@@ -79,21 +79,22 @@ export default function Page() {
     const lastMessage = messages[messages.length - 1];
 
     // Simple regex to check for a pattern resembling an email
-    // It looks for characters, then @, then characters, then ., then characters.
     const emailRegex = /\S+@\S+\.\S+/;
+    const emailMatch = lastMessage.content.match(emailRegex);
 
-    if (lastMessage.role === 'user' && emailRegex.test(lastMessage.content)) {
-      console.log("Frontend: Email pattern detected in user's last message:", lastMessage.content);
+    if (lastMessage.role === 'user' && emailMatch) {
+      const extractedEmail = emailMatch[0]; // The first match is the email itself
+      console.log("Frontend: Email pattern detected and extracted:", extractedEmail);
       console.log("Frontend: Preparing for evaluation based on email submission.");
       setIsInterviewEvaluating(true); // Mark that evaluation process has started
       setEvaluationStatus("Correo electrónico detectado. Preparando evaluación...");
-      // Call evaluation with the current messages array (which includes the email)
-      sendConversationForEvaluation(messages);
+      // Call evaluation with the current messages array and the extracted email
+      sendConversationForEvaluation(messages, extractedEmail);
     }
   }, [messages, isInterviewEvaluating]); // Re-run when messages or isInterviewEvaluating changes
 
   // Function to send the conversation to the evaluation API
-  async function sendConversationForEvaluation(conversationMessages: Message[]) {
+  async function sendConversationForEvaluation(conversationMessages: Message[], userEmail: string) {
     if (conversationMessages.length === 0) {
       console.warn("Frontend: No messages to evaluate.");
       setEvaluationStatus("No hay mensajes para evaluar.");
@@ -119,6 +120,7 @@ export default function Page() {
         body: JSON.stringify({
           messages: conversationMessages, 
           conversationId: conversationId, // Include conversationId in the payload
+          userEmail: userEmail, // <<<--- ADDED USER EMAIL HERE ---<<<
         }),
       });
 
@@ -247,8 +249,29 @@ export default function Page() {
 
       {/* Display Evaluation Status Message */} 
       {evaluationStatus && (
-        <div className="text-center p-2 my-2 bg-blue-100 border border-blue-300 text-blue-700 rounded-md text-sm z-20 relative">
-          {evaluationStatus}
+        <div className={`text-center p-3 my-3 rounded-2xl shadow-sm text-sm z-20 relative transition-all duration-300 ${
+          evaluationStatus.includes("éxito") || evaluationStatus.includes("completada") 
+          ? "bg-[#FFF8E6] border-2 border-[#F5B614] text-gray-800"  // Success style
+          : evaluationStatus.includes("Error") 
+            ? "bg-red-50 border-2 border-red-200 text-red-800"       // Error style
+            : "bg-[#FFF8E6] border-2 border-[#F5B614] text-gray-800" // Default/processing style
+        }`}>
+          <span className="flex items-center justify-center">
+            {evaluationStatus.includes("éxito") || evaluationStatus.includes("completada") ? (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#F5B614]" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            ) : evaluationStatus.includes("Error") ? (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="animate-spin h-5 w-5 mr-2 text-[#F5B614]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            )}
+            {evaluationStatus}
+          </span>
         </div>
       )}
 
