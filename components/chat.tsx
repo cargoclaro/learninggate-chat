@@ -3,12 +3,27 @@
 import { useChat, type Message } from '@ai-sdk/react';
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Page() {
   // State to track if the interview evaluation process has started
   const [isInterviewEvaluating, setIsInterviewEvaluating] = useState(false);
   // State to provide feedback to the user about the evaluation process
-  const [evaluationStatus, setEvaluationStatus] = useState<string | null>(null); 
+  const [evaluationStatus, setEvaluationStatus] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+
+  // Generate a conversation ID when the component mounts
+  useEffect(() => {
+    setConversationId(uuidv4());
+    console.log("Frontend: New Conversation ID generated:", conversationId);
+  }, []); // Empty dependency array ensures this runs only once on mount
+
+  // Effect to log conversationId when it changes (for debugging)
+  useEffect(() => {
+    if(conversationId) {
+      console.log("Frontend: Conversation ID is now:", conversationId);
+    }
+  }, [conversationId]);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     // Add throttling configuration to slow down streaming
@@ -85,8 +100,14 @@ export default function Page() {
       setIsInterviewEvaluating(false); // Reset if there's nothing to do
       return;
     }
+    if (!conversationId) { // Check if conversationId is available
+      console.error("Frontend: Conversation ID is missing. Cannot send for evaluation.");
+      setEvaluationStatus("Error: Falta el ID de la conversación.");
+      setIsInterviewEvaluating(false);
+      return;
+    }
 
-    console.log("Frontend: Sending conversation for evaluation...", conversationMessages);
+    console.log(`Frontend: Sending conversation ${conversationId} for evaluation...`, conversationMessages);
     setEvaluationStatus("Procesando evaluación... Por favor espere.");
 
     try {
@@ -96,7 +117,8 @@ export default function Page() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messages: conversationMessages, // Send the full conversation history
+          messages: conversationMessages, 
+          conversationId: conversationId, // Include conversationId in the payload
         }),
       });
 
