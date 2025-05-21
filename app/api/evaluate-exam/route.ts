@@ -65,7 +65,7 @@ export const IAFormSchema = z.object({
 export async function POST(req: Request) {
   try {
     // Destructure conversationId along with messages from the request body
-    const { messages, conversationId, /* other potential fields if any */ } = await req.json();
+    const { messages, conversationId, userEmail /* other potential fields if any */ } = await req.json();
 
     // Validate messages
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -81,8 +81,15 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+    // Validate userEmail
+    if (!userEmail || typeof userEmail !== 'string') { // Basic check, can be improved with regex for email format
+      return NextResponse.json(
+        { error: 'Valid userEmail is required in the request body.' },
+        { status: 400 }
+      );
+    }
 
-    console.log(`Received conversation for evaluation. Conversation ID: ${conversationId}`);
+    console.log(`Received conversation for evaluation. Conversation ID: ${conversationId}, User Email: ${userEmail}`);
     console.log('Messages:', JSON.stringify(messages, null, 2));
 
     const conversationText = messages.map((m: { role: string; content: string; }) => `${m.role}: ${m.content}`).join('\n');
@@ -166,6 +173,7 @@ Genera la evaluacion de acuerdo al esquema definido.`;
     if (supabase) {
       const insertData = {
         conversation_id: conversationId,
+        user_email: userEmail,
         conversation_transcript: messages,
         
         // Use the typedEvaluationResult for insertion
