@@ -59,18 +59,35 @@ export const aiDiagnosticSchema = z.object({
 
 // Define the Zod schema for the desired evaluation output
 // CUSTOMIZE THIS SCHEMA TO YOUR NEEDS
-const evaluationSchema = z.object({
-  evaluationSummary: z.string().describe("A brief overall summary of the user\'s performance."),
-  strengths: z.array(z.string()).describe("List of identified strengths."),
-  areasForImprovement: z.array(z.string()).describe("List of areas needing improvement."),
-  finalScore: z.number().optional().describe("An optional numerical score if applicable."),
-  detailedFeedback: z.array(
-    z.object({
-      relevantQuestion: z.string().optional().describe("The key question or topic from the conversation being assessed."),
-      userResponseSnippet: z.string().optional().describe("A snippet of the user\'s response related to this point."),
-      assessment: z.string().describe("Specific feedback on this part of the interaction.")
-    })
-  ).optional().describe("Detailed feedback on specific parts of the conversation.")
+const IAFormSchema = z.object({
+  nombre_y_puesto: z.string().describe("Nombre completo y puesto laboral actual"),
+  area_principal_trabajo: z.string().describe("Área principal en la que trabaja (ej. ventas, marketing, finanzas)"),
+  anios_experiencia: z.string().describe("Años de experiencia laboral total"),
+  nivel_office: z.string().describe("Nivel de dominio de Office (básico, intermedio, avanzado)"),
+  herramientas_ia_usadas: z.string().describe("Herramientas de IA que usa actualmente"),
+  horas_ia_semana: z.string().describe("Horas de uso de IA por semana"),
+  dispositivos_ia: z.string().describe("Dispositivos usados para trabajar con IA (ej. laptop, celular)"),
+  objetivo_ia: z.string().describe("Objetivo principal al usar IA (ej. ahorrar tiempo, mejorar calidad)"),
+  sabe_que_es_llm: z.string().describe("¿Sabe qué es un LLM? (sí/no o breve explicación)"),
+  conoce_pretraining_finetuning: z.string().describe("¿Conoce los conceptos de pre-training y fine-tuning?"),
+  conoce_4_partes_prompt: z.string().describe("¿Conoce las 4 partes de un buen prompt?"),
+  habilidad_prompts: z.string().describe("Autoevaluación de su habilidad para crear prompts (1-5)"),
+  funciones_avanzadas_chatgpt: z.string().describe("Funciones avanzadas de ChatGPT usadas (ej. search, imágenes, subir docs, canvas, agentes)"),
+  usos_ia_ventas: z.string().describe("Usos actuales o posibles de IA en el área de ventas"),
+  usos_ia_marketing: z.string().describe("Usos actuales o posibles de IA en el área de marketing"),
+  usos_ia_finanzas: z.string().describe("Usos actuales o posibles de IA en el área de finanzas"),
+  usado_copilot_web: z.string().describe("¿Ha usado Copilot en versión web?"),
+  usado_copilot_excel: z.string().describe("¿Ha usado Copilot en Excel? Incluir ejemplos si es posible"),
+  usado_copilot_word: z.string().describe("¿Ha usado Copilot en Word? Incluir ejemplos si es posible"),
+  usado_copilot_outlook: z.string().describe("¿Ha usado Copilot en Outlook? Incluir ejemplos si es posible"),
+  usado_copilot_power_platform: z.string().describe("¿Ha usado Copilot en Power BI, Power Apps o Power Automate? Enumere"),
+  tiempo_ahorrado: z.string().describe("Minutos u horas que ahorra al día con IA"),
+  ejemplos_mejoras_ia: z.string().describe("Ejemplos concretos de decisiones mejoradas o errores evitados gracias a la IA"),
+  retos_actuales_ia: z.string().describe("Principales retos o barreras actuales (ej. seguridad, ideas, costos)"),
+  tema_a_profundizar: z.string().describe("Tema relacionado con IA que más desea profundizar"),
+  capacitacion_formal: z.string().describe("¿Ha recibido capacitación formal en IA?"),
+  confianza_resultados_ia: z.string().describe("Nivel de confianza en resultados de IA (1-5)"),
+  curiosidad_explorar_ia: z.string().describe("Nivel de curiosidad por explorar nuevas funciones de IA (1-5)")
 });
 
 export async function POST(req: Request) {
@@ -102,7 +119,7 @@ Please generate the evaluation according to the defined schema.`;
     
     const { object: evaluationResult } = await generateObject({
       model: openai('gpt-4o'), 
-      schema: evaluationSchema, // Consistently using evaluationSchema
+      schema: IAFormSchema, // Use the new IAFormSchema here
       prompt: prompt,
     });
 
