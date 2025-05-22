@@ -134,8 +134,10 @@ export default function Page() {
       const evaluationResult = await response.json();
       console.log('Frontend: Evaluation successful!', evaluationResult);
       setEvaluationStatus("¡Evaluación completada con éxito!"); 
-      // You could navigate to a results page or display summary here
-      // For example: alert("Evaluation Complete: " + evaluationResult.evaluation?.evaluationSummary);
+      // Reload the page after 2 seconds to give user time to see the success message
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
 
     } catch (error) {
       console.error('Frontend: Error during evaluation API call:', error);
