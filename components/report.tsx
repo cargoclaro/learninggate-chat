@@ -416,11 +416,11 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
       {/* Key Metrics */}
       <section className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <SummaryCard
-          title="Años experiencia con IA"
-          value={singleValue(stats, "avgYearsExperience", 1)}
+          title="Empleados evaluados"
+          value={singleValue(stats, "employeeCount", 0)}
           icon={<Users className="w-4 h-4" />}
-          benchmark={2}
-          unit=" años"
+          benchmark={50}
+          unit=" empleados"
         />
         <SummaryCard
           title="Horas IA/semana"
@@ -440,14 +440,14 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
           title="Skill prompting"
           value={singleValue(stats, "avgPromptSkill", 1)}
           icon={<Target className="w-4 h-4" />}
-          benchmark={4}
+          benchmark={5}
           unit="/5"
         />
         <SummaryCard
           title="% Conoce LLMs"
           value={singleValue(stats, "pctKnowLLM", 0)}
           icon={<Brain className="w-4 h-4" />}
-          benchmark={80}
+          benchmark={100}
           unit="%"
         />
       </section>
@@ -553,23 +553,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
         </Card>
       </section>
 
-      {/* Opportunities & Risks */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <OpportunityCard
-          title="Oportunidades de Crecimiento"
-          items={getOpportunities()}
-          icon={<TrendingUp className="w-4 h-4" />}
-          color="#0F9D58"
-        />
-        <OpportunityCard
-          title="Riesgos Identificados"
-          items={getRisks()}
-          icon={<AlertTriangle className="w-4 h-4" />}
-          color="#DB4437"
-        />
-      </section>
-
-      {/* Charts Grid */}
+      {/* Charts Grid - Moved up for better visibility */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Device distribution pie */}
         <Card>
@@ -612,27 +596,27 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
             <p className="text-xs text-purple-600">Comparación con benchmarks del mercado</p>
           </CardHeader>
           <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={radarData}>
-                <PolarGrid stroke="#e5e7eb" />
-                <PolarAngleAxis dataKey="metric" tick={{ fontSize: 12 }} />
-                <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fontSize: 10 }} />
+                          <ResponsiveContainer width="100%" height="100%">
+                <RadarChart data={radarData}>
+                  <PolarGrid stroke="#d1d5db" strokeWidth={1} />
+                  <PolarAngleAxis dataKey="metric" tick={{ fontSize: 12, fill: "#374151" }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fontSize: 10, fill: "#6b7280" }} />
                 <Radar
                   name="Tu empresa"
                   dataKey="score"
-                  stroke="#8b5cf6"
-                  fill="#8b5cf6"
-                  fillOpacity={0.6}
-                  strokeWidth={2}
+                  stroke="#2563eb"
+                  fill="#3b82f6"
+                  fillOpacity={0.3}
+                  strokeWidth={3}
                 />
                 <Radar
                   name="Promedio industria"
                   dataKey="industry"
-                  stroke="#ef4444"
+                  stroke="#dc2626"
                   fill="#ef4444"
-                  fillOpacity={0.2}
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
+                  fillOpacity={0.1}
+                  strokeWidth={3}
+                  strokeDasharray="8 4"
                 />
                 <Tooltip />
                 <Legend />
@@ -642,15 +626,15 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
         </Card>
       </section>
 
-      {/* Copilot Adoption */}
+      {/* Copilot Adoption - Moved up for better visibility */}
       <section>
-        <Card className="border-2 border-orange-200 bg-orange-50/50">
+        <Card className="border-2 border-blue-200 bg-blue-50/50">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-orange-700 flex items-center gap-2">
+            <CardTitle className="text-lg font-semibold text-blue-700 flex items-center gap-2">
               <BarChart3 className="w-5 h-5" />
               Adopción Microsoft Copilot
             </CardTitle>
-            <p className="text-xs text-orange-600">Uso de herramientas Copilot en Office 365</p>
+            <p className="text-sm text-blue-600 mt-1">Porcentaje de uso por herramienta</p>
           </CardHeader>
           <CardContent className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -675,11 +659,11 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
                   labelFormatter={(label) => `Microsoft Copilot ${label}`}
                 />
                 <Bar dataKey="value" radius={[8, 8, 0, 0]}>
-                  <Cell fill="#0078d4" /> {/* Microsoft Blue */}
-                  <Cell fill="#107c10" /> {/* Excel Green */}
-                  <Cell fill="#2b579a" /> {/* Word Blue */}
-                  <Cell fill="#0078d4" /> {/* Outlook Blue */}
-                  <Cell fill="#742774" /> {/* Power Platform Purple */}
+                  <Cell fill="#1f77b4" /> {/* Bright Blue */}
+                  <Cell fill="#2ca02c" /> {/* Bright Green */}
+                  <Cell fill="#ff7f0e" /> {/* Bright Orange */}
+                  <Cell fill="#d62728" /> {/* Bright Red */}
+                  <Cell fill="#9467bd" /> {/* Bright Purple */}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -687,36 +671,291 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
         </Card>
       </section>
 
-      {/* Main Challenges */}
+      {/* Opportunities & Risks */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <OpportunityCard
+          title="Oportunidades de Crecimiento"
+          items={getOpportunities()}
+          icon={<TrendingUp className="w-4 h-4" />}
+          color="#0F9D58"
+        />
+        <OpportunityCard
+          title="Riesgos Identificados"
+          items={getRisks()}
+          icon={<AlertTriangle className="w-4 h-4" />}
+          color="#DB4437"
+        />
+      </section>
+
+      {/* Course Transformation Offer - Based on Real Calculated Values */}
       <section>
-        <Card className="border-2 border-red-200 bg-red-50/50">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-red-700 flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5" />
-              Principales Retos Identificados
-            </CardTitle>
-            <p className="text-xs text-red-600">Obstáculos que limitan el potencial de IA en la empresa</p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {topChallenges.map((c, idx) => (
-              <div key={idx} className="bg-white p-4 rounded-lg border border-red-100">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                      <span className="text-red-600 font-bold text-sm">#{idx + 1}</span>
+        <Card className="border-2 border-[#F5B614] bg-gradient-to-br from-white via-[#FFFBF0] to-white shadow-lg overflow-hidden">
+          {/* Header Section */}
+          <div className="bg-gradient-to-r from-[#F5B614] to-[#E5A604] text-white p-4 text-center">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <GraduationCap className="w-5 h-5" />
+              <span className="text-xs font-medium tracking-wide">PROGRAMA EXCLUSIVO</span>
+            </div>
+            <h2 className="text-2xl font-bold mb-1">
+              De Nivel {maturity.level} a Experto IA en 90 Días
+            </h2>
+            <p className="text-sm opacity-95 max-w-xl mx-auto">
+              Transforma a tus {Math.max(25, roi.employeeCount)} empleados en expertos de ChatGPT y Copilot
+            </p>
+          </div>
+
+          <CardContent className="p-6 space-y-6">
+            {(() => {
+              // Ensure minimum 25 employees for program calculations
+              const programEmployeeCount = Math.max(25, roi.employeeCount);
+              const isMinimumTeam = roi.employeeCount < 25;
+              
+              // Calculate program value based on potential savings and employee count
+              const baseProgramValue = 50000; // Minimum $50k
+              const potentialSavingsValue = Math.max(roi.potential - roi.current, 0);
+              
+              // Value scales with team size and potential savings
+              // Base: $50k for 25 employees, then $1.5k per additional employee
+              const employeeScalingValue = programEmployeeCount > 25 
+                ? (programEmployeeCount - 25) * 1500 
+                : 0;
+              
+              // Add 15% of potential annual savings as value component
+              const savingsBasedValue = potentialSavingsValue * 0.15;
+              
+              const totalProgramValue = Math.max(
+                baseProgramValue + employeeScalingValue + savingsBasedValue,
+                baseProgramValue
+              );
+              
+              // Program price is 50% of total value (good value proposition)
+              const programPrice = Math.round(totalProgramValue * 0.5);
+              
+              return (
+                <>
+                  {/* Minimum Team Size Notice */}
+                  {isMinimumTeam && (
+                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded-r-lg mb-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Users className="w-4 h-4 text-yellow-600" />
+                        <span className="font-bold text-yellow-700 text-sm">Programa Empresarial</span>
+                      </div>
+                      <div className="text-xs text-yellow-600">
+                        Programa diseñado para equipos de mínimo 25 empleados.
+                        <span className="font-semibold"> Cotización basada en 25 empleados.</span>
+                      </div>
                     </div>
-                    <span className="font-medium capitalize text-gray-800">{c.name}</span>
+                  )}
+
+                  {/* Problem/Solution - Based on Real Data */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                      <h3 className="text-base font-bold text-red-700 mb-3 flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4" />
+                        Sin el programa
+                      </h3>
+                      <div className="space-y-2 text-xs text-red-600">
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                          <span>Pierdes ${Math.round(roi.opportunity/12).toLocaleString()}/mes</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                          <span>Solo {roi.currentMinutesSavedPerDay} min/día ahorrados</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                          <span>Skill: {singleValue(stats, "avgPromptSkill", 1)}/5 ({maturity.level})</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                      <h3 className="text-base font-bold text-green-700 mb-3 flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4" />
+                        Con el programa
+                      </h3>
+                      <div className="space-y-2 text-xs text-green-600">
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                          <span>Generas ${Math.round(roi.potential/12).toLocaleString()}/mes adicionales</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                          <span>120+ min/día ahorrados (2+ horas)</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                          <span>Skill: 5/5 (Experto certificado)</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <span className="text-xl font-bold text-red-600">{c.value}%</span>
-                </div>
-                <div className="w-full bg-red-100 rounded-full h-3">
-                  <div
-                    className="h-3 rounded-full bg-gradient-to-r from-red-400 to-red-600 transition-all duration-500"
-                    style={{ width: `${c.value}%` }}
-                  />
-                </div>
+
+                  {/* ROI Calculation - Real Numbers */}
+                  <div className="bg-slate-50 border border-slate-300 rounded-lg p-4">
+                    <h3 className="text-lg font-bold text-center mb-3 text-black">
+                      ROI para {companyName}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-center">
+                      <div className="bg-white rounded-lg p-3">
+                        <div className="text-xl font-bold text-red-700">${Math.round(roi.opportunity).toLocaleString()}</div>
+                        <div className="text-xs text-gray-600">Oportunidad perdida</div>
+                      </div>
+                      <div className="bg-white rounded-lg p-3">
+                        <div className="text-xl font-bold text-emerald-700">${Math.round(roi.potential).toLocaleString()}</div>
+                        <div className="text-xs text-gray-600">Potencial anual</div>
+                      </div>
+                      <div className="bg-white rounded-lg p-3">
+                        <div className="text-xl font-bold text-indigo-700">{Math.round((roi.potential - roi.current) / programPrice * 100)}%</div>
+                        <div className="text-xs text-gray-600">ROI programa</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Value Stack - Dynamic Based on Team Size & Potential */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="text-lg font-bold text-center mb-4 text-gray-800">
+                      Programa ({programEmployeeCount} empleados)
+                    </h3>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
+                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-800 text-sm">8 semanas entrenamiento</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
+                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-800 text-sm">Certificación oficial</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
+                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-800 text-sm">Prompts personalizados</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
+                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-800 text-sm">Soporte 90 días</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
+                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-800 text-sm">Comunidad expertos</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
+                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-800 text-sm">Templates listos</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
+                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-800 text-sm">Seguimiento ROI</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
+                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
+                            <CheckCircle className="w-4 h-4 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-800 text-sm">Garantía resultados</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Value Summary - Dynamic Calculation */}
+                    <div className="border-t mt-4 pt-3 text-center">
+                      <div className="text-sm text-gray-700 font-medium">Valor total:</div>
+                      <div className="text-xl font-bold text-gray-800 line-through">${totalProgramValue.toLocaleString()}</div>
+                    </div>
+                  </div>
+
+                  {/* Pricing - Dynamic Based on Value */}
+                  <div className="text-center">
+                    <div className="bg-[#F5B614] rounded-lg p-4 text-white mb-3">
+                      <div className="text-xs mb-1">Tu inversión ({programEmployeeCount} empleados):</div>
+                      <div className="text-3xl font-bold mb-1">${programPrice.toLocaleString()}</div>
+                      <div className="text-sm">Se paga en {Math.round(programPrice / (roi.potential - roi.current) * 12)} días</div>
+                    </div>
+                    
+                    {/* Risk Reversal */}
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Shield className="w-4 h-4 text-green-600" />
+                        <span className="font-bold text-green-700 text-sm">Garantía Triple</span>
+                      </div>
+                      <div className="text-xs text-green-600 space-y-1">
+                        <div>✓ ${Math.round(roi.potential - roi.current).toLocaleString()} adicionales en 90 días o devolución completa</div>
+                        <div>✓ Mejora de {singleValue(stats, "avgPromptSkill", 1)}/5 a 5/5 o extensión gratis</div>
+                        <div>✓ Satisfacción garantizada</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Urgency & Scarcity - Personalized */}
+                  <div className="bg-red-50 border-l-4 border-red-500 p-3 rounded-r-lg">
+                    <div className="flex items-center gap-2 mb-1">
+                      <AlertTriangle className="w-4 h-4 text-red-600" />
+                      <span className="font-bold text-red-700 text-sm">Disponibilidad Limitada</span>
+                    </div>
+                    <div className="text-xs text-red-600">
+                      Solo 20 empresas por trimestre. 
+                      <span className="font-semibold">Siguiente cohorte en 15 días.</span>
+                    </div>
+                  </div>
+
+                  {/* CTA Button */}
+                  <div className="text-center space-y-3">
+                    <button className="w-full bg-gradient-to-r from-[#F5B614] to-[#E5A604] hover:from-[#E5A604] hover:to-[#D4950A] text-white font-bold text-lg py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]">
+                      RESERVAR CUPO - ${programPrice.toLocaleString()}
+                    </button>
+                    <div className="text-xs text-gray-500 space-y-1">
+                      <div>✓ Llamada estratégica gratuita</div>
+                      <div>✓ Análisis ROI personalizado</div>
+                      <div>✓ Sin compromiso inicial</div>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
+
+            {/* Social Proof */}
+            <div className="border-t pt-4 text-center">
+              <div className="text-xs text-gray-600 mb-2">
+                <span className="font-bold text-[#F5B614]">+500 empleados</span> transformados en <span className="font-bold">+50 empresas</span>
               </div>
-            ))}
+              <div className="flex justify-center items-center gap-4 text-gray-400 text-xs font-medium">
+                <span>VISIONA</span>
+                <span>TECH CORP</span>
+                <span>INNOVATE SA</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </section>

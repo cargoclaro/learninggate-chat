@@ -77,14 +77,14 @@ export default function ReportGeneratorForm({ onReportStateChange }: ReportGener
 
   return (
     <div className="relative">
-      {/* Back button icon - positioned absolutely in top left when report is shown */}
+      {/* Back button icon - neat static design in top left when report is shown */}
       {stats && stats.length > 0 && (
         <button 
           onClick={handleBackToForm}
-          className="fixed top-4 left-4 z-50 p-3 bg-white rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+          className="absolute -top-2 left-2 z-10 p-2 bg-gray-100 rounded-lg border border-gray-300 hover:bg-gray-200 hover:border-gray-400 transition-all duration-200 shadow-sm"
           title="Back to company selection"
         >
-          <ArrowLeft className="w-6 h-6 text-gray-600" />
+          <ArrowLeft className="w-4 h-4 text-gray-700" />
         </button>
       )}
 
