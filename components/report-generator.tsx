@@ -1,12 +1,15 @@
 'use client'; // This directive is necessary for using hooks like useState and event handlers
 
 import React, { useState } from 'react';
+import { ArrowLeft } from 'lucide-react'; // Import the back arrow icon
 import CompanyIADashboard from './report'; // Import the dashboard component
 
-// Define a type for the component props if you plan to pass any, though none for now.
-// interface ReportGeneratorFormProps {}
+// Define a type for the component props
+interface ReportGeneratorFormProps {
+  onReportStateChange?: (hasReport: boolean) => void; // Callback to notify parent about report state
+}
 
-export default function ReportGeneratorForm(/*props: ReportGeneratorFormProps*/) {
+export default function ReportGeneratorForm({ onReportStateChange }: ReportGeneratorFormProps) {
   // State to store the company name entered by the user
   const [companyName, setCompanyName] = useState('');
   // State to indicate if the report is currently being generated (for loading indicators)
@@ -50,6 +53,8 @@ export default function ReportGeneratorForm(/*props: ReportGeneratorFormProps*/)
       
       // Store the stats in state
       setStats(data);
+      // Notify parent that report is now displayed
+      onReportStateChange?.(true);
 
     } catch (err: any) { // Added type for caught error
       // If an error occurs during the API call or processing
@@ -61,49 +66,73 @@ export default function ReportGeneratorForm(/*props: ReportGeneratorFormProps*/)
     }
   };
 
+  // Function to reset the form and go back to company selection
+  const handleBackToForm = () => {
+    setStats(null); // Clear the stats to show the form again
+    setError(null); // Clear any errors
+    setCompanyName(''); // Reset the company name
+    // Notify parent that we're back to form view
+    onReportStateChange?.(false);
+  };
+
   return (
-    <div className="space-y-8">
-      {/* Form for company name input */}
-      <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-        <div className="mb-4">
-          <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-2">
-            Company Name:
-          </label>
-          <input
-            type="text"
-            id="companyName"
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)} // Update companyName state on change
-            placeholder="E.g., Acme Corporation"
-            disabled={isLoading} // Disable input while loading
-            className="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-        
+    <div className="relative">
+      {/* Back button icon - positioned absolutely in top left when report is shown */}
+      {stats && stats.length > 0 && (
         <button 
-          onClick={handleGenerateReport} 
-          disabled={isLoading} // Disable button while loading
-          className={`w-full py-2 px-4 rounded-md text-white font-medium ${
-            isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-          }`}
+          onClick={handleBackToForm}
+          className="fixed top-4 left-4 z-50 p-3 bg-white rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+          title="Back to company selection"
         >
-          {isLoading ? 'Generating...' : 'Generate Report'} {/* Change text when loading */}
+          <ArrowLeft className="w-6 h-6 text-gray-600" />
         </button>
-        
-        {/* Display error message if any */}
-        {error && (
-          <p className="mt-4 text-red-600 text-center">
-            Error: {error}
-          </p>
+      )}
+
+      <div className="space-y-8">
+        {/* Show form only when no stats are loaded */}
+        {!stats && (
+          <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+            <div className="mb-4">
+              <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-2">
+                Company Name:
+              </label>
+              <input
+                type="text"
+                id="companyName"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)} // Update companyName state on change
+                placeholder="E.g., Acme Corporation"
+                disabled={isLoading} // Disable input while loading
+                className="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            
+            <button 
+              onClick={handleGenerateReport} 
+              disabled={isLoading} // Disable button while loading
+              className={`w-full py-2 px-4 rounded-md text-white font-medium ${
+                isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+            >
+              {isLoading ? 'Generating...' : 'Generate Report'} {/* Change text when loading */}
+            </button>
+            
+            {/* Display error message if any */}
+            {error && (
+              <p className="mt-4 text-red-600 text-center">
+                Error: {error}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Show dashboard when stats are loaded */}
+        {stats && stats.length > 0 && (
+          <div className="pt-4">
+            <CompanyIADashboard companyName={companyName} stats={stats} />
+          </div>
         )}
       </div>
-
-      {/* Render the dashboard if we have stats */}
-      {stats && stats.length > 0 && (
-        <div className="mt-8">
-          <CompanyIADashboard companyName={companyName} stats={stats} />
-        </div>
-      )}
     </div>
   );
 }
