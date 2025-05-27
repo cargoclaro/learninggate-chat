@@ -57,7 +57,12 @@ export async function POST(req: Request) {
     const conversationText = messages.map((m: { role: string; content: string; }) => `${m.role}: ${m.content}`).join('\n');
     const prompt = `Eres un experto evaluador de un examen de diagnostico de IA. 
 Basado en el siguiente transcripto de la conversacion, proporciona una evaluacion estructurada del rendimiento del usuario.
-Enfocate en identificar su comprension, fortalezas y areas para mejorar.
+Tu tarea es calificar cada respuesta con un número del 1 al 5, donde:
+	•	1 = No sabe del tema o la respuesta está muy incorrecta.
+	•	2 = Muestra una idea vaga o incompleta.
+	•	3 = Conoce el término pero lo explica superficialmente.
+	•	4 = Tiene buen entendimiento y explica con claridad.
+	•	5 = Explica con precisión, usando ejemplos correctos y lenguaje técnico adecuado.
 
 Transcript:
 ${conversationText}
@@ -76,61 +81,64 @@ Genera la evaluacion de acuerdo al esquema definido.`;
 
     console.log('LLM string-based evaluation result:', evaluationResultStrings);
 
-    // --- Manual Type Conversion --- 
-    // Helper function to safely parse integers from strings
-    const parseIntOrNull = (value: string | undefined, allowNaNAsNull: boolean = true): number | null => {
-      if (value === undefined || value === null || value.trim() === '') return null;
+    // Helper function to safely parse integers from strings (1-5 scale)
+    const parseIntScale = (value: string | undefined): number | null => {
+      if (!value) return null;
       const num = parseInt(value, 10);
-      return isNaN(num) && allowNaNAsNull ? null : (isNaN(num) ? 0 : num); // Default to 0 if parsing fails & not allowing null for NaN
+      return (num >= 1 && num <= 5) ? num : null;
     };
 
-    // Helper function to safely parse booleans from strings
-    const parseBooleanOrNull = (value: string | undefined): boolean | null => {
-      if (value === undefined || value === null || value.trim() === '') return null;
-      const lowerVal = value.toLowerCase();
-      if (['true', 'sí', 'si', 'yes', '1'].includes(lowerVal)) return true;
-      if (['false', 'no', '0'].includes(lowerVal)) return false;
-      return null; // Or a default boolean like false, depending on requirements
+    // Helper function to parse JSON arrays from strings
+    const parseJsonArray = (value: string | undefined): string[] | null => {
+      if (!value) return null;
+      try {
+        // If it's already an array string like "['laptop', 'celular']"
+        const parsed = JSON.parse(value.replace(/'/g, '"')); // Replace single quotes with double quotes
+        return Array.isArray(parsed) ? parsed : null;
+      } catch {
+        // If parsing fails, try to split by comma and clean up
+        const items = value.split(',').map(item => item.trim().replace(/[\[\]'"]/g, ''));
+        return items.filter(item => item.length > 0);
+      }
     };
 
+    // Convert string responses to proper data types for database
     const typedEvaluationResult = {
-      // Keep string fields as they are
-      nombre_empresa_comercial: evaluationResultStrings.nombre_empresa_comercial,
+      // Basic Information (text fields)
+      nombre: evaluationResultStrings.nombre,
       nombre_y_puesto: evaluationResultStrings.nombre_y_puesto,
       area_principal_trabajo: evaluationResultStrings.area_principal_trabajo,
-      nivel_office: evaluationResultStrings.nivel_office,
-      herramientas_ia_usadas: evaluationResultStrings.herramientas_ia_usadas,
-      dispositivos_ia: evaluationResultStrings.dispositivos_ia,
-      objetivo_ia: evaluationResultStrings.objetivo_ia,
-      funciones_avanzadas_chatgpt: evaluationResultStrings.funciones_avanzadas_chatgpt,
-      usos_ia_ventas: evaluationResultStrings.usos_ia_ventas,
-      usos_ia_marketing: evaluationResultStrings.usos_ia_marketing,
-      usos_ia_finanzas: evaluationResultStrings.usos_ia_finanzas,
-      usado_copilot_excel: evaluationResultStrings.usado_copilot_excel,
-      usado_copilot_word: evaluationResultStrings.usado_copilot_word,
-      usado_copilot_outlook: evaluationResultStrings.usado_copilot_outlook,
-      usado_copilot_power_platform: evaluationResultStrings.usado_copilot_power_platform,
-      ejemplos_mejoras_ia: evaluationResultStrings.ejemplos_mejoras_ia,
-      retos_actuales_ia: evaluationResultStrings.retos_actuales_ia,
-      tema_a_profundizar: evaluationResultStrings.tema_a_profundizar,
-
-      // Fields to be converted
-      anios_experiencia: parseIntOrNull(evaluationResultStrings.anios_experiencia),
-      horas_ia_semana: parseIntOrNull(evaluationResultStrings.horas_ia_semana),
-      sabe_que_es_llm: parseBooleanOrNull(evaluationResultStrings.sabe_que_es_llm),
-      conoce_pretraining_finetuning: parseBooleanOrNull(evaluationResultStrings.conoce_pretraining_finetuning),
-      conoce_4_partes_prompt: parseBooleanOrNull(evaluationResultStrings.conoce_4_partes_prompt),
-      habilidad_prompts: parseIntOrNull(evaluationResultStrings.habilidad_prompts),
-      usado_copilot_web: parseBooleanOrNull(evaluationResultStrings.usado_copilot_web),
-      tiempo_ahorrado: parseIntOrNull(evaluationResultStrings.tiempo_ahorrado),
-      capacitacion_formal: parseBooleanOrNull(evaluationResultStrings.capacitacion_formal),
-      confianza_resultados_ia: parseIntOrNull(evaluationResultStrings.confianza_resultados_ia),
-      curiosidad_explorar_ia: parseIntOrNull(evaluationResultStrings.curiosidad_explorar_ia),
+      edad: parseIntScale(evaluationResultStrings.edad),
+      
+      // AI Knowledge Assessment (1-5 integers)
+      sabe_que_es_llm: parseIntScale(evaluationResultStrings.sabe_que_es_llm),
+      conoce_pretraining_finetuning: parseIntScale(evaluationResultStrings.conoce_pretraining_finetuning),
+      conoce_4_partes_prompt: parseIntScale(evaluationResultStrings.conoce_4_partes_prompt),
+      
+      // Department Usage (1-5 integers)
+      uso_por_departamento: parseIntScale(evaluationResultStrings.uso_por_departamento),
+      
+      // Training and Confidence (1-5 integers)
+      capacitacion_formal: parseIntScale(evaluationResultStrings.capacitacion_formal),
+      confia_en_ia: parseIntScale(evaluationResultStrings.confia_en_ia),
+      curiosidad_explorar_ia: parseIntScale(evaluationResultStrings.curiosidad_explorar_ia),
+      
+      // Devices and Tools (JSON arrays)
+      dispositivos_ia: parseJsonArray(evaluationResultStrings.dispositivos_ia),
+      uso_herramientas_ia: parseJsonArray(evaluationResultStrings.uso_herramientas_ia),
+      
+      // Department-specific AI Usage (1-5 integers)
+      uso_ia_ventas: parseIntScale(evaluationResultStrings.uso_ia_ventas),
+      uso_ia_marketing: parseIntScale(evaluationResultStrings.uso_ia_marketing),
+      uso_ia_finanzas: parseIntScale(evaluationResultStrings.uso_ia_finanzas),
+      uso_ia_administracion: parseIntScale(evaluationResultStrings.uso_ia_administracion),
+      
+      // Impact and Challenges (1-5 integers)
+      tiempo_ahorrado: parseIntScale(evaluationResultStrings.tiempo_ahorrado),
+      retos_actuales_ia: parseIntScale(evaluationResultStrings.retos_actuales_ia)
     };
 
-    console.log('Manually typed evaluation result:', typedEvaluationResult);
-
-    // --- End Manual Type Conversion ---
+    console.log('Typed evaluation result:', typedEvaluationResult);
 
     if (supabase) {
       const insertData = {
@@ -138,36 +146,26 @@ Genera la evaluacion de acuerdo al esquema definido.`;
         user_email: userEmail,
         conversation_transcript: messages,
         
-        // Use the typedEvaluationResult for insertion
-        nombre_empresa_comercial: typedEvaluationResult.nombre_empresa_comercial,
+        // Use the new schema fields
+        nombre: typedEvaluationResult.nombre,
         nombre_y_puesto: typedEvaluationResult.nombre_y_puesto,
         area_principal_trabajo: typedEvaluationResult.area_principal_trabajo,
-        anios_experiencia: typedEvaluationResult.anios_experiencia,
-        nivel_office: typedEvaluationResult.nivel_office,
-        herramientas_ia_usadas: typedEvaluationResult.herramientas_ia_usadas,
-        horas_ia_semana: typedEvaluationResult.horas_ia_semana,
-        dispositivos_ia: typedEvaluationResult.dispositivos_ia,
-        objetivo_ia: typedEvaluationResult.objetivo_ia,
+        edad: typedEvaluationResult.edad,
         sabe_que_es_llm: typedEvaluationResult.sabe_que_es_llm,
         conoce_pretraining_finetuning: typedEvaluationResult.conoce_pretraining_finetuning,
         conoce_4_partes_prompt: typedEvaluationResult.conoce_4_partes_prompt,
-        habilidad_prompts: typedEvaluationResult.habilidad_prompts,
-        funciones_avanzadas_chatgpt: typedEvaluationResult.funciones_avanzadas_chatgpt,
-        usos_ia_ventas: typedEvaluationResult.usos_ia_ventas,
-        usos_ia_marketing: typedEvaluationResult.usos_ia_marketing,
-        usos_ia_finanzas: typedEvaluationResult.usos_ia_finanzas,
-        usado_copilot_web: typedEvaluationResult.usado_copilot_web,
-        usado_copilot_excel: typedEvaluationResult.usado_copilot_excel,
-        usado_copilot_word: typedEvaluationResult.usado_copilot_word,
-        usado_copilot_outlook: typedEvaluationResult.usado_copilot_outlook,
-        usado_copilot_power_platform: typedEvaluationResult.usado_copilot_power_platform,
-        tiempo_ahorrado: typedEvaluationResult.tiempo_ahorrado,
-        ejemplos_mejoras_ia: typedEvaluationResult.ejemplos_mejoras_ia,
-        retos_actuales_ia: typedEvaluationResult.retos_actuales_ia,
-        tema_a_profundizar: typedEvaluationResult.tema_a_profundizar,
+        uso_por_departamento: typedEvaluationResult.uso_por_departamento,
         capacitacion_formal: typedEvaluationResult.capacitacion_formal,
-        confianza_resultados_ia: typedEvaluationResult.confianza_resultados_ia,
+        confia_en_ia: typedEvaluationResult.confia_en_ia,
         curiosidad_explorar_ia: typedEvaluationResult.curiosidad_explorar_ia,
+                 dispositivos_ia: typedEvaluationResult.dispositivos_ia,
+         uso_herramientas_ia: typedEvaluationResult.uso_herramientas_ia,
+        uso_ia_ventas: typedEvaluationResult.uso_ia_ventas,
+        uso_ia_marketing: typedEvaluationResult.uso_ia_marketing,
+        uso_ia_finanzas: typedEvaluationResult.uso_ia_finanzas,
+        uso_ia_administracion: typedEvaluationResult.uso_ia_administracion,
+        tiempo_ahorrado: typedEvaluationResult.tiempo_ahorrado,
+        retos_actuales_ia: typedEvaluationResult.retos_actuales_ia,
       };
 
       const { data, error: dbError } = await supabase

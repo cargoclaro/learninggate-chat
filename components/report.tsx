@@ -102,6 +102,18 @@ const singleValue = (stats: StatKV[], key: string, decimals = 1) => {
   return found ? Number(found.value.toFixed(decimals)) : 0;
 };
 
+// Helper function to convert age scale to readable format
+const convertAgeScale = (ageScale: number) => {
+  switch(Math.round(ageScale)) {
+    case 1: return "18-25";
+    case 2: return "26-35";
+    case 3: return "36-45";
+    case 4: return "46-55";
+    case 5: return "56+";
+    default: return "N/A";
+  }
+};
+
 // AI Maturity Calculator - Based on actual API calculations
 const calculateAIMaturity = (stats: StatKV[]) => {
   const avgSkill = singleValue(stats, "avgPromptSkill"); // 1-5 scale from API
@@ -191,36 +203,51 @@ const MaturityCard: React.FC<{ maturity: MaturityData }> = ({ maturity }) => (
   </Card>
 );
 
-const ROICard: React.FC<{ roi: ROIData }> = ({ roi }) => (
-  <Card className="border-2 border-green-200 bg-green-50/50">
-    <CardHeader className="pb-2">
-      <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-        <DollarSign className="w-4 h-4" />
-        Potencial ROI Anual ({roi.employeeCount} empleados)
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="pt-0 space-y-3">
-      <div className="flex justify-between items-center">
-        <span className="text-sm">Ahorro actual:</span>
-        <span className="font-semibold text-green-600">${roi.current.toLocaleString()}</span>
-      </div>
-      <div className="flex justify-between items-center">
-        <span className="text-sm">Potencial con training:</span>
-        <span className="font-bold text-green-700">${roi.potential.toLocaleString()}</span>
-      </div>
-      <div className="border-t pt-2">
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-medium">Oportunidad adicional:</span>
-          <span className="font-bold text-red-600">${roi.opportunity.toLocaleString()}</span>
+const ROICard: React.FC<{ roi: ROIData }> = ({ roi }) => {
+  // Calculate monthly values for easier understanding
+  const currentMonthly = Math.round(roi.current / 12);
+  const potentialMonthly = Math.round(roi.potential / 12);
+  const opportunityMonthly = Math.round(roi.opportunity / 12);
+
+  return (
+    <Card className="border-2 border-orange-200 bg-orange-50/50">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+          <DollarSign className="w-4 h-4" />
+          Análisis ROI Mensual ({roi.employeeCount} empleados)
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0 space-y-3">
+        {/* Current Value */}
+        <div className="flex justify-between items-center p-2 bg-blue-50 rounded border border-blue-200">
+          <span className="text-sm font-medium text-blue-700">💰 Valor actual generado:</span>
+          <span className="font-bold text-blue-700">${currentMonthly.toLocaleString()}/mes</span>
         </div>
-      </div>
-      <div className="border-t pt-2 text-xs text-muted-foreground space-y-1">
-        <div>Uso actual: {roi.currentHoursPerWeek}h/semana, {roi.currentMinutesSavedPerDay} min/día ahorrados</div>
-        <div>Basado en 30,000 MXN/mes por empleado y potencial de 2h/día con IA optimizada</div>
-      </div>
-    </CardContent>
-  </Card>
-);
+        
+        {/* Opportunity Cost - What they're losing */}
+        <div className="flex justify-between items-center p-2 bg-red-50 rounded border border-red-200">
+          <span className="text-sm font-medium text-red-700">⚠️ Dinero que pierden:</span>
+          <span className="font-bold text-red-700">${opportunityMonthly.toLocaleString()}/mes</span>
+        </div>
+        
+        {/* Maximum Potential */}
+        <div className="flex justify-between items-center p-2 bg-green-50 rounded border border-green-200">
+          <span className="text-sm font-medium text-green-700">🎯 Potencial con training:</span>
+          <span className="font-bold text-green-700">${potentialMonthly.toLocaleString()}/mes</span>
+        </div>
+        
+        {/* Context */}
+        <div className="border-t pt-2 text-xs text-muted-foreground space-y-1">
+          <div>Uso actual: {roi.currentMinutesSavedPerDay} min/día por empleado</div>
+          <div>Potencial: 2h/día con IA optimizada (187.5 MXN/hora)</div>
+          <div className="font-medium text-red-600">
+            Están perdiendo {Math.round((roi.opportunity / roi.current) * 100)}% más valor del que generan
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 const OpportunityCard: React.FC<{ title: string; items: string[]; icon: React.ReactNode; color: string }> = ({
   title,
@@ -250,7 +277,7 @@ const OpportunityCard: React.FC<{ title: string; items: string[]; icon: React.Re
 
 const SummaryCard: React.FC<{ 
   title: string; 
-  value: number; 
+  value: number | string; 
   icon?: React.ReactNode; 
   benchmark?: number;
   unit?: string;
@@ -265,10 +292,10 @@ const SummaryCard: React.FC<{
   let statusColor = "#DB4437"; // Red by default
   let statusText = "Bajo";
   
-  if (benchmark && value >= benchmark) {
+  if (benchmark && typeof value === 'number' && value >= benchmark) {
     statusColor = "#0F9D58"; // Green
     statusText = "Excelente";
-  } else if (benchmark && value >= benchmark * 0.7) {
+  } else if (benchmark && typeof value === 'number' && value >= benchmark * 0.7) {
     statusColor = "#F4B400"; // Yellow
     statusText = "Bueno";
   }
@@ -303,14 +330,15 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
   // --- datasets ---
   const deviceData = useGroupedStats(stats, "device.");
   
-  // Copilot data - based on exact API structure
-  const copilotData = [
-    { name: "Web/chrome", value: singleValue(stats, "copilot.web") },
-    { name: "Excel/sheets", value: singleValue(stats, "copilot.excel") },
-    { name: "Word/docs", value: singleValue(stats, "copilot.word") },
-    { name: "Outlook/mail", value: singleValue(stats, "copilot.outlook") },
-    { name: "Power Platform", value: singleValue(stats, "copilot.powerPlat") },
-  ];
+  // AI Tools data - Updated to use the new uso_herramientas_ia data
+  // Removed unused variable: const aiToolsData = useGroupedStats(stats, "tool.");
+  
+  // Get tool stats for use in the BarChart
+  const toolStats = useGroupedStats(stats, "tool.");
+
+  // Calculate average age from the 1-5 scale
+  const avgAgeScale = singleValue(stats, "avgAge", 1); // This should come from your calculations
+  const avgAgeRange = convertAgeScale(avgAgeScale);
 
   // Calculate AI maturity and ROI
   const maturity = calculateAIMaturity(stats);
@@ -405,6 +433,40 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
     day: "numeric",
   });
 
+  // Get employee count and tool data for charts
+  const totalUsers = singleValue(stats, "employeeCount", 0);
+  
+  // Define all possible tools for the bar chart
+  const allPossibleTools = [
+    { name: 'ChatGPT', icon: '🤖', color: '#10B981' },
+    { name: 'Copilot', icon: '🔧', color: '#3B82F6' },
+    { name: 'Gemini', icon: '💎', color: '#8B5CF6' },
+    { name: 'Perplexity', icon: '🔍', color: '#F59E0B' },
+    { name: 'Cursor', icon: '⚡', color: '#EF4444' },
+    { name: 'Claude', icon: '🧠', color: '#06B6D4' },
+    { name: 'Otro', icon: '🔧', color: '#6B7280' }
+  ];
+
+  // Create tool usage data for the bar chart
+  const usageMap = new Map(toolStats.map(item => [
+    item.name.toLowerCase(), 
+    Math.round((item.value / 100) * totalUsers) // Convert percentage to user count
+  ]));
+  
+  const toolChartData = allPossibleTools.map(tool => ({
+    name: tool.name,
+    value: usageMap.get(tool.name.toLowerCase()) || 0,
+    icon: tool.icon,
+    color: tool.color,
+    status: (usageMap.get(tool.name.toLowerCase()) || 0) > 0 ? 'En uso' : 'Sin explorar',
+    percentage: toolStats.find(item => item.name.toLowerCase() === tool.name.toLowerCase())?.value || 0
+  }));
+
+  // Calculate tool discovery summary
+  const usedToolsCount = toolStats.filter(tool => tool.value > 0).length;
+  const totalToolsCount = 7;
+  const unusedToolsCount = totalToolsCount - usedToolsCount;
+
   return (
     <div className="w-full p-6 space-y-8 font-sans">
       {/* Header */}
@@ -432,7 +494,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
         <ROICard roi={roi} />
       </section>
 
-      {/* Key Metrics */}
+      {/* Key Metrics - Updated 5th component to show average age */}
       <section className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <SummaryCard
           title="Empleados evaluados"
@@ -463,11 +525,10 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
           unit="/5"
         />
         <SummaryCard
-          title="% Conoce LLMs"
-          value={singleValue(stats, "pctKnowLLM", 0)}
-          icon={<Brain className="w-4 h-4" />}
-          benchmark={100}
-          unit="%"
+          title="Edad promedio"
+          value={avgAgeRange}
+          icon={<Users className="w-4 h-4" />}
+          unit=" años"
         />
       </section>
 
@@ -479,7 +540,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
               <Brain className="w-5 h-5" />
               Conocimiento Básico IA
             </CardTitle>
-            <p className="text-xs text-blue-600">Oportunidad de capacitación fundamental</p>
+            <p className="text-xs text-blue-600">Promedio en escala 1-5 (donde 5 = excelente)</p>
           </CardHeader>
           <CardContent className="pt-0 space-y-4">
             <div className="flex justify-between items-center p-2 bg-white rounded">
@@ -487,31 +548,33 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
                 <BookOpen className="w-4 h-4 text-blue-500" />
                 <span className="text-sm">Sabe qué es un LLM:</span>
               </div>
-              <span className="font-bold text-lg text-blue-700">{singleValue(stats, "pctKnowLLM", 0)}%</span>
+              <span className="font-bold text-lg text-blue-700">{singleValue(stats, "avgLLMKnowledge", 1).toFixed(1)}/5</span>
             </div>
             <div className="flex justify-between items-center p-2 bg-white rounded">
               <div className="flex items-center gap-2">
                 <GraduationCap className="w-4 h-4 text-blue-500" />
                 <span className="text-sm">Conoce pretraining/finetuning:</span>
               </div>
-              <span className="font-bold text-lg text-blue-700">{singleValue(stats, "pctKnowPretrainingFT", 0)}%</span>
+              <span className="font-bold text-lg text-blue-700">{singleValue(stats, "avgPretrainingKnowledge", 1).toFixed(1)}/5</span>
             </div>
             <div className="flex justify-between items-center p-2 bg-white rounded">
               <div className="flex items-center gap-2">
                 <Target className="w-4 h-4 text-blue-500" />
                 <span className="text-sm">Conoce 4 partes del prompt:</span>
               </div>
-              <span className="font-bold text-lg text-blue-700">{singleValue(stats, "pctKnowPromptParts", 0)}%</span>
+              <span className="font-bold text-lg text-blue-700">{singleValue(stats, "avgPromptKnowledge", 1).toFixed(1)}/5</span>
             </div>
           </CardContent>
         </Card>
 
+        {/* Uso por Departamento */}
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Uso por Departamento
             </CardTitle>
+            <p className="text-xs text-muted-foreground">% con uso avanzado de IA (puntuación 4-5)</p>
           </CardHeader>
           <CardContent className="pt-0 space-y-3">
             <div className="flex justify-between items-center">
@@ -537,7 +600,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
             </div>
           </CardContent>
         </Card>
-
+        {/* Estado de Capacitación */}
         <Card className="border-2 border-green-200 bg-green-50/50">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-semibold text-green-700 flex items-center gap-2">
@@ -572,7 +635,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
         </Card>
       </section>
 
-      {/* Charts Grid - Moved up for better visibility */}
+      {/* Charts Grid - Updated to show AI Tools instead of Copilot */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Device distribution pie */}
         <Card>
@@ -645,47 +708,65 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
         </Card>
       </section>
 
-      {/* Copilot Adoption - Moved up for better visibility */}
+      {/* AI Tools Adoption - Updated from Copilot to general AI tools */}
       <section>
         <Card className="border-2 border-blue-200 bg-blue-50/50">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-blue-700 flex items-center gap-2">
               <BarChart3 className="w-5 h-5" />
-              Adopción Microsoft Copilot
+              Herramientas IA Disponibles
             </CardTitle>
-            <p className="text-sm text-blue-600 mt-1">Porcentaje de uso por herramienta</p>
+            <p className="text-sm text-blue-600 mt-1">Número de empleados por herramienta</p>
           </CardHeader>
           <CardContent className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={copilotData} margin={{ left: 16, right: 16, top: 20, bottom: 20 }}>
+              <BarChart 
+                data={toolChartData} 
+                margin={{ left: 16, right: 16, top: 20, bottom: 20 }}
+              >
                 <XAxis 
                   dataKey="name" 
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 11 }}
                   tickFormatter={(value) => {
-                    const icons = {
-                      "Web": "🌐",
-                      "Excel": "📊", 
-                      "Word": "📝",
-                      "Outlook": "📧",
-                      "Power Platform": "⚡"
-                    };
-                    return `${icons[value as keyof typeof icons] || ""} ${value}`;
+                    const item = allPossibleTools.find(tool => tool.name === value);
+                    return `${item?.icon || '🔧'} ${value}`;
                   }}
                 />
-                <YAxis domain={[0, 100]} tickFormatter={(v: number) => `${v}%`} tick={{ fontSize: 12 }} />
-                <Tooltip 
-                  formatter={(v: number) => [`${v}%`, "Adopción"]}
-                  labelFormatter={(label) => `Microsoft Copilot ${label}`}
+                <YAxis 
+                  domain={[0, 'dataMax']} 
+                  tickFormatter={(v: number) => `${v} empleados`} 
+                  tick={{ fontSize: 12 }} 
                 />
-                <Bar dataKey="value" radius={[8, 8, 0, 0]}>
-                  <Cell fill="#1f77b4" /> {/* Bright Blue */}
-                  <Cell fill="#2ca02c" /> {/* Bright Green */}
-                  <Cell fill="#ff7f0e" /> {/* Bright Orange */}
-                  <Cell fill="#d62728" /> {/* Bright Red */}
-                  <Cell fill="#9467bd" /> {/* Bright Purple */}
+                <Tooltip 
+                  formatter={(v: number, name, props) => [
+                    `${v} empleados (${props.payload.percentage.toFixed(1)}%)`, 
+                    props.payload.status === 'En uso' ? 'Empleados actuales' : 'Sin empleados'
+                  ]}
+                  labelFormatter={(label) => `${label}`}
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                  {allPossibleTools.map((tool, index) => (
+                    <Cell key={`cell-${index}`} fill={tool.color} />
+                  ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
+            
+            {/* Discovery Summary */}
+            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-center gap-2 text-yellow-700 text-sm font-medium mb-2">
+                <Lightbulb className="w-4 h-4" />
+                Oportunidad de Descubrimiento
+              </div>
+              <div className="text-xs text-yellow-600">
+                {`${usedToolsCount} herramientas en uso de ${totalToolsCount} disponibles. ${unusedToolsCount} herramientas sin explorar por ${totalUsers} empleados.`}
+              </div>
+            </div>
           </CardContent>
         </Card>
       </section>

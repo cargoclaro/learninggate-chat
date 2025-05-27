@@ -26,43 +26,19 @@ export default function Page() {
     }
   }, [conversationId]);
 
+  // Reference to the textarea element for resizing
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     // Add throttling configuration to slow down streaming
     experimental_throttle: 250, // Adds a 100ms delay between each token
-    // The onFinish callback is triggered when a new AI response is fully received
-    // onFinish: async (message) => { // Commenting out the previous onFinish trigger
-    //   console.log("Frontend: onFinish triggered.");
-    //   if (message.role === 'assistant') {
-    //     console.log("Frontend: AI assistant message received:", message.content);
-    //     console.log("Frontend: Current isInterviewEvaluating state:", isInterviewEvaluating);
-    //   } else {
-    //     console.log("Frontend: onFinish message is not from assistant. Role:", message.role);
-    //     return; // No need to check further if not from assistant
-    //   }
-
-    //   const triggerPhrase = "¡Gracias, ya tengo lo que necesitaba.";
-    //   if (
-    //     message.role === 'assistant' && // This check is a bit redundant due to the log block above, but safe
-    //     message.content.includes(triggerPhrase) &&
-    //     !isInterviewEvaluating 
-    //   ) {
-    //     console.log("Frontend: Trigger phrase DETECTED! Preparing for evaluation.");
-    //     setIsInterviewEvaluating(true); 
-    //     setEvaluationStatus("Preparando evaluación...");
-    //     await sendConversationForEvaluation(messages);
-    //   } else if (message.role === 'assistant') {
-    //     // --- Log why trigger was NOT met (if it was an assistant message) ---
-    //     console.log("Frontend: Trigger phrase NOT detected or already evaluating.");
-    //     if (!message.content.includes(triggerPhrase)) {
-    //       console.log("Frontend: Reason: AI message did NOT include the trigger phrase.");
-    //       console.log("Frontend: Expected to include: '" + triggerPhrase + "'");
-    //     }
-    //     if (isInterviewEvaluating) {
-    //       console.log("Frontend: Reason: isInterviewEvaluating is already true.");
-    //     }
-    //     // --- End log block ---
-    //   }
-    // },
+    // Reset textarea height after message is sent
+    onFinish: () => {
+      // Reset the textarea height to its minimum after sending a message
+      if (textareaRef.current) {
+        textareaRef.current.style.height = '48px';
+      }
+    },
     // It's good practice to also handle potential errors from the chat API
     onError: (error) => {
       console.error("Chat API error:", error);
@@ -206,7 +182,7 @@ export default function Page() {
                 Descubre tu potencial de IA. <span role="img" aria-label="rocket">🚀</span>
               </h1>
               <p className="text-xl text-gray-600 max-w-md">
-                Cuales son tus fortalezas y que debes aprender.
+                Descubre tus fortalezas y áreas para mejorar.
                 <br />
                 <br />
                 <span className="text-sm text-gray-500">
@@ -284,18 +260,37 @@ export default function Page() {
       )}
 
       <div className="border-t border-gray-100 pt-4 z-10 relative">
-        <form onSubmit={handleSubmit} className="relative flex items-center">
-          <input
+        <form onSubmit={handleSubmit} className="relative flex items-end">
+          <textarea
+            ref={textareaRef}
             name="prompt"
             value={input}
             onChange={handleInputChange}
-            placeholder="Envía un mensaje..."
-            className="flex-1 rounded-full border border-gray-200 px-6 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-[#F5B614] focus:border-transparent font-manrope text-sm w-full bg-gray-50"
+            onKeyDown={(e) => {
+              // Submit on Enter, but allow Shift+Enter for new lines
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e);
+              }
+            }}
+            placeholder="Envía un mensaje... (Shift+Enter para nueva línea)"
+            rows={1}
+            className="flex-1 rounded-2xl border border-gray-200 px-6 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-[#F5B614] focus:border-transparent font-manrope text-sm w-full bg-gray-50 resize-none min-h-[48px] max-h-32 overflow-y-auto"
+            style={{
+              height: 'auto',
+              minHeight: '48px'
+            }}
+            onInput={(e) => {
+              // Auto-resize the textarea based on content
+              const target = e.target as HTMLTextAreaElement;
+              target.style.height = 'auto';
+              target.style.height = Math.min(target.scrollHeight, 128) + 'px';
+            }}
           />
           <button
             type="submit"
             disabled={!input.trim()}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-[#F5B614] text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-[#E5A604] transition-colors disabled:bg-[#F5B614] disabled:cursor-not-allowed"
+            className="absolute right-3 bottom-3 bg-[#F5B614] text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-[#E5A604] transition-colors disabled:bg-[#F5B614] disabled:cursor-not-allowed"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
           </button>
