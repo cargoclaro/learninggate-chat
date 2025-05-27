@@ -127,7 +127,7 @@ export async function computeStatsByCompany(company: string) {
   const pctIAmarketing= pct(rows.filter(r => (r as Row).usos_ia_marketing!== 'Otro').length, total);
   const pctIAfinanzas = pct(rows.filter(r => (r as Row).usos_ia_finanzas !== 'Otro').length, total);
 
-  const cp = (field: keyof Row) => pct(rows.filter(r => yes((r as any)[field])).length, total);
+  const cp = (field: keyof Row) => pct(rows.filter(r => yes((r as Row)[field])).length, total);
   const copilot = {
     web: cp('usado_copilot_web'),
     excel: cp('usado_copilot_excel'),
@@ -140,7 +140,7 @@ export async function computeStatsByCompany(company: string) {
     rows.reduce((s, r) => s + num((r as Row).tiempo_ahorrado), 0) / total;
 
   const topN = (field: keyof Row) =>
-    [...countBy(r => (r as any)[field])]
+    [...countBy(r => (r as Row)[field])]
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
       .map(([k, v]) => ({ key: k, value: pct(v, total) }));
@@ -158,13 +158,12 @@ export async function computeStatsByCompany(company: string) {
     const monthlyRatePerEmployee = 30000; // MXN
     const workHoursPerDay = 8;
     const workDaysPerMonth = 20;
-    const workDaysPerWeek = 5;
+
     
     // Calculate hourly rate in MXN per employee
     const hourlyRatePerEmployee = monthlyRatePerEmployee / (workHoursPerDay * workDaysPerMonth);
     
-    // Current AI usage: Convert weekly hours to daily hours
-    const currentHoursPerDay = avgCurrentHoursPerWeek / workDaysPerWeek;
+    // Current AI usage: Convert weekly hours to daily hours (for reference)
     
     // Current savings: Convert minutes to hours per day
     const currentSavingsHoursPerDay = avgCurrentMinutesSaved / 60;

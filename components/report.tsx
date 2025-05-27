@@ -22,8 +22,7 @@ import {
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
-  LineChart,
-  Line,
+
 } from "recharts";
 import { 
   CalendarDays, 
@@ -39,7 +38,7 @@ import {
   Brain,
   BookOpen,
   Award,
-  Heart,
+
   ShoppingCart,
   Megaphone,
   Calculator,
@@ -47,7 +46,7 @@ import {
   Lightbulb,
   Shield
 } from "lucide-react";
-import { PDFExportWrapper, PDFExportDual } from "./pdf-export-wrapper";
+import { PDFExportDual } from "./pdf-export-wrapper";
 
 interface StatKV {
   key: string;
@@ -57,6 +56,22 @@ interface StatKV {
 interface Props {
   companyName: string;
   stats: StatKV[];
+}
+
+interface MaturityData {
+  score: number;
+  level: string;
+  color: string;
+  description: string;
+}
+
+interface ROIData {
+  current: number;
+  potential: number;
+  opportunity: number;
+  employeeCount: number;
+  currentHoursPerWeek: number;
+  currentMinutesSavedPerDay: number;
 }
 
 const COLORS = [
@@ -95,7 +110,6 @@ const calculateAIMaturity = (stats: StatKV[]) => {
   
   // Additional knowledge metrics from API
   const pctKnowLLM = singleValue(stats, "pctKnowLLM"); // Percentage who know what LLM is
-  const pctKnowPromptParts = singleValue(stats, "pctKnowPromptParts"); // Know 4 parts of prompt
   const pctFormalTraining = singleValue(stats, "pctFormalTraining"); // Have formal training
   
   // Calculate maturity score (0-100) based on actual API metrics
@@ -141,7 +155,7 @@ const getROIFromStats = (stats: StatKV[]) => {
   };
 };
 
-const MaturityCard: React.FC<{ maturity: any }> = ({ maturity }) => (
+const MaturityCard: React.FC<{ maturity: MaturityData }> = ({ maturity }) => (
   <Card className="border-2" style={{ borderColor: maturity.color }}>
     <CardHeader className="pb-2">
       <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -176,7 +190,7 @@ const MaturityCard: React.FC<{ maturity: any }> = ({ maturity }) => (
   </Card>
 );
 
-const ROICard: React.FC<{ roi: any }> = ({ roi }) => (
+const ROICard: React.FC<{ roi: ROIData }> = ({ roi }) => (
   <Card className="border-2 border-green-200 bg-green-50/50">
     <CardHeader className="pb-2">
       <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -237,14 +251,12 @@ const SummaryCard: React.FC<{
   title: string; 
   value: number; 
   icon?: React.ReactNode; 
-  trend?: string;
   benchmark?: number;
   unit?: string;
 }> = ({
   title,
   value,
   icon,
-  trend,
   benchmark,
   unit = ""
 }) => {
@@ -288,9 +300,7 @@ const SummaryCard: React.FC<{
 
 const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
   // --- datasets ---
-  const areaData = useGroupedStats(stats, "area.");
   const deviceData = useGroupedStats(stats, "device.");
-  const objectiveData = useGroupedStats(stats, "objective.");
   
   // Copilot data - based on exact API structure
   const copilotData = [
@@ -323,8 +333,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
     },
   ];
 
-  const topChallenges = useGroupedStats(stats, "topChallenge.");
-  const topTopics = useGroupedStats(stats, "topTopic.");
+
 
   // Generate opportunities based on maturity level
   const getOpportunities = () => {

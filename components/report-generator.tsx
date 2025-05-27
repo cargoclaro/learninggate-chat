@@ -56,10 +56,11 @@ export default function ReportGeneratorForm({ onReportStateChange }: ReportGener
       // Notify parent that report is now displayed
       onReportStateChange?.(true);
 
-    } catch (err: any) { // Added type for caught error
+    } catch (err: unknown) { // Added type for caught error
       // If an error occurs during the API call or processing
       console.error('Error in handleGenerateReport:', err);
-      setError(err.message || 'An unexpected error occurred.');
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred.';
+      setError(errorMessage);
     } finally {
       // This block will always run, whether the try succeeded or failed
       setIsLoading(false); // Set loading back to false

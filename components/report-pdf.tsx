@@ -400,6 +400,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
+            {/* eslint-disable-next-line jsx-a11y/alt-text */}
             <Image
               src="/logo.png"
               style={{ width: 100, height: 23, marginRight: 12 }}
@@ -1126,6 +1127,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
         {/* Header for third page */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
+            {/* eslint-disable-next-line jsx-a11y/alt-text */}
             <Image
               src="/logo.png"
               style={{ width: 100, height: 23, marginRight: 12 }}

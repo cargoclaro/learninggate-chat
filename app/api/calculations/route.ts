@@ -19,8 +19,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json(stats);
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in /api/calculations POST handler:', error);
-    return NextResponse.json({ message: error.message || 'An internal server error occurred.' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'An internal server error occurred.';
+    return NextResponse.json({ message: errorMessage }, { status: 500 });
   }
 }
