@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import {
   Card,
   CardHeader,
@@ -723,13 +724,12 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
               const savingsValue = potentialGain * 0.15;
               const totalValue = Math.max(programBase + employeeScaling + savingsValue, programBase);
               const price = Math.round(totalValue * 0.5);
-              const daysToROI = Math.round(price / potentialGain * 12);
 
               return (
                 <>
                   <div className="text-center mb-6">
                     <div className="flex justify-center items-center gap-2 mb-3">
-                      <img src="/logo.png" alt="Learning Gate" className="h-12 w-auto" />
+                      <Image src="/logo.png" alt="Learning Gate" width={48} height={48} className="h-12 w-auto" />
                     </div>
                     <div className="flex justify-center items-center gap-2 text-sm text-[#F5B614] font-medium mb-2">
                       <GraduationCap className="w-5 h-5" />
@@ -862,13 +862,12 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
               const potentialGain = (roi.potential - roi.current) * 0.5; // Half the ROI
               const pricePerEmployee = 999;
               const totalPrice = employeeCount * pricePerEmployee;
-              const daysToROI = Math.round(totalPrice / potentialGain * 12);
 
               return (
                 <>
                   <div className="text-center mb-6">
                     <div className="flex justify-center items-center gap-2 mb-3">
-                      <img src="/logo.png" alt="Learning Gate" className="h-12 w-auto" />
+                      <Image src="/logo.png" alt="Learning Gate" width={48} height={48} className="h-12 w-auto" />
                     </div>
                     <div className="flex justify-center items-center gap-2 text-sm text-gray-600 font-medium mb-2">
                       <GraduationCap className="w-5 h-5" />

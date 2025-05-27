@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat, type Message } from '@ai-sdk/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -14,8 +14,9 @@ export default function Page() {
 
   // Generate a conversation ID when the component mounts
   useEffect(() => {
-    setConversationId(uuidv4());
-    console.log("Frontend: New Conversation ID generated:", conversationId);
+    const newId = uuidv4();
+    setConversationId(newId);
+    console.log("Frontend: New Conversation ID generated:", newId);
   }, []); // Empty dependency array ensures this runs only once on mount
 
   // Effect to log conversationId when it changes (for debugging)
@@ -70,31 +71,8 @@ export default function Page() {
     }
   });
 
-  // New useEffect to check for email in the last user message
-  useEffect(() => {
-    if (messages.length === 0 || isInterviewEvaluating) {
-      return; // No messages or evaluation already in progress
-    }
-
-    const lastMessage = messages[messages.length - 1];
-
-    // Simple regex to check for a pattern resembling an email
-    const emailRegex = /\S+@\S+\.\S+/;
-    const emailMatch = lastMessage.content.match(emailRegex);
-
-    if (lastMessage.role === 'user' && emailMatch) {
-      const extractedEmail = emailMatch[0]; // The first match is the email itself
-      console.log("Frontend: Email pattern detected and extracted:", extractedEmail);
-      console.log("Frontend: Preparing for evaluation based on email submission.");
-      setIsInterviewEvaluating(true); // Mark that evaluation process has started
-      setEvaluationStatus("Correo electrónico detectado. Preparando evaluación...");
-      // Call evaluation with the current messages array and the extracted email
-      sendConversationForEvaluation(messages, extractedEmail);
-    }
-  }, [messages, isInterviewEvaluating]); // Re-run when messages or isInterviewEvaluating changes
-
   // Function to send the conversation to the evaluation API
-  async function sendConversationForEvaluation(conversationMessages: Message[], userEmail: string) {
+  const sendConversationForEvaluation = useCallback(async (conversationMessages: Message[], userEmail: string) => {
     if (conversationMessages.length === 0) {
       console.warn("Frontend: No messages to evaluate.");
       setEvaluationStatus("No hay mensajes para evaluar.");
@@ -154,7 +132,30 @@ export default function Page() {
       // If you only want one evaluation per session, you might not reset isInterviewEvaluating
       // setIsInterviewEvaluating(false); // Comment this out if only one eval per session
     }
-  }
+  }, [conversationId]);
+
+  // New useEffect to check for email in the last user message
+  useEffect(() => {
+    if (messages.length === 0 || isInterviewEvaluating) {
+      return; // No messages or evaluation already in progress
+    }
+
+    const lastMessage = messages[messages.length - 1];
+
+    // Simple regex to check for a pattern resembling an email
+    const emailRegex = /\S+@\S+\.\S+/;
+    const emailMatch = lastMessage.content.match(emailRegex);
+
+    if (lastMessage.role === 'user' && emailMatch) {
+      const extractedEmail = emailMatch[0]; // The first match is the email itself
+      console.log("Frontend: Email pattern detected and extracted:", extractedEmail);
+      console.log("Frontend: Preparing for evaluation based on email submission.");
+      setIsInterviewEvaluating(true); // Mark that evaluation process has started
+      setEvaluationStatus("Correo electrónico detectado. Preparando evaluación...");
+      // Call evaluation with the current messages array and the extracted email
+      sendConversationForEvaluation(messages, extractedEmail);
+    }
+  }, [messages, isInterviewEvaluating, sendConversationForEvaluation]); // Re-run when messages, isInterviewEvaluating, or sendConversationForEvaluation changes
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [loadingDots, setLoadingDots] = useState('.');
