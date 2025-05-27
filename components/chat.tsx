@@ -111,7 +111,7 @@ export default function Page() {
 
       const evaluationResult = await response.json();
       console.log('Frontend: Evaluation successful!', evaluationResult);
-      setEvaluationStatus("¡Tus datos han sido enviados!"); 
+      setEvaluationStatus("¡Ya quedaste registrado!"); 
       // Reload the page after 2 seconds to give user time to see the success message
       setTimeout(() => {
         window.location.reload();

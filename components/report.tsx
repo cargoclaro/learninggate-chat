@@ -305,10 +305,10 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
   
   // Copilot data - based on exact API structure
   const copilotData = [
-    { name: "Web", value: singleValue(stats, "copilot.web") },
-    { name: "Excel", value: singleValue(stats, "copilot.excel") },
-    { name: "Word", value: singleValue(stats, "copilot.word") },
-    { name: "Outlook", value: singleValue(stats, "copilot.outlook") },
+    { name: "Web/chrome", value: singleValue(stats, "copilot.web") },
+    { name: "Excel/sheets", value: singleValue(stats, "copilot.excel") },
+    { name: "Word/docs", value: singleValue(stats, "copilot.word") },
+    { name: "Outlook/mail", value: singleValue(stats, "copilot.outlook") },
     { name: "Power Platform", value: singleValue(stats, "copilot.powerPlat") },
   ];
 
