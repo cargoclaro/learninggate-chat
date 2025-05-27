@@ -33,7 +33,7 @@ export const IAFormSchema = z.object({
   tiempo_ahorrado: z.string().describe("TOTAL de minutos u horas que ahorra al día con IA, preferiblemente como un NÚMERO de minutos (ej: 120 para 2 horas)"),
   ejemplos_mejoras_ia: z.string().describe("Ejemplos concretos de decisiones mejoradas o errores evitados gracias a la IA. Formato de testimonio."),
   retos_actuales_ia: z.string().describe("Principales retos o barreras actuales. Debe ser una de estas categorías: 1) Seguridad y privacidad de datos, 2) Falta de conocimientos técnicos, 3) Costos de implementación y licencias, 4) Resistencia al cambio organizacional, 5) Integración con sistemas existentes, 6) Calidad y confiabilidad de resultados, 7) Limitaciones técnicas o de infraestructura, 8) Aspectos éticos y regulatorios, 9) Gestión del cambio y capacitación"),
-  tema_a_profundizar: z.string().describe("Tema relacionado con IA que más desea profundizar. Debe ser una de estas categorías: 1) Generación de contenido, 2) Análisis de datos y tendencias, 3) Segmentación de audiencias, 4) Optimización de campañas"),
+  tema_a_profundizar: z.string().describe("Tema relacionado con IA que más desea profundizar. Debe ser una de estas categorías: 1) Generación de contenido, 2) Análisis de datos y tendencias, 3) Segmentación de audiencias, 4) Optimización de campañas "),
   
   capacitacion_formal: z.string().describe("¿Ha recibido capacitación formal en IA? Responder con 'sí' o 'no' preferentemente."),
   confianza_resultados_ia: z.string().describe("Nivel de confianza en resultados de IA, como un NÚMERO del 1 al 5 (ej: 3)"),
