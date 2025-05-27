@@ -11,6 +11,15 @@ export default function Page() {
   // State to provide feedback to the user about the evaluation process
   const [evaluationStatus, setEvaluationStatus] = useState<string | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  
+  // New state for the CTA form
+  const [showForm, setShowForm] = useState(true);
+  const [formData, setFormData] = useState({
+    name: '',
+    company: '',
+    area: '',
+    age: ''
+  });
 
   // Generate a conversation ID when the component mounts
   useEffect(() => {
@@ -29,7 +38,7 @@ export default function Page() {
   // Reference to the textarea element for resizing
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, append } = useChat({
     // Add throttling configuration to slow down streaming
     experimental_throttle: 250, // Adds a 100ms delay between each token
     // Reset textarea height after message is sent
@@ -46,6 +55,41 @@ export default function Page() {
       setEvaluationStatus("Error en el chat. Por favor, intente de nuevo.");
     }
   });
+
+  // Function to handle form submission and start conversation
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Create the initial message with available user information
+    let initialMessage = "Hola, estoy listo para comenzar la evaluación de IA.";
+    
+    const userInfo = [];
+    if (formData.name) userInfo.push(`mi nombre es ${formData.name}`);
+    if (formData.company) userInfo.push(`trabajo en ${formData.company}`);
+    if (formData.area) userInfo.push(`en el área de ${formData.area}`);
+    if (formData.age) userInfo.push(`tengo ${formData.age} años`);
+    
+    if (userInfo.length > 0) {
+      initialMessage = `Hola, ${userInfo.join(', ')}. Estoy listo para comenzar la evaluación de IA.`;
+    }
+    
+    // Hide the form and start the conversation
+    setShowForm(false);
+    
+    // Send the initial message to start the conversation
+    await append({
+      role: 'user',
+      content: initialMessage
+    });
+  };
+
+  // Function to handle form input changes
+  const handleFormChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
 
   // Function to send the conversation to the evaluation API
   const sendConversationForEvaluation = useCallback(async (conversationMessages: Message[], userEmail: string) => {
@@ -166,41 +210,115 @@ export default function Page() {
   }, [isLoading]);
 
   return (
-    <div className="flex flex-col h-screen max-w-4xl mx-auto px-4 py-8 font-manrope bg-white relative">
-      {messages.length === 0 && !isLoading && (
+    <div className="flex flex-col h-screen font-manrope bg-white relative">
+      {messages.length === 0 && !isLoading && showForm && (
         <>
-          <div className="flex-1 flex flex-col z-10 px-4 relative">
-            {/* Background logo positioned within the messages area */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-15 pointer-events-none">
-              <Image src="/logo.png" alt="" width={600} height={600} className="object-contain" />
+          {/* Full screen background image with slight x-axis offset */}
+          <div className="fixed inset-0 opacity-60 pointer-events-none z-0" style={{ transform: 'translateX(20px)' }}>
+            <Image 
+              src="/ctawoman.png" 
+              alt="" 
+              fill
+              className="object-cover object-center"
+              priority
+            />
+          </div>
+          
+                    {/* Content container */}
+          <div className="w-full px-4 py-8 relative z-10 flex flex-col h-full">
+            <div className="flex-1 flex flex-col relative">
+              {/* Left-positioned content with form */}
+              <div className="flex-1 flex items-center justify-start">
+                <div className="w-full max-w-lg relative z-10 ml-16" style={{ marginLeft: 'calc(50% - 600px)' }}>
+                  <div className="text-left mb-8">
+                    <h1 className="text-3xl font-semibold mb-3 text-gray-800">
+                      Descubre tu potencial de IA. <span role="img" aria-label="rocket">🚀</span>
+                    </h1>
+                    <p className="text-lg text-gray-600">
+                      Descubre tus fortalezas y áreas para mejorar.
+                    </p>
+                    <p className="text-sm text-gray-500 mt-4">
+                      Es importante ser honesto - responde desde tu propio conocimiento.
+                    </p>
+                  </div>
+
+                {/* CTA Form */}
+                <form onSubmit={handleFormSubmit} className="space-y-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                      Nombre completo
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => handleFormChange('name', e.target.value)}
+                      className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F5B614] focus:border-transparent bg-gray-50"
+                      placeholder="Tu nombre completo"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
+                      Empresa
+                    </label>
+                    <input
+                      type="text"
+                      id="company"
+                      value={formData.company}
+                      onChange={(e) => handleFormChange('company', e.target.value)}
+                      className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F5B614] focus:border-transparent bg-gray-50"
+                      placeholder="Nombre de tu empresa"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="area" className="block text-sm font-medium text-gray-700 mb-1">
+                      Área de trabajo
+                    </label>
+                    <input
+                      type="text"
+                      id="area"
+                      value={formData.area}
+                      onChange={(e) => handleFormChange('area', e.target.value)}
+                      className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F5B614] focus:border-transparent bg-gray-50"
+                      placeholder="Ej: Marketing, Ventas, IT, etc."
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="age" className="block text-sm font-medium text-gray-700 mb-1">
+                      Edad
+                    </label>
+                    <input
+                      type="number"
+                      id="age"
+                      value={formData.age}
+                      onChange={(e) => handleFormChange('age', e.target.value)}
+                      className="w-full rounded-lg border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F5B614] focus:border-transparent bg-gray-50"
+                      placeholder="Tu edad"
+                      min="18"
+                      max="100"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full bg-[#F5B614] text-white font-medium py-3 px-6 rounded-lg hover:bg-[#E5A604] transition-colors focus:outline-none focus:ring-2 focus:ring-[#F5B614] focus:ring-offset-2"
+                  >
+                    Comenzar Evaluación
+                  </button>
+                </form>
+              </div>
             </div>
-            
-            {/* Adjusted positioning for left alignment at bottom */}
-            <div className="flex-1"></div>
-            <div className="mb-32 relative z-10">
-              <h1 className="text-5xl font-semibold mb-3 text-gray-800">
-                Descubre tu potencial de IA. <span role="img" aria-label="rocket">🚀</span>
-              </h1>
-              <p className="text-xl text-gray-600 max-w-md">
-                Descubre tus fortalezas y áreas para mejorar.
-                <br />
-                <br />
-                <span className="text-sm text-gray-500">
-                  Es importante ser honesto - responde desde tu propio conocimiento.
-                </span>
-              </p>
             </div>
           </div>
         </>
       )}
 
       {(messages.length > 0 || isLoading) && (
-        <>
+        <div className="max-w-4xl mx-auto px-4 py-8 relative z-10 flex flex-col h-full">
           <div className="flex-1 overflow-y-auto mb-4 space-y-4 pl-0 flex flex-col z-10 relative">
-            {/* Background logo positioned within the messages area */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-15 pointer-events-none">
-              <Image src="/logo.png" alt="" width={500} height={500} className="object-contain" />
-            </div>
             
             {messages.map((message: Message) => (
               <div
@@ -228,7 +346,7 @@ export default function Page() {
             )}
             <div ref={messagesEndRef} />
           </div>
-        </>
+        </div>
       )}
 
       {/* Display Evaluation Status Message */} 
@@ -259,42 +377,50 @@ export default function Page() {
         </div>
       )}
 
-      <div className="border-t border-gray-100 pt-4 z-10 relative">
-        <form onSubmit={handleSubmit} className="relative flex items-end">
-          <textarea
-            ref={textareaRef}
-            name="prompt"
-            value={input}
-            onChange={handleInputChange}
-            onKeyDown={(e) => {
-              // Submit on Enter, but allow Shift+Enter for new lines
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmit(e);
-              }
-            }}
-            placeholder="Envía un mensaje... (Shift+Enter para nueva línea)"
-            rows={1}
-            className="flex-1 rounded-2xl border border-gray-200 px-6 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-[#F5B614] focus:border-transparent font-manrope text-sm w-full bg-gray-50 resize-none min-h-[48px] max-h-32 overflow-y-auto"
-            style={{
-              height: 'auto',
-              minHeight: '48px'
-            }}
-            onInput={(e) => {
-              // Auto-resize the textarea based on content
-              const target = e.target as HTMLTextAreaElement;
-              target.style.height = 'auto';
-              target.style.height = Math.min(target.scrollHeight, 128) + 'px';
-            }}
-          />
-          <button
-            type="submit"
-            disabled={!input.trim()}
-            className="absolute right-3 bottom-3 bg-[#F5B614] text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-[#E5A604] transition-colors disabled:bg-[#F5B614] disabled:cursor-not-allowed"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-          </button>
-        </form>
+      {/* Only show chat input after form is submitted */}
+      {!showForm && (
+        <div className="border-t border-gray-100 pt-4 z-10 relative">
+          <form onSubmit={handleSubmit} className="relative flex items-end">
+            <textarea
+              ref={textareaRef}
+              name="prompt"
+              value={input}
+              onChange={handleInputChange}
+              onKeyDown={(e) => {
+                // Submit on Enter, but allow Shift+Enter for new lines
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }
+              }}
+              placeholder="Envía un mensaje... (Shift+Enter para nueva línea)"
+              rows={1}
+              className="flex-1 rounded-2xl border border-gray-200 px-6 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-[#F5B614] focus:border-transparent font-manrope text-sm w-full bg-gray-50 resize-none min-h-[48px] max-h-32 overflow-y-auto"
+              style={{
+                height: 'auto',
+                minHeight: '48px'
+              }}
+              onInput={(e) => {
+                // Auto-resize the textarea based on content
+                const target = e.target as HTMLTextAreaElement;
+                target.style.height = 'auto';
+                target.style.height = Math.min(target.scrollHeight, 128) + 'px';
+              }}
+            />
+            <button
+              type="submit"
+              disabled={!input.trim()}
+              className="absolute right-3 bottom-3 bg-[#F5B614] text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-[#E5A604] transition-colors disabled:bg-[#F5B614] disabled:cursor-not-allowed"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* Bottom Logo - Always visible */}
+      <div className="flex justify-center mt-4 pb-8 relative z-20">
+        <Image src="/logo.png" alt="Logo" width={240} height={240} className="object-contain" />
       </div>
     </div>
   );

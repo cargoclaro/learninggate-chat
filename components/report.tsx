@@ -360,41 +360,66 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
       score: singleValue(stats, "avgCuriosity", 2),
       industry: 3.8,
     },
+    {
+      metric: "Autonomía IA",
+      score: singleValue(stats, "avgAutonomyLevel", 2),
+      industry: 3.0,
+    },
+    {
+      metric: "Impacto KPIs",
+      score: singleValue(stats, "avgKPIImpact", 2),
+      industry: 2.8,
+    },
+    {
+      metric: "Calidad prompts",
+      score: singleValue(stats, "avgPromptQuality", 2),
+      industry: 3.1,
+    },
   ];
 
 
 
   // Generate opportunities based on maturity level
   const getOpportunities = () => {
+    const opportunities = [];
+    
+    // Base opportunities by maturity level
     if (maturity.score < 25) {
-      return [
-        "Implementar programa básico de alfabetización IA",
-        "Capacitación en herramientas fundamentales (ChatGPT, Copilot)",
-        "Establecer políticas de uso responsable de IA",
-        "Identificar casos de uso de alto impacto"
-      ];
+      opportunities.push("Implementar programa básico de alfabetización IA");
+      opportunities.push("Capacitación en herramientas fundamentales (ChatGPT, Copilot)");
+      opportunities.push("Establecer políticas de uso responsable de IA");
     } else if (maturity.score < 50) {
-      return [
-        "Desarrollar prompts especializados por área",
-        "Implementar workflows automatizados",
-        "Capacitación avanzada en herramientas específicas",
-        "Medir y optimizar ROI de herramientas IA"
-      ];
+      opportunities.push("Desarrollar prompts especializados por área");
+      opportunities.push("Implementar workflows automatizados");
+      opportunities.push("Capacitación avanzada en herramientas específicas");
     } else if (maturity.score < 75) {
-      return [
-        "Desarrollar soluciones IA personalizadas",
-        "Implementar IA en procesos críticos",
-        "Crear centro de excelencia en IA",
-        "Explorar IA generativa avanzada"
-      ];
+      opportunities.push("Desarrollar soluciones IA personalizadas");
+      opportunities.push("Implementar IA en procesos críticos");
+      opportunities.push("Crear centro de excelencia en IA");
     } else {
-      return [
-        "Liderar innovación en el sector",
-        "Desarrollar productos con IA integrada",
-        "Monetizar capacidades IA",
-        "Establecer partnerships tecnológicos"
-      ];
+      opportunities.push("Liderar innovación en el sector");
+      opportunities.push("Desarrollar productos con IA integrada");
+      opportunities.push("Monetizar capacidades IA");
     }
+
+    // Add specific opportunities based on new metrics
+    if (singleValue(stats, "avgAutonomyLevel") < 3) {
+      opportunities.push("Programa de mentoría para aumentar autonomía en IA");
+    }
+    if (singleValue(stats, "avgKPIImpact") < 3) {
+      opportunities.push("Identificar y medir KPIs específicos impactados por IA");
+    }
+    if (singleValue(stats, "avgPromptQuality") < 3) {
+      opportunities.push("Workshop intensivo de prompt engineering avanzado");
+    }
+    if (singleValue(stats, "avgImprovementOpportunity") >= 4) {
+      opportunities.push("Aprovechar alta motivación del equipo para proyectos piloto");
+    }
+    if (singleValue(stats, "pctLowBarriers") >= 70) {
+      opportunities.push("Acelerar adopción aprovechando baja resistencia organizacional");
+    }
+
+    return opportunities.slice(0, 4); // Return top 4 opportunities
   };
 
   const getRisks = () => {
@@ -416,14 +441,28 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
     if (singleValue(stats, "pctFormalTraining") < 30) {
       risks.push("Ausencia de capacitación formal estructurada");
     }
-    if (singleValue(stats, "pctKnowPromptParts") < 40) {
-      risks.push("Desconocimiento de técnicas avanzadas de prompting");
+    
+    // Add risks based on new metrics
+    if (singleValue(stats, "avgOrganizationalBarriers") >= 4) {
+      risks.push("Barreras organizacionales extremas bloquean progreso");
+    }
+    if (singleValue(stats, "avgAutonomyLevel") < 2.5) {
+      risks.push("Dependencia excesiva limita escalabilidad de IA");
+    }
+    if (singleValue(stats, "avgKPIImpact") < 2) {
+      risks.push("Falta de impacto medible puede reducir inversión en IA");
+    }
+    if (singleValue(stats, "avgPromptQuality") < 2.5) {
+      risks.push("Prompts de baja calidad generan resultados inconsistentes");
+    }
+    if (singleValue(stats, "pctLowBarriers") < 30) {
+      risks.push("Alta resistencia organizacional frena implementación");
     }
     
     if (risks.length === 0) {
       risks.push("Riesgo de quedarse atrás sin mejora continua");
     }
-    return risks;
+    return risks.slice(0, 4); // Return top 4 risks
   };
 
   // fecha generada
@@ -635,6 +674,176 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
         </Card>
       </section>
 
+      {/* New Diagnostic Metrics Section */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Autonomy and Skills */}
+        <Card className="border-2 border-purple-200 bg-purple-50/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-semibold text-purple-700 flex items-center gap-2">
+              <Zap className="w-5 h-5" />
+              Autonomía y Habilidades Prácticas
+            </CardTitle>
+            <p className="text-xs text-purple-600">Nivel de independencia en el uso de IA</p>
+          </CardHeader>
+          <CardContent className="pt-0 space-y-4">
+            <div className="flex justify-between items-center p-3 bg-white rounded-lg border">
+              <div className="flex items-center gap-2">
+                <Target className="w-5 h-5 text-purple-500" />
+                <div>
+                  <span className="text-sm font-medium">Nivel de autonomía:</span>
+                  <div className="text-xs text-muted-foreground">1=Necesita ayuda, 5=Totalmente autónomo</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="font-bold text-2xl text-purple-700">{singleValue(stats, "avgAutonomyLevel", 1).toFixed(1)}</span>
+                <span className="text-sm text-purple-600">/5</span>
+              </div>
+            </div>
+            <div className="flex justify-between items-center p-3 bg-white rounded-lg border">
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-purple-500" />
+                <div>
+                  <span className="text-sm font-medium">Calidad de prompts:</span>
+                  <div className="text-xs text-muted-foreground">1=Muy básico, 5=Excelente</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="font-bold text-2xl text-purple-700">{singleValue(stats, "avgPromptQuality", 1).toFixed(1)}</span>
+                <span className="text-sm text-purple-600">/5</span>
+              </div>
+            </div>
+            <div className="bg-purple-100 p-3 rounded-lg">
+              <div className="flex items-center gap-2 text-purple-700 text-sm font-medium mb-1">
+                <Users className="w-4 h-4" />
+                Empleados con alta autonomía (4-5):
+              </div>
+              <div className="text-2xl font-bold text-purple-700">{singleValue(stats, "pctHighAutonomy", 0)}%</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Impact and Opportunities */}
+        <Card className="border-2 border-orange-200 bg-orange-50/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-semibold text-orange-700 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Impacto y Oportunidades
+            </CardTitle>
+            <p className="text-xs text-orange-600">Resultados actuales y potencial de mejora</p>
+          </CardHeader>
+          <CardContent className="pt-0 space-y-4">
+            <div className="flex justify-between items-center p-3 bg-white rounded-lg border">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-orange-500" />
+                <div>
+                  <span className="text-sm font-medium">Impacto en KPIs:</span>
+                  <div className="text-xs text-muted-foreground">1=Sin impacto, 5=Muy alto</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="font-bold text-2xl text-orange-700">{singleValue(stats, "avgKPIImpact", 1).toFixed(1)}</span>
+                <span className="text-sm text-orange-600">/5</span>
+              </div>
+            </div>
+            <div className="flex justify-between items-center p-3 bg-white rounded-lg border">
+              <div className="flex items-center gap-2">
+                <Lightbulb className="w-5 h-5 text-orange-500" />
+                <div>
+                  <span className="text-sm font-medium">Oportunidad de mejora:</span>
+                  <div className="text-xs text-muted-foreground">1=Baja, 5=Muy alta</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="font-bold text-2xl text-orange-700">{singleValue(stats, "avgImprovementOpportunity", 1).toFixed(1)}</span>
+                <span className="text-sm text-orange-600">/5</span>
+              </div>
+            </div>
+            <div className="bg-orange-100 p-3 rounded-lg">
+              <div className="flex items-center gap-2 text-orange-700 text-sm font-medium mb-1">
+                <CheckCircle className="w-4 h-4" />
+                Empleados con alto impacto en KPIs (4-5):
+              </div>
+              <div className="text-2xl font-bold text-orange-700">{singleValue(stats, "pctHighKPIImpact", 0)}%</div>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Organizational Barriers Analysis */}
+      <section>
+        <Card className="border-2 border-red-200 bg-red-50/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-semibold text-red-700 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5" />
+              Análisis de Barreras Organizacionales
+            </CardTitle>
+            <p className="text-xs text-red-600">Obstáculos internos para la adopción de IA</p>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white p-4 rounded-lg border">
+                <div className="flex items-center gap-2 mb-2">
+                  <Shield className="w-5 h-5 text-red-500" />
+                  <span className="text-sm font-medium">Nivel de barreras:</span>
+                </div>
+                <div className="text-3xl font-bold text-red-700 mb-1">
+                  {singleValue(stats, "avgOrganizationalBarriers", 1).toFixed(1)}/5
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  1=Ninguna, 5=Extremas
+                </div>
+              </div>
+              <div className="bg-white p-4 rounded-lg border">
+                <div className="flex items-center gap-2 mb-2">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span className="text-sm font-medium">Empleados sin barreras:</span>
+                </div>
+                <div className="text-3xl font-bold text-green-700 mb-1">
+                  {singleValue(stats, "pctLowBarriers", 0)}%
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Puntuación 1-2 en barreras
+                </div>
+              </div>
+              <div className="bg-white p-4 rounded-lg border">
+                <div className="flex items-center gap-2 mb-2">
+                  <TrendingUp className="w-5 h-5 text-blue-500" />
+                  <span className="text-sm font-medium">Potencial de mejora:</span>
+                </div>
+                <div className="text-3xl font-bold text-blue-700 mb-1">
+                  {singleValue(stats, "pctHighImprovementOpportunity", 0)}%
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Alta oportunidad (4-5)
+                </div>
+              </div>
+            </div>
+            
+            {/* Barriers Interpretation */}
+            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-center gap-2 text-yellow-700 text-sm font-medium mb-2">
+                <Lightbulb className="w-4 h-4" />
+                Interpretación de Barreras
+              </div>
+              <div className="text-sm text-yellow-600">
+                {(() => {
+                  const barrierLevel = singleValue(stats, "avgOrganizationalBarriers", 1);
+                  if (barrierLevel <= 2) {
+                    return "🟢 Excelente: Pocas barreras organizacionales. El equipo tiene libertad para experimentar con IA.";
+                  } else if (barrierLevel <= 3) {
+                    return "🟡 Moderado: Algunas barreras presentes. Se recomienda trabajar en políticas y comunicación interna.";
+                  } else if (barrierLevel <= 4) {
+                    return "🟠 Alto: Barreras significativas. Necesario involucrar liderazgo y crear estrategia de cambio.";
+                  } else {
+                    return "🔴 Crítico: Barreras extremas. Requiere intervención ejecutiva y plan de transformación cultural.";
+                  }
+                })()}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
       {/* Charts Grid - Updated to show AI Tools instead of Copilot */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Device distribution pie */}
@@ -810,11 +1019,19 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
                 <>
                   <div className="text-center mb-6">
                     <div className="flex justify-center items-center gap-2 mb-3">
-                      <Image src="/logo.png" alt="Learning Gate" width={48} height={48} className="h-12 w-auto" />
+                      <Image 
+                        src="/logo.png" 
+                        alt="Learning Gate" 
+                        width={144} 
+                        height={32} 
+                        quality={100}
+                        priority
+                        className="w-36 h-8 object-contain"
+                      />
                     </div>
-                    <div className="flex justify-center items-center gap-2 text-sm text-[#F5B614] font-medium mb-2">
+                    <div className="flex justify-center items-center gap-2 text-sm text-gray-600 font-medium mb-2">
                       <GraduationCap className="w-5 h-5" />
-                      PROGRAMA CHATGPT + MICROSOFT COPILOT IA
+                      PROGRAMA CHATGPT BÁSICO + MICROSOFT COPILOT IA / GOOGLE GEMINI
                     </div>
                     <h3 className="text-2xl font-bold mb-1">
                       De {maturity.level} a Experto en 90 Días
@@ -948,7 +1165,15 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
                 <>
                   <div className="text-center mb-6">
                     <div className="flex justify-center items-center gap-2 mb-3">
-                      <Image src="/logo.png" alt="Learning Gate" width={48} height={48} className="h-12 w-auto" />
+                      <Image 
+                        src="/logo.png" 
+                        alt="Learning Gate" 
+                        width={144} 
+                        height={32} 
+                        quality={100}
+                        priority
+                        className="w-36 h-8 object-contain"
+                      />
                     </div>
                     <div className="flex justify-center items-center gap-2 text-sm text-gray-600 font-medium mb-2">
                       <GraduationCap className="w-5 h-5" />

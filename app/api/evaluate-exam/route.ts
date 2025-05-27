@@ -135,7 +135,14 @@ Genera la evaluacion de acuerdo al esquema definido.`;
       
       // Impact and Challenges (1-5 integers)
       tiempo_ahorrado: parseIntScale(evaluationResultStrings.tiempo_ahorrado),
-      retos_actuales_ia: parseIntScale(evaluationResultStrings.retos_actuales_ia)
+      retos_actuales_ia: parseIntScale(evaluationResultStrings.retos_actuales_ia),
+      
+      // New fields for complete diagnosis
+      nivel_autonomia_ia: parseIntScale(evaluationResultStrings.nivel_autonomia_ia),
+      impacto_en_kpis: parseIntScale(evaluationResultStrings.impacto_en_kpis),
+      barreras_organizacionales: parseIntScale(evaluationResultStrings.barreras_organizacionales),
+      oportunidad_de_mejora: parseIntScale(evaluationResultStrings.oportunidad_de_mejora),
+      prompt_practico: parseIntScale(evaluationResultStrings.prompt_practico)
     };
 
     console.log('Typed evaluation result:', typedEvaluationResult);
@@ -166,6 +173,11 @@ Genera la evaluacion de acuerdo al esquema definido.`;
         uso_ia_administracion: typedEvaluationResult.uso_ia_administracion,
         tiempo_ahorrado: typedEvaluationResult.tiempo_ahorrado,
         retos_actuales_ia: typedEvaluationResult.retos_actuales_ia,
+        nivel_autonomia_ia: typedEvaluationResult.nivel_autonomia_ia,
+        impacto_en_kpis: typedEvaluationResult.impacto_en_kpis,
+        barreras_organizacionales: typedEvaluationResult.barreras_organizacionales,
+        oportunidad_de_mejora: typedEvaluationResult.oportunidad_de_mejora,
+        prompt_practico: typedEvaluationResult.prompt_practico
       };
 
       const { data, error: dbError } = await supabase

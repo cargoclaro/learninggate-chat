@@ -57,6 +57,13 @@ type Row = {
   tiempo_ahorrado: number;
   retos_actuales_ia: number;
 
+  // New fields for complete diagnosis (1-5 integers)
+  nivel_autonomia_ia: number;
+  impacto_en_kpis: number;
+  barreras_organizacionales: number;
+  oportunidad_de_mejora: number;
+  prompt_practico: number;
+
   // Legacy fields that might still exist
   anios_experiencia?: number;
   nivel_office?: string;
@@ -150,13 +157,13 @@ export async function computeStatsByCompany(company: string) {
   };
 
   // ----- BASIC DEMOGRAPHICS -----
-  const area = [...countBy(r => r.area_principal_trabajo)].map(([k, v]) => ({
+  const area = Array.from(countBy(r => r.area_principal_trabajo)).map(([k, v]) => ({
     key: `area.${k}`,
     value: pct(v, total),
   }));
 
   // Age distribution (1-5 scale)
-  const ageDistribution = [...countBy(r => {
+  const ageDistribution = Array.from(countBy(r => {
     const ageScale = r.edad;
     if (!ageScale) return '';
     switch(ageScale) {
@@ -167,7 +174,7 @@ export async function computeStatsByCompany(company: string) {
       case 5: return '56+';
       default: return '';
     }
-  })].map(([k, v]) => ({
+  })).map(([k, v]) => ({
     key: `age.${k}`,
     value: pct(v, total),
   }));
@@ -200,13 +207,13 @@ export async function computeStatsByCompany(company: string) {
 
   // ----- DEVICES AND TOOLS ANALYSIS -----
   const deviceCounts = countJsonArrayElements(rows, 'dispositivos_ia');
-  const devices = [...deviceCounts].map(([k, v]) => ({
+  const devices = Array.from(deviceCounts).map(([k, v]) => ({
     key: `device.${k}`,
     value: pct(v, total),
   }));
 
   const toolCounts = countJsonArrayElements(rows, 'uso_herramientas_ia');
-  const tools = [...toolCounts].map(([k, v]) => ({
+  const tools = Array.from(toolCounts).map(([k, v]) => ({
     key: `tool.${k}`,
     value: pct(v, total),
   }));
@@ -223,6 +230,20 @@ export async function computeStatsByCompany(company: string) {
   // ----- TIME SAVINGS AND CHALLENGES -----
   const avgTimeSaved = avgScale(rows, 'tiempo_ahorrado');
   const avgChallengeLevel = avgScale(rows, 'retos_actuales_ia');
+
+  // ----- NEW DIAGNOSTIC FIELDS -----
+  const avgAutonomyLevel = avgScale(rows, 'nivel_autonomia_ia');
+  const avgKPIImpact = avgScale(rows, 'impacto_en_kpis');
+  const avgOrganizationalBarriers = avgScale(rows, 'barreras_organizacionales');
+  const avgImprovementOpportunity = avgScale(rows, 'oportunidad_de_mejora');
+  const avgPromptQuality = avgScale(rows, 'prompt_practico');
+
+  // Percentage with high scores (4-5) for new fields
+  const pctHighAutonomy = pctHighScore(rows, 'nivel_autonomia_ia');
+  const pctHighKPIImpact = pctHighScore(rows, 'impacto_en_kpis');
+  const pctLowBarriers = 100 - pctHighScore(rows, 'barreras_organizacionales'); // Inverted: low barriers is good
+  const pctHighImprovementOpportunity = pctHighScore(rows, 'oportunidad_de_mejora');
+  const pctHighPromptQuality = pctHighScore(rows, 'prompt_practico');
 
   // Convert time saved scale to actual minutes for ROI calculation
   const convertTimeScaleToMinutes = (scale: number) => {
@@ -257,7 +278,7 @@ export async function computeStatsByCompany(company: string) {
 
   // Office skills (if available)
   const office = rows.filter(r => r.nivel_office).length > 0
-    ? [...countBy(r => r.nivel_office || '')].map(([k, v]) => ({
+    ? Array.from(countBy(r => r.nivel_office || '')).map(([k, v]) => ({
         key: `office.${k}`,
         value: pct(v, total),
       }))
@@ -265,7 +286,7 @@ export async function computeStatsByCompany(company: string) {
 
   // Objectives (if available)
   const objectives = rows.filter(r => r.objetivo_ia).length > 0
-    ? [...countBy(r => r.objetivo_ia || '')].map(([k, v]) => ({
+    ? Array.from(countBy(r => r.objetivo_ia || '')).map(([k, v]) => ({
         key: `objective.${k}`,
         value: pct(v, total),
       }))
@@ -273,7 +294,7 @@ export async function computeStatsByCompany(company: string) {
 
   // Advanced functions (if available)
   const advFns = rows.filter(r => r.funciones_avanzadas_chatgpt).length > 0
-    ? [...countBy(r => r.funciones_avanzadas_chatgpt || 'ninguna')].map(
+    ? Array.from(countBy(r => r.funciones_avanzadas_chatgpt || 'ninguna')).map(
         ([k, v]) => ({ key: `advFn.${k}`, value: pct(v, total) })
       )
     : [];
@@ -294,7 +315,7 @@ export async function computeStatsByCompany(company: string) {
   // Top challenges and topics (if available)
   const topN = (field: keyof Row) => {
     if (rows.filter(r => r[field]).length === 0) return [];
-    return [...countBy(r => String(r[field] || ''))]
+    return Array.from(countBy(r => String(r[field] || '')))
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
       .map(([k, v]) => ({ key: k, value: pct(v, total) }));
@@ -430,6 +451,18 @@ export async function computeStatsByCompany(company: string) {
     // Top items (legacy support)
     ...topChallenges.map(c => ({ key: `topChallenge.${c.key}`, value: c.value })),
     ...topTopics.map(t => ({ key: `topTopic.${t.key}`, value: t.value })),
+    
+    // New diagnostic fields
+    { key: 'avgAutonomyLevel', value: +avgAutonomyLevel.toFixed(2) },
+    { key: 'avgKPIImpact', value: +avgKPIImpact.toFixed(2) },
+    { key: 'avgOrganizationalBarriers', value: +avgOrganizationalBarriers.toFixed(2) },
+    { key: 'avgImprovementOpportunity', value: +avgImprovementOpportunity.toFixed(2) },
+    { key: 'avgPromptQuality', value: +avgPromptQuality.toFixed(2) },
+    { key: 'pctHighAutonomy', value: pctHighAutonomy },
+    { key: 'pctHighKPIImpact', value: pctHighKPIImpact },
+    { key: 'pctLowBarriers', value: pctLowBarriers },
+    { key: 'pctHighImprovementOpportunity', value: pctHighImprovementOpportunity },
+    { key: 'pctHighPromptQuality', value: pctHighPromptQuality },
     
     // ROI data
     { key: 'employeeCount', value: total },
