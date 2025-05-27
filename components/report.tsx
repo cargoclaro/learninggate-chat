@@ -46,7 +46,7 @@ import {
   Lightbulb,
   Shield
 } from "lucide-react";
-import { PDFExportDual } from "./pdf-export-wrapper";
+import { DropdownPDFExport } from "./pdf-export-wrapper";
 
 interface StatKV {
   key: string;
@@ -416,8 +416,8 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
           {/* Option 1: Single button (original) */}
           {/* <PDFExportWrapper companyName={companyName} stats={stats} /> */}
           
-          {/* Option 2: Dual buttons (preview + full) */}
-          <PDFExportDual companyName={companyName} stats={stats} />
+          {/* Option 2: Single button with dropdown options */}
+          <DropdownPDFExport companyName={companyName} stats={stats} />
           
           <Badge className="gap-1">
             <CalendarDays className="w-4 h-4" /> {today}

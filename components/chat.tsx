@@ -133,7 +133,7 @@ export default function Page() {
 
       const evaluationResult = await response.json();
       console.log('Frontend: Evaluation successful!', evaluationResult);
-      setEvaluationStatus("¡Evaluación completada con éxito!"); 
+      setEvaluationStatus("¡Tus datos han sido enviados!"); 
       // Reload the page after 2 seconds to give user time to see the success message
       setTimeout(() => {
         window.location.reload();
@@ -202,10 +202,15 @@ export default function Page() {
             <div className="flex-1"></div>
             <div className="mb-32 relative z-10">
               <h1 className="text-5xl font-semibold mb-3 text-gray-800">
-                Descubre tu potencial de IA <span role="img" aria-label="rocket">🚀</span>
+                Descubre tu potencial de IA. <span role="img" aria-label="rocket">🚀</span>
               </h1>
               <p className="text-xl text-gray-600 max-w-md">
                 Cuales son tus fortalezas y que debes aprender.
+                <br />
+                <br />
+                <span className="text-sm text-gray-500">
+                  Es importante ser honesto - responde desde tu propio conocimiento.
+                </span>
               </p>
             </div>
           </div>
