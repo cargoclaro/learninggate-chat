@@ -47,6 +47,7 @@ import {
   Lightbulb,
   Shield
 } from "lucide-react";
+import { PDFExportWrapper } from "./pdf-export-wrapper";
 
 interface StatKV {
   key: string;
@@ -402,9 +403,12 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
           <PieIcon className="w-8 h-8 text-primary" />
           Diagnóstico IA – {companyName}
         </h1>
-        <Badge className="gap-1">
-          <CalendarDays className="w-4 h-4" /> {today}
-        </Badge>
+        <div className="flex items-center gap-3">
+          <PDFExportWrapper companyName={companyName} stats={stats} />
+          <Badge className="gap-1">
+            <CalendarDays className="w-4 h-4" /> {today}
+          </Badge>
+        </div>
       </header>
 
       {/* Executive Summary */}
