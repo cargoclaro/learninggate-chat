@@ -705,275 +705,288 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
         />
       </section>
 
-      {/* Course Transformation Offer - Based on Real Calculated Values */}
-      <section>
-        <Card className="border-2 border-[#F5B614] bg-gradient-to-br from-white via-[#FFFBF0] to-white shadow-lg overflow-hidden">
-          {/* Header Section */}
-          <div className="bg-gradient-to-r from-[#F5B614] to-[#E5A604] text-white p-4 text-center">
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <GraduationCap className="w-5 h-5" />
-              <span className="text-xs font-medium tracking-wide">PROGRAMA EXCLUSIVO</span>
-            </div>
-            <h2 className="text-2xl font-bold mb-1">
-              De Nivel {maturity.level} a Experto IA en 90 Días
-            </h2>
-            <p className="text-sm opacity-95 max-w-xl mx-auto">
-              Transforma a tus {Math.max(25, roi.employeeCount)} empleados en expertos de ChatGPT y Copilot
-            </p>
+      {/* Course Transformation Offer - Hormozi Style */}
+      <section className="mt-8">
+        <Card className="border-2 border-[#F5B614] bg-stone-50 shadow-lg relative">
+          {/* Recommended Banner */}
+          <div className="absolute -top-4 -left-4 bg-[#F5B614] text-white px-6 py-3 rounded-lg shadow-lg z-10 transform -rotate-3">
+            <div className="text-sm font-bold">RECOMENDADO PARA</div>
+            <div className="text-lg font-bold">{companyName}</div>
           </div>
-
-          <CardContent className="p-6 space-y-6">
+          <CardContent className="p-6">
             {(() => {
-              // Ensure minimum 25 employees for program calculations
-              const programEmployeeCount = Math.max(25, roi.employeeCount);
+              const employeeCount = Math.max(25, roi.employeeCount);
               const isMinimumTeam = roi.employeeCount < 25;
-              
-              // Calculate program value based on potential savings and employee count
-              const baseProgramValue = 50000; // Minimum $50k
-              const potentialSavingsValue = Math.max(roi.potential - roi.current, 0);
-              
-              // Value scales with team size and potential savings
-              // Base: $50k for 25 employees, then $1.5k per additional employee
-              const employeeScalingValue = programEmployeeCount > 25 
-                ? (programEmployeeCount - 25) * 1500 
-                : 0;
-              
-              // Add 15% of potential annual savings as value component
-              const savingsBasedValue = potentialSavingsValue * 0.15;
-              
-              const totalProgramValue = Math.max(
-                baseProgramValue + employeeScalingValue + savingsBasedValue,
-                baseProgramValue
-              );
-              
-              // Program price is 50% of total value (good value proposition)
-              const programPrice = Math.round(totalProgramValue * 0.5);
-              
+              const potentialGain = roi.potential - roi.current;
+              const programBase = 50000;
+              const employeeScaling = employeeCount > 25 ? (employeeCount - 25) * 1500 : 0;
+              const savingsValue = potentialGain * 0.15;
+              const totalValue = Math.max(programBase + employeeScaling + savingsValue, programBase);
+              const price = Math.round(totalValue * 0.5);
+              const daysToROI = Math.round(price / potentialGain * 12);
+
               return (
                 <>
-                  {/* Minimum Team Size Notice */}
+                  <div className="text-center mb-6">
+                    <div className="flex justify-center items-center gap-2 mb-3">
+                      <img src="/logo.png" alt="Learning Gate" className="h-12 w-auto" />
+                    </div>
+                    <div className="flex justify-center items-center gap-2 text-sm text-[#F5B614] font-medium mb-2">
+                      <GraduationCap className="w-5 h-5" />
+                      PROGRAMA CHATGPT + MICROSOFT COPILOT IA
+                    </div>
+                    <h3 className="text-2xl font-bold mb-1">
+                      De {maturity.level} a Experto en 90 Días
+                    </h3>
+                    <p className="text-base text-muted-foreground">
+                      Para {employeeCount} empleados — Certificación en IA aplicada
+                    </p>
+                  </div>
+
                   {isMinimumTeam && (
                     <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded-r-lg mb-4">
                       <div className="flex items-center gap-2 mb-1">
-                        <Users className="w-4 h-4 text-yellow-600" />
-                        <span className="font-bold text-yellow-700 text-sm">Programa Empresarial</span>
+                        <Users className="w-5 h-5 text-yellow-600" />
+                        <span className="font-medium text-yellow-700 text-base">Programa Empresarial</span>
                       </div>
-                      <div className="text-xs text-yellow-600">
+                      <div className="text-sm text-yellow-600">
                         Programa diseñado para equipos de mínimo 25 empleados.
-                        <span className="font-semibold"> Cotización basada en 25 empleados.</span>
+                        <span className="font-medium"> Cotización basada en 25 empleados.</span>
                       </div>
                     </div>
                   )}
 
-                  {/* Problem/Solution - Based on Real Data */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
-                      <h3 className="text-base font-bold text-red-700 mb-3 flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4" />
-                        Sin el programa
-                      </h3>
-                      <div className="space-y-2 text-xs text-red-600">
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                          <span>Pierdes ${Math.round(roi.opportunity/12).toLocaleString()}/mes</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                          <span>Solo {roi.currentMinutesSavedPerDay} min/día ahorrados</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                          <span>Skill: {singleValue(stats, "avgPromptSkill", 1)}/5 ({maturity.level})</span>
-                        </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
+                      <h4 className="text-red-700 font-medium text-lg flex items-center gap-2 mb-3">
+                        <AlertTriangle className="w-5 h-5" /> Sin el programa
+                      </h4>
+                      <ul className="text-base text-red-600 space-y-2">
+                        <li className="flex items-center gap-2">
+                          <span className="text-red-500">💸</span>
+                          <span>Pierdes ${Math.round(roi.opportunity / 12).toLocaleString()} / mes</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="text-red-500">🕒</span>
+                          <span>Ahorro actual: {roi.currentMinutesSavedPerDay} min/día</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="text-red-500">📉</span>
+                          <span>Skill IA: {singleValue(stats, "avgPromptSkill", 1)}/5</span>
+                        </li>
+                      </ul>
+                      <div className="border-t border-red-200 mt-3 pt-3 text-center">
+                        <div className="text-base text-red-600 mb-2">Costo anual de oportunidad</div>
+                        <div className="text-3xl font-bold text-red-700 bg-white rounded-lg py-2 px-4">${Math.round(roi.opportunity).toLocaleString()}</div>
                       </div>
                     </div>
-
-                    <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
-                      <h3 className="text-base font-bold text-green-700 mb-3 flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4" />
-                        Con el programa
-                      </h3>
-                      <div className="space-y-2 text-xs text-green-600">
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                          <span>Generas ${Math.round(roi.potential/12).toLocaleString()}/mes adicionales</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                          <span>120+ min/día ahorrados (2+ horas)</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                          <span>Skill: 5/5 (Experto certificado)</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* ROI Calculation - Real Numbers */}
-                  <div className="bg-slate-50 border border-slate-300 rounded-lg p-4">
-                    <h3 className="text-lg font-bold text-center mb-3 text-black">
-                      ROI para {companyName}
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-center">
-                      <div className="bg-white rounded-lg p-3">
-                        <div className="text-xl font-bold text-red-700">${Math.round(roi.opportunity).toLocaleString()}</div>
-                        <div className="text-xs text-gray-600">Oportunidad perdida</div>
-                      </div>
-                      <div className="bg-white rounded-lg p-3">
-                        <div className="text-xl font-bold text-emerald-700">${Math.round(roi.potential).toLocaleString()}</div>
-                        <div className="text-xs text-gray-600">Potencial anual</div>
-                      </div>
-                      <div className="bg-white rounded-lg p-3">
-                        <div className="text-xl font-bold text-indigo-700">{Math.round((roi.potential - roi.current) / programPrice * 100)}%</div>
-                        <div className="text-xs text-gray-600">ROI programa</div>
+                    <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
+                      <h4 className="text-green-700 font-medium text-lg flex items-center gap-2 mb-3">
+                        <CheckCircle className="w-5 h-5" /> Con el programa
+                      </h4>
+                      <ul className="text-base text-green-600 space-y-2">
+                        <li className="flex items-center gap-2">
+                          <span className="text-green-500">📈</span>
+                          <span>Ganas ${Math.round(roi.potential / 12).toLocaleString()} / mes</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="text-green-500">⏱️</span>
+                          <span>120+ min/día ahorrados</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="text-green-500">🏆</span>
+                          <span>Skill IA: 5/5 certificado</span>
+                        </li>
+                      </ul>
+                      <div className="border-t border-green-200 mt-3 pt-3 text-center">
+                        <div className="text-base text-green-600 mb-2">Beneficio anual total</div>
+                        <div className="text-3xl font-bold text-green-700 bg-white rounded-lg py-2 px-4">${Math.round(roi.potential).toLocaleString()}</div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Value Stack - Dynamic Based on Team Size & Potential */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="text-lg font-bold text-center mb-4 text-gray-800">
-                      Programa ({programEmployeeCount} empleados)
-                    </h3>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
-                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
-                            <CheckCircle className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-gray-800 text-sm">8 semanas entrenamiento</div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
-                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
-                            <CheckCircle className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-gray-800 text-sm">Certificación oficial</div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
-                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
-                            <CheckCircle className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-gray-800 text-sm">Prompts personalizados</div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
-                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
-                            <CheckCircle className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-gray-800 text-sm">Soporte 90 días</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
-                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
-                            <CheckCircle className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-gray-800 text-sm">Comunidad expertos</div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
-                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
-                            <CheckCircle className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-gray-800 text-sm">Templates listos</div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
-                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
-                            <CheckCircle className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-gray-800 text-sm">Seguimiento ROI</div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
-                          <div className="w-6 h-6 bg-[#F5B614] rounded-full flex items-center justify-center flex-shrink-0">
-                            <CheckCircle className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-gray-800 text-sm">Garantía resultados</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Value Summary - Dynamic Calculation */}
-                    <div className="border-t mt-4 pt-3 text-center">
-                      <div className="text-sm text-gray-700 font-medium">Valor total:</div>
-                      <div className="text-xl font-bold text-gray-800 line-through">${totalProgramValue.toLocaleString()}</div>
-                    </div>
+                  <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg text-center mb-4">
+                    <div className="text-sm text-gray-600 mb-1">Precio del programa</div>
+                    <div className="text-2xl font-bold text-gray-900">${price.toLocaleString()}</div>
                   </div>
 
-                  {/* Pricing - Dynamic Based on Value */}
+                  <div className="bg-green-50 border border-green-200 p-4 rounded-lg mb-4">
+                    <div className="flex items-center justify-center gap-2 text-green-700 text-base font-medium mb-2">
+                      <Shield className="w-5 h-5" /> Garantía Triple
+                    </div>
+                    <ul className="text-sm text-green-600 space-y-1">
+                      <li>✓ Recuperas ${Math.round(potentialGain).toLocaleString()} o reembolso</li>
+                      <li>✓ Skill sube a 5/5 o extensión gratis</li>
+                      <li>✓ Satisfacción o no pagas</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-red-50 border-l-4 border-red-400 p-3 rounded-r-lg mb-4 text-sm text-red-600">
+                    Solo 20 empresas por cohorte — Próximo inicio en <strong>15 días</strong>
+                  </div>
+
                   <div className="text-center">
-                    <div className="bg-[#F5B614] rounded-lg p-4 text-white mb-3">
-                      <div className="text-xs mb-1">Tu inversión ({programEmployeeCount} empleados):</div>
-                      <div className="text-3xl font-bold mb-1">${programPrice.toLocaleString()}</div>
-                      <div className="text-sm">Se paga en {Math.round(programPrice / (roi.potential - roi.current) * 12)} días</div>
-                    </div>
-                    
-                    {/* Risk Reversal */}
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        <Shield className="w-4 h-4 text-green-600" />
-                        <span className="font-bold text-green-700 text-sm">Garantía Triple</span>
-                      </div>
-                      <div className="text-xs text-green-600 space-y-1">
-                        <div>✓ ${Math.round(roi.potential - roi.current).toLocaleString()} adicionales en 90 días o devolución completa</div>
-                        <div>✓ Mejora de {singleValue(stats, "avgPromptSkill", 1)}/5 a 5/5 o extensión gratis</div>
-                        <div>✓ Satisfacción garantizada</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Urgency & Scarcity - Personalized */}
-                  <div className="bg-red-50 border-l-4 border-red-500 p-3 rounded-r-lg">
-                    <div className="flex items-center gap-2 mb-1">
-                      <AlertTriangle className="w-4 h-4 text-red-600" />
-                      <span className="font-bold text-red-700 text-sm">Disponibilidad Limitada</span>
-                    </div>
-                    <div className="text-xs text-red-600">
-                      Solo 20 empresas por trimestre. 
-                      <span className="font-semibold">Siguiente cohorte en 15 días.</span>
-                    </div>
-                  </div>
-
-                  {/* CTA Button */}
-                  <div className="text-center space-y-3">
-                    <button className="w-full bg-gradient-to-r from-[#F5B614] to-[#E5A604] hover:from-[#E5A604] hover:to-[#D4950A] text-white font-bold text-lg py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]">
-                      RESERVAR CUPO - ${programPrice.toLocaleString()}
+                    <button className="w-full bg-[#F5B614] hover:bg-[#e4a900] text-white font-medium py-3 rounded-lg transition duration-200 text-base">
+                      RESERVAR CUPO
                     </button>
-                    <div className="text-xs text-gray-500 space-y-1">
-                      <div>✓ Llamada estratégica gratuita</div>
-                      <div>✓ Análisis ROI personalizado</div>
-                      <div>✓ Sin compromiso inicial</div>
+                    <div className="text-sm text-muted-foreground mt-2">
+                      Incluye llamada estratégica gratuita y análisis ROI personalizado
+                    </div>
+                  </div>
+
+                  {/* Social Proof */}
+                  <div className="border-t pt-4 text-center mt-6">
+                    <div className="text-sm text-muted-foreground mb-2">
+                      <span className="font-medium text-[#F5B614]">+500 empleados</span> transformados en <span className="font-medium">+50 empresas</span>
+                    </div>
+                    <div className="flex justify-center items-center gap-4 text-muted-foreground text-sm">
+                      <span>VISIONA</span>
+                      <span>TECH CORP</span>
+                      <span>INNOVATE SA</span>
                     </div>
                   </div>
                 </>
               );
             })()}
+          </CardContent>
+        </Card>
+      </section>
 
-            {/* Social Proof */}
-            <div className="border-t pt-4 text-center">
-              <div className="text-xs text-gray-600 mb-2">
-                <span className="font-bold text-[#F5B614]">+500 empleados</span> transformados en <span className="font-bold">+50 empresas</span>
-              </div>
-              <div className="flex justify-center items-center gap-4 text-gray-400 text-xs font-medium">
-                <span>VISIONA</span>
-                <span>TECH CORP</span>
-                <span>INNOVATE SA</span>
-              </div>
-            </div>
+      {/* ChatGPT Only Program - Alternative Offer */}
+      <section className="mt-6">
+        <Card className="border-2 border-blue-500 bg-white shadow-sm">
+          <CardContent className="p-6">
+            {(() => {
+              const employeeCount = Math.max(25, roi.employeeCount);
+              const isMinimumTeam = roi.employeeCount < 25;
+              const potentialGain = (roi.potential - roi.current) * 0.5; // Half the ROI
+              const pricePerEmployee = 999;
+              const totalPrice = employeeCount * pricePerEmployee;
+              const daysToROI = Math.round(totalPrice / potentialGain * 12);
+
+              return (
+                <>
+                  <div className="text-center mb-6">
+                    <div className="flex justify-center items-center gap-2 mb-3">
+                      <img src="/logo.png" alt="Learning Gate" className="h-12 w-auto" />
+                    </div>
+                    <div className="flex justify-center items-center gap-2 text-sm text-gray-600 font-medium mb-2">
+                      <GraduationCap className="w-5 h-5" />
+                      PROGRAMA CHATGPT BÁSICO
+                    </div>
+                    <h3 className="text-2xl font-bold mb-1">
+                      De {maturity.level} a Intermedio en 60 Días
+                    </h3>
+                    <p className="text-base text-muted-foreground">
+                      Para {employeeCount} empleados — Certificación ChatGPT
+                    </p>
+                  </div>
+
+                  {isMinimumTeam && (
+                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded-r-lg mb-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Users className="w-5 h-5 text-yellow-600" />
+                        <span className="font-medium text-yellow-700 text-base">Programa Empresarial</span>
+                      </div>
+                      <div className="text-sm text-yellow-600">
+                        Programa diseñado para equipos de mínimo 25 empleados.
+                        <span className="font-medium"> Cotización basada en 25 empleados.</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
+                      <h4 className="text-red-700 font-medium text-lg flex items-center gap-2 mb-3">
+                        <AlertTriangle className="w-5 h-5" /> Sin el programa
+                      </h4>
+                      <ul className="text-base text-red-600 space-y-2">
+                        <li className="flex items-center gap-2">
+                          <span className="text-red-500">💸</span>
+                          <span>Pierdes ${Math.round((roi.opportunity * 0.5) / 12).toLocaleString()} / mes</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="text-red-500">🕒</span>
+                          <span>Ahorro actual: {roi.currentMinutesSavedPerDay} min/día</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="text-red-500">📉</span>
+                          <span>Skill ChatGPT: {singleValue(stats, "avgPromptSkill", 1)}/5</span>
+                        </li>
+                      </ul>
+                      <div className="border-t border-red-200 mt-3 pt-3 text-center">
+                        <div className="text-base text-red-600 mb-2">Costo anual de oportunidad</div>
+                        <div className="text-3xl font-bold text-red-700 bg-white rounded-lg py-2 px-4">${Math.round(roi.opportunity * 0.5).toLocaleString()}</div>
+                      </div>
+                    </div>
+                    <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
+                      <h4 className="text-green-700 font-medium text-lg flex items-center gap-2 mb-3">
+                        <CheckCircle className="w-5 h-5" /> Con el programa
+                      </h4>
+                      <ul className="text-base text-green-600 space-y-2">
+                        <li className="flex items-center gap-2">
+                          <span className="text-green-500">📈</span>
+                          <span>Ganas ${Math.round((roi.current + potentialGain) / 12).toLocaleString()} / mes</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="text-green-500">⏱️</span>
+                          <span>60+ min/día ahorrados</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="text-green-500">🏆</span>
+                          <span>Skill ChatGPT: 4/5 intermedio</span>
+                        </li>
+                      </ul>
+                      <div className="border-t border-green-200 mt-3 pt-3 text-center">
+                        <div className="text-base text-green-600 mb-2">Beneficio anual total</div>
+                        <div className="text-3xl font-bold text-green-700 bg-white rounded-lg py-2 px-4">${Math.round(roi.current + potentialGain).toLocaleString()}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center mb-4">
+                    <div className="text-sm text-gray-600 mb-1">Precio del programa</div>
+                    <div className="text-2xl font-bold text-gray-900">${totalPrice.toLocaleString()}</div>
+                    <div className="text-sm text-gray-500">${pricePerEmployee} por empleado</div>
+                  </div>
+
+                  <div className="bg-green-50 border border-green-200 p-4 rounded-lg mb-4">
+                    <div className="flex items-center justify-center gap-2 text-green-700 text-base font-medium mb-2">
+                      <Shield className="w-5 h-5" /> Garantía Doble
+                    </div>
+                    <ul className="text-sm text-green-600 space-y-1">
+                      <li>✓ Recuperas ${Math.round(potentialGain).toLocaleString()} o reembolso</li>
+                      <li>✓ Skill sube a 4/5 o extensión gratis</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-blue-50 border-l-4 border-blue-400 p-3 rounded-r-lg mb-4 text-sm text-blue-600">
+                    Programa de entrada — <strong>Disponible inmediatamente</strong>
+                  </div>
+
+                  <div className="text-center">
+                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition duration-200 text-base">
+                      EMPEZAR AHORA
+                    </button>
+                    <div className="text-sm text-muted-foreground mt-2">
+                      Incluye acceso inmediato y soporte básico
+                    </div>
+                  </div>
+
+                  {/* Social Proof */}
+                  <div className="border-t pt-4 text-center mt-6">
+                    <div className="text-sm text-muted-foreground mb-2">
+                      <span className="font-medium text-blue-600">+200 empleados</span> capacitados en <span className="font-medium">ChatGPT básico</span>
+                    </div>
+                    <div className="flex justify-center items-center gap-4 text-muted-foreground text-sm">
+                      <span>STARTUP CO</span>
+                      <span>DIGITAL PLUS</span>
+                      <span>GROWTH SA</span>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
           </CardContent>
         </Card>
       </section>
