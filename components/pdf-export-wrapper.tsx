@@ -27,8 +27,36 @@ interface StatKV {
 interface Props {
   companyName: string;
   stats: StatKV[];
+  isBlurred?: boolean;
 }
 
-export const PDFExportWrapper: React.FC<Props> = ({ companyName, stats }) => {
-  return <PDFExportButton companyName={companyName} stats={stats} />;
+// Single PDF Export (original functionality)
+export const PDFExportWrapper: React.FC<Props> = ({ companyName, stats, isBlurred = false }) => {
+  return <PDFExportButton companyName={companyName} stats={stats} isBlurred={isBlurred} />;
+};
+
+// Dual PDF Export Options (new functionality)
+export const PDFExportDual: React.FC<Omit<Props, 'isBlurred'>> = ({ companyName, stats }) => {
+  return (
+    <div className="flex items-center gap-2">
+      {/* Preview/Blurred Version */}
+      <PDFExportButton 
+        companyName={companyName} 
+        stats={stats} 
+        isBlurred={true}
+      />
+      
+      {/* Full Version */}
+      <div className="relative group">
+        <PDFExportButton 
+          companyName={companyName} 
+          stats={stats} 
+          isBlurred={false}
+        />
+        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+          Versión completa
+        </div>
+      </div>
+    </div>
+  );
 }; 

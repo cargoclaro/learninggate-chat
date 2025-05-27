@@ -295,6 +295,27 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#374151',
   },
+  // Blur overlay styles
+  blurOverlay: {
+    position: 'absolute',
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: '2 solid #F5B614',
+  },
+  blurText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#6b7280',
+    textAlign: 'center',
+  },
+  blurSubtext: {
+    fontSize: 10,
+    color: '#9ca3af',
+    textAlign: 'center',
+    marginTop: 4,
+  },
 });
 
 interface StatKV {
@@ -305,6 +326,7 @@ interface StatKV {
 interface PDFReportProps {
   companyName: string;
   stats: StatKV[];
+  isBlurred?: boolean;
 }
 
 // Helper function to get single value from stats
@@ -354,7 +376,7 @@ const calculateAIMaturity = (stats: StatKV[]) => {
 };
 
 // The PDF Document Component
-export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats }) => {
+export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlurred = false }) => {
   const today = new Date().toLocaleDateString('es-ES', {
     year: 'numeric',
     month: 'long',
@@ -591,157 +613,176 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats }) => {
           </View>
         </View>
 
-        {/* Knowledge Assessment Section */}
-        <View style={styles.section} wrap={false}>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
-            {/* Knowledge Card */}
-            <View style={[styles.card, styles.cardBordered, styles.cardBlue, { flex: 1, padding: 12, borderWidth: 1.5 }]}>
-              <View style={{ marginBottom: 10 }}>
-                <View style={[styles.cardTitleWithIcon, { gap: 6 }]}>
-                  <Svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                    <Path d="M9 11H3M21 11h-6M12 11v6M12 5V3M9.31 5.69L8.6 5M15.69 5.69l.71-.69" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                  </Svg>
-                  <Text style={[styles.cardTitle, { color: '#2563eb', fontWeight: 'bold', fontSize: 11 }]}>Conocimiento Básico IA</Text>
-                </View>
-                <Text style={[styles.cardSubtitle, { color: '#6b82f6', fontSize: 7, marginTop: 3 }]}>Oportunidad de capacitación fundamental</Text>
-              </View>
-              <View style={{ gap: 8 }}>
-                <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #dbeafe', borderRadius: 6 }]}>
-                  <View style={[styles.row, { alignItems: 'center', justifyContent: 'space-between' }]}>
-                    <View style={[styles.cardTitleWithIcon, { gap: 6, flex: 1, marginRight: 8 }]}>
-                      <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                        <Path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#3b82f6" strokeWidth="1.5" fill="none"/>
-                      </Svg>
-                      <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Sabe qué es un LLM:</Text>
-                    </View>
-                    <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'pctKnowLLM', 0)}%</Text>
-                  </View>
-                </View>
-                <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #dbeafe', borderRadius: 6 }]}>
-                  <View style={[styles.row, { alignItems: 'center', justifyContent: 'space-between' }]}>
-                    <View style={[styles.cardTitleWithIcon, { gap: 6, flex: 1, marginRight: 8 }]}>
-                      <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                        <Path d="M12 2v20m10-10H2" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" fill="none"/>
-                      </Svg>
-                      <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Pretraining/finetuning:</Text>
-                    </View>
-                    <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'pctKnowPretrainingFT', 0)}%</Text>
-                  </View>
-                </View>
-                <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #dbeafe', borderRadius: 6 }]}>
-                  <View style={[styles.row, { alignItems: 'center', justifyContent: 'space-between' }]}>
-                    <View style={[styles.cardTitleWithIcon, { gap: 6, flex: 1, marginRight: 8 }]}>
-                      <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                        <Circle cx="12" cy="12" r="10" stroke="#3b82f6" strokeWidth="1.5" fill="none"/>
-                        <Circle cx="12" cy="12" r="3" stroke="#3b82f6" strokeWidth="1.5" fill="none"/>
-                      </Svg>
-                      <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Conoce 4 partes del prompt:</Text>
-                    </View>
-                    <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'pctKnowPromptParts', 0)}%</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
 
-            {/* Department Usage */}
-            <View style={[styles.card, { flex: 1, padding: 12 }]}>
-              <View style={{ marginBottom: 10 }}>
-                <View style={[styles.cardTitleWithIcon, { gap: 6 }]}>
-                  <Svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                    <Rect x="3" y="11" width="18" height="10" rx="2" stroke="#374151" strokeWidth="1.5" fill="none"/>
-                    <Path d="M8 7V11M12 5V11M16 9V11" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-                  </Svg>
-                  <Text style={[styles.cardTitle, { fontSize: 11, fontWeight: 'bold', color: '#1f2937' }]}>Uso por Departamento</Text>
-                </View>
-              </View>
-              <View style={{ gap: 8, marginTop: 6 }}>
-                <View style={[styles.card, { backgroundColor: '#f9fafb', padding: 8, border: '1 solid #e5e7eb', borderRadius: 6 }]}>
-                  <View style={[styles.row, { alignItems: 'center' }]}>
-                    <View style={[styles.cardTitleWithIcon, { flex: 1, gap: 6 }]}>
-                      <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                        <Path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="#16a34a" strokeWidth="1.5" fill="none"/>
-                      </Svg>
-                      <Text style={{ fontSize: 9, fontWeight: 'bold', color: '#374151' }}>Ventas:</Text>
-                    </View>
-                    <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a' }}>{getSingleValue(stats, 'pctIAinSales', 0)}%</Text>
-                  </View>
-                </View>
-                <View style={[styles.card, { backgroundColor: '#f9fafb', padding: 8, border: '1 solid #e5e7eb', borderRadius: 6 }]}>
-                  <View style={[styles.row, { alignItems: 'center' }]}>
-                    <View style={[styles.cardTitleWithIcon, { flex: 1, gap: 6 }]}>
-                      <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                        <Path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="#9333ea" strokeWidth="1.5" fill="none"/>
-                      </Svg>
-                      <Text style={{ fontSize: 9, fontWeight: 'bold', color: '#374151' }}>Marketing:</Text>
-                    </View>
-                    <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#9333ea' }}>{getSingleValue(stats, 'pctIAinMarketing', 0)}%</Text>
-                  </View>
-                </View>
-                <View style={[styles.card, { backgroundColor: '#f9fafb', padding: 8, border: '1 solid #e5e7eb', borderRadius: 6 }]}>
-                  <View style={[styles.row, { alignItems: 'center' }]}>
-                    <View style={[styles.cardTitleWithIcon, { flex: 1, gap: 6 }]}>
-                      <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                        <Rect x="2" y="7" width="20" height="14" rx="2" stroke="#3b82f6" strokeWidth="1.5" fill="none"/>
-                      </Svg>
-                      <Text style={{ fontSize: 9, fontWeight: 'bold', color: '#374151' }}>Finanzas:</Text>
-                    </View>
-                    <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#3b82f6' }}>{getSingleValue(stats, 'pctIAinFinance', 0)}%</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
 
-            {/* Training Status */}
-            <View style={[styles.card, styles.cardBordered, styles.cardGreen, { flex: 1, padding: 12, borderWidth: 1.5 }]}>
-              <View style={{ marginBottom: 10 }}>
-                <View style={[styles.cardTitleWithIcon, { gap: 6 }]}>
-                  <Svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                    <Path d="M22 10v6M2 10l10-5 10 5-10 5z" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                    <Path d="M6 12v5c0 1.7 3.1 3 6 3s6-1.3 6-3v-5" stroke="#16a34a" strokeWidth="1.5" fill="none"/>
-                  </Svg>
-                  <Text style={[styles.cardTitle, { color: '#15803d', fontWeight: 'bold', fontSize: 11 }]}>Estado de Capacitación</Text>
+        {/* Knowledge Assessment Section - Container for blur overlay */}
+        <View style={{ position: 'relative' }}>
+          <View style={[styles.section, { position: 'relative' }]} wrap={false}>
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              {/* Knowledge Card */}
+              <View style={[styles.card, styles.cardBordered, styles.cardBlue, { flex: 1, padding: 12, borderWidth: 1.5 }]}>
+                <View style={{ marginBottom: 10 }}>
+                  <View style={[styles.cardTitleWithIcon, { gap: 6 }]}>
+                    <Svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                      <Path d="M9 11H3M21 11h-6M12 11v6M12 5V3M9.31 5.69L8.6 5M15.69 5.69l.71-.69" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                    </Svg>
+                    <Text style={[styles.cardTitle, { color: '#2563eb', fontWeight: 'bold', fontSize: 11 }]}>Conocimiento Básico IA</Text>
+                  </View>
+                  <Text style={[styles.cardSubtitle, { color: '#6b82f6', fontSize: 7, marginTop: 3 }]}>Oportunidad de capacitación fundamental</Text>
                 </View>
-                <Text style={[styles.cardSubtitle, { color: '#16a34a', fontSize: 7, marginTop: 3 }]}>Potencial de desarrollo del equipo</Text>
+                <View style={{ gap: 8 }}>
+                  <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #dbeafe', borderRadius: 6 }]}>
+                    <View style={[styles.row, { alignItems: 'center', justifyContent: 'space-between' }]}>
+                      <View style={[styles.cardTitleWithIcon, { gap: 6, flex: 1, marginRight: 8 }]}>
+                        <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <Path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#3b82f6" strokeWidth="1.5" fill="none"/>
+                        </Svg>
+                        <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Sabe qué es un LLM:</Text>
+                      </View>
+                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'pctKnowLLM', 0)}%</Text>
+                    </View>
+                  </View>
+                  <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #dbeafe', borderRadius: 6 }]}>
+                    <View style={[styles.row, { alignItems: 'center', justifyContent: 'space-between' }]}>
+                      <View style={[styles.cardTitleWithIcon, { gap: 6, flex: 1, marginRight: 8 }]}>
+                        <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <Path d="M12 2v20m10-10H2" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" fill="none"/>
+                        </Svg>
+                        <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Pretraining/finetuning:</Text>
+                      </View>
+                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'pctKnowPretrainingFT', 0)}%</Text>
+                    </View>
+                  </View>
+                  <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #dbeafe', borderRadius: 6 }]}>
+                    <View style={[styles.row, { alignItems: 'center', justifyContent: 'space-between' }]}>
+                      <View style={[styles.cardTitleWithIcon, { gap: 6, flex: 1, marginRight: 8 }]}>
+                        <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <Circle cx="12" cy="12" r="10" stroke="#3b82f6" strokeWidth="1.5" fill="none"/>
+                          <Circle cx="12" cy="12" r="3" stroke="#3b82f6" strokeWidth="1.5" fill="none"/>
+                        </Svg>
+                        <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Conoce 4 partes del prompt:</Text>
+                      </View>
+                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'pctKnowPromptParts', 0)}%</Text>
+                    </View>
+                  </View>
+                </View>
               </View>
-              <View style={{ gap: 8 }}>
-                <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #bbf7d0', borderRadius: 6 }]}>
-                  <View style={[styles.row, { alignItems: 'center', justifyContent: 'space-between' }]}>
-                    <View style={[styles.cardTitleWithIcon, { flex: 0.7, gap: 6 }]}>
-                      <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                        <Path d="M22 10v6M2 10l10-5 10 5-10 5z" stroke="#16a34a" strokeWidth="1.5" fill="none"/>
-                      </Svg>
-                      <Text style={{ fontSize: 8, color: '#4b5563' }}>Capacitación formal de IA:</Text>
-                    </View>
-                    <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#15803d' }}>{getSingleValue(stats, 'pctFormalTraining', 0)}%</Text>
+
+              {/* Department Usage */}
+              <View style={[styles.card, { flex: 1, padding: 12 }]}>
+                <View style={{ marginBottom: 10 }}>
+                  <View style={[styles.cardTitleWithIcon, { gap: 6 }]}>
+                    <Svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                      <Rect x="3" y="11" width="18" height="10" rx="2" stroke="#374151" strokeWidth="1.5" fill="none"/>
+                      <Path d="M8 7V11M12 5V11M16 9V11" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                    </Svg>
+                    <Text style={[styles.cardTitle, { fontSize: 11, fontWeight: 'bold', color: '#1f2937' }]}>Uso por Departamento</Text>
                   </View>
                 </View>
-                <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #bbf7d0', borderRadius: 6 }]}>
-                  <View style={[styles.row, { alignItems: 'center', justifyContent: 'space-between' }]}>
-                    <View style={[styles.cardTitleWithIcon, { flex: 0.7, gap: 6 }]}>
-                      <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                        <Path d="M9 11l3 3L22 4" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                        <Path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="#16a34a" strokeWidth="2" fill="none"/>
-                      </Svg>
-                      <Text style={{ fontSize: 8, color: '#4b5563' }}>Confianza en resultados IA:</Text>
+                <View style={{ gap: 8, marginTop: 6 }}>
+                  <View style={[styles.card, { backgroundColor: '#f9fafb', padding: 8, border: '1 solid #e5e7eb', borderRadius: 6 }]}>
+                    <View style={[styles.row, { alignItems: 'center' }]}>
+                      <View style={[styles.cardTitleWithIcon, { flex: 1, gap: 6 }]}>
+                        <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <Path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="#16a34a" strokeWidth="1.5" fill="none"/>
+                        </Svg>
+                        <Text style={{ fontSize: 9, fontWeight: 'bold', color: '#374151' }}>Ventas:</Text>
+                      </View>
+                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a' }}>{getSingleValue(stats, 'pctIAinSales', 0)}%</Text>
                     </View>
-                    <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#15803d' }}>{getSingleValue(stats, 'avgConfidence', 1)}/5</Text>
+                  </View>
+                  <View style={[styles.card, { backgroundColor: '#f9fafb', padding: 8, border: '1 solid #e5e7eb', borderRadius: 6 }]}>
+                    <View style={[styles.row, { alignItems: 'center' }]}>
+                      <View style={[styles.cardTitleWithIcon, { flex: 1, gap: 6 }]}>
+                        <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <Path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="#9333ea" strokeWidth="1.5" fill="none"/>
+                        </Svg>
+                        <Text style={{ fontSize: 9, fontWeight: 'bold', color: '#374151' }}>Marketing:</Text>
+                      </View>
+                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#9333ea' }}>{getSingleValue(stats, 'pctIAinMarketing', 0)}%</Text>
+                    </View>
+                  </View>
+                  <View style={[styles.card, { backgroundColor: '#f9fafb', padding: 8, border: '1 solid #e5e7eb', borderRadius: 6 }]}>
+                    <View style={[styles.row, { alignItems: 'center' }]}>
+                      <View style={[styles.cardTitleWithIcon, { flex: 1, gap: 6 }]}>
+                        <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <Rect x="2" y="7" width="20" height="14" rx="2" stroke="#3b82f6" strokeWidth="1.5" fill="none"/>
+                        </Svg>
+                        <Text style={{ fontSize: 9, fontWeight: 'bold', color: '#374151' }}>Finanzas:</Text>
+                      </View>
+                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#3b82f6' }}>{getSingleValue(stats, 'pctIAinFinance', 0)}%</Text>
+                    </View>
                   </View>
                 </View>
-                <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #bbf7d0', borderRadius: 6 }]}>
-                  <View style={[styles.row, { alignItems: 'center', justifyContent: 'space-between' }]}>
-                    <View style={[styles.cardTitleWithIcon, { flex: 0.7, gap: 6 }]}>
-                      <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                        <Circle cx="12" cy="6" r="4" stroke="#F5B614" strokeWidth="1.5" fill="none"/>
-                        <Path d="M20 21a8 8 0 10-16 0" stroke="#F5B614" strokeWidth="2" fill="none"/>
-                      </Svg>
-                      <Text style={{ fontSize: 8, color: '#4b5563' }}>Curiosidad por explorar IA:</Text>
+              </View>
+
+              {/* Training Status */}
+              <View style={[styles.card, styles.cardBordered, styles.cardGreen, { flex: 1, padding: 12, borderWidth: 1.5 }]}>
+                <View style={{ marginBottom: 10 }}>
+                  <View style={[styles.cardTitleWithIcon, { gap: 6 }]}>
+                    <Svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                      <Path d="M22 10v6M2 10l10-5 10 5-10 5z" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                      <Path d="M6 12v5c0 1.7 3.1 3 6 3s6-1.3 6-3v-5" stroke="#16a34a" strokeWidth="1.5" fill="none"/>
+                    </Svg>
+                    <Text style={[styles.cardTitle, { color: '#15803d', fontWeight: 'bold', fontSize: 11 }]}>Estado de Capacitación</Text>
+                  </View>
+                  <Text style={[styles.cardSubtitle, { color: '#16a34a', fontSize: 7, marginTop: 3 }]}>Potencial de desarrollo del equipo</Text>
+                </View>
+                <View style={{ gap: 8 }}>
+                  <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #bbf7d0', borderRadius: 6 }]}>
+                    <View style={[styles.row, { alignItems: 'center', justifyContent: 'space-between' }]}>
+                      <View style={[styles.cardTitleWithIcon, { flex: 0.7, gap: 6 }]}>
+                        <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <Path d="M22 10v6M2 10l10-5 10 5-10 5z" stroke="#16a34a" strokeWidth="1.5" fill="none"/>
+                        </Svg>
+                        <Text style={{ fontSize: 8, color: '#4b5563' }}>Capacitación formal de IA:</Text>
+                      </View>
+                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#15803d' }}>{getSingleValue(stats, 'pctFormalTraining', 0)}%</Text>
                     </View>
-                    <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#15803d' }}>{getSingleValue(stats, 'avgCuriosity', 1)}/5</Text>
+                  </View>
+                  <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #bbf7d0', borderRadius: 6 }]}>
+                    <View style={[styles.row, { alignItems: 'center', justifyContent: 'space-between' }]}>
+                      <View style={[styles.cardTitleWithIcon, { flex: 0.7, gap: 6 }]}>
+                        <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <Path d="M9 11l3 3L22 4" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                          <Path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="#16a34a" strokeWidth="2" fill="none"/>
+                        </Svg>
+                        <Text style={{ fontSize: 8, color: '#4b5563' }}>Confianza en resultados IA:</Text>
+                      </View>
+                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#15803d' }}>{getSingleValue(stats, 'avgConfidence', 1)}/5</Text>
+                    </View>
+                  </View>
+                  <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #bbf7d0', borderRadius: 6 }]}>
+                    <View style={[styles.row, { alignItems: 'center', justifyContent: 'space-between' }]}>
+                      <View style={[styles.cardTitleWithIcon, { flex: 0.7, gap: 6 }]}>
+                        <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <Circle cx="12" cy="6" r="4" stroke="#F5B614" strokeWidth="1.5" fill="none"/>
+                          <Path d="M20 21a8 8 0 10-16 0" stroke="#F5B614" strokeWidth="2" fill="none"/>
+                        </Svg>
+                        <Text style={{ fontSize: 8, color: '#4b5563' }}>Curiosidad por explorar IA:</Text>
+                      </View>
+                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#15803d' }}>{getSingleValue(stats, 'avgCuriosity', 1)}/5</Text>
+                    </View>
                   </View>
                 </View>
               </View>
             </View>
           </View>
+          
+          {/* Blur overlay for Knowledge Assessment section */}
+          {isBlurred && (
+            <View style={[styles.blurOverlay, { 
+              top: 0, 
+              left: 0, 
+              right: 0, 
+              bottom: 0,
+              width: '100%',
+              height: '100%'
+            }]}>
+              <Text style={styles.blurText}>Motivación de tu equipo</Text>
+              <Text style={styles.blurSubtext}>Desbloquea el análisis completo</Text>
+            </View>
+          )}
         </View>
       </Page>
 
@@ -754,8 +795,12 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats }) => {
             </Text>
           </View>
 
-        {/* Charts Section - Data Visualizations */}
-        <View style={styles.section} wrap={false}>
+
+
+        {/* Container for blurred content on second page */}
+        <View style={{ position: 'relative', flex: 1 }}>
+          {/* Charts Section - Data Visualizations */}
+          <View style={styles.section} wrap={false}>
           <View style={{ flexDirection: 'row', gap: 12 }}>
             {/* Skills vs Industry */}
             <View style={[styles.card, styles.cardBordered, { flex: 1, borderColor: '#9333ea' }]}>
@@ -1059,6 +1104,21 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats }) => {
             Este reporte contiene información propietaria y confidencial. Prohibida su distribución sin autorización.
           </Text>
         </View>
+
+        {/* Blur overlay for second page */}
+        {isBlurred && (
+          <View style={[styles.blurOverlay, { 
+            top: 0, 
+            left: 0, 
+            right: 0, 
+            bottom: 40,
+            width: '100%'
+          }]}>
+            <Text style={styles.blurText}>Análisis Avanzado</Text>
+            <Text style={styles.blurSubtext}>Comparativas vs industria y métricas detalladas</Text>
+          </View>
+        )}
+      </View>
       </Page>
 
       {/* Third Page - Program Offer */}
@@ -1077,60 +1137,67 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats }) => {
           </View>
         </View>
 
-        {/* Program Hero Section - Simplified */}
-        <View style={[styles.section, { marginBottom: 16 }]}>
-          <View style={[styles.card, styles.cardBordered, { borderColor: '#F5B614', borderWidth: 3, backgroundColor: '#FFFBF0', padding: 20 }]}>
-            {/* Alert Icon and Opening */}
-            <View style={{ marginBottom: 20 }}>
-              <Text style={{ fontSize: 13, fontWeight: 'bold', color: '#374151', lineHeight: 1.5 }}>
-                Ya conoces la brecha. La pregunta es: ¿qué harás al respecto?
-              </Text>
-            </View>
 
-            {/* Main Message */}
-            <View style={{ gap: 18 }}>
-              <Text style={{ fontSize: 11, color: '#374151', lineHeight: 1.6 }}>
-                Basado en tu nivel de madurez actual y el ROI perdido de{' '}
-                <Text style={{ fontWeight: 'bold', color: '#DC2626', fontSize: 12 }}>
-                  ${roi.opportunity.toLocaleString()}
-                </Text>
-                , tu equipo está sentado sobre una mina de oro de productividad sin explotar.
-              </Text>
 
-              <Text style={{ fontSize: 11, color: '#374151', lineHeight: 1.6 }}>
-                Por eso creamos el{' '}
-                <Text style={{ fontWeight: 'bold', color: '#F5B614', fontSize: 12 }}>
-                  Programa de Transformación IA
-                </Text>
-                {' '}— un sprint de 90 días para convertir equipos como el tuyo en usuarios expertos certificados de ChatGPT + Copilot.
-              </Text>
-
-              <Text style={{ fontSize: 11, color: '#374151', lineHeight: 1.6 }}>
-                Lo diseñamos para que{' '}
-                <Text style={{ fontWeight: 'bold', color: '#059669', fontSize: 12 }}>
-                  se pague solo en menos de 30 días
-                </Text>
-                {' '}— y garantizamos resultados, o seguimos trabajando contigo gratis.
-              </Text>
-
-              {/* Urgency Section */}
-              <View style={{ borderTopWidth: 1, borderTopColor: '#E5E7EB', paddingTop: 16, marginTop: 8 }}>
-                <Text style={{ fontSize: 11, color: '#374151', marginBottom: 16 }}>
-                  Solo 20 empresas por cohorte. El próximo grupo inicia en 15 días.
+        {/* Container for program content with blur overlay */}
+        <View style={{ position: 'relative', flex: 1 }}>
+          {/* Program Hero Section - Simplified */}
+          <View style={[styles.section, { marginBottom: 16 }]}>
+            <View style={[styles.card, styles.cardBordered, { borderColor: '#F5B614', borderWidth: 3, backgroundColor: '#FFFBF0', padding: 20 }]}>
+              {/* Alert Icon and Opening */}
+              <View style={{ marginBottom: 20 }}>
+                <Text style={{ fontSize: 13, fontWeight: 'bold', color: '#374151', lineHeight: 1.5 }}>
+                  Ya conoces la brecha. La pregunta es: ¿qué harás al respecto?
                 </Text>
               </View>
 
-              {/* CTA Button */}
-              <View style={{ backgroundColor: '#F5B614', borderRadius: 8, padding: 16, alignItems: 'center' }}>
-                <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'white', textAlign: 'center', marginBottom: 6 }}>
-                  Agenda tu llamada estratégica ahora
+              {/* Main Message */}
+              <View style={{ gap: 18 }}>
+                <Text style={{ fontSize: 11, color: '#374151', lineHeight: 1.6 }}>
+                  Basado en tu nivel de madurez actual y el ROI perdido de{' '}
+                  <Text style={{ fontWeight: 'bold', color: '#DC2626', fontSize: 12 }}>
+                    ${roi.opportunity.toLocaleString()}
+                  </Text>
+                  , tu equipo está sentado sobre una mina de oro de productividad sin explotar.
                 </Text>
-                <Text style={{ fontSize: 11, color: 'white', textAlign: 'center', lineHeight: 1.4 }}>
-                  y construyamos la ventaja competitiva IA de tu equipo, empezando hoy.
+
+                <Text style={{ fontSize: 11, color: '#374151', lineHeight: 1.6 }}>
+                  Por eso creamos el{' '}
+                  <Text style={{ fontWeight: 'bold', color: '#F5B614', fontSize: 12 }}>
+                    Programa de Transformación IA
+                  </Text>
+                  {' '}— un sprint de 90 días para convertir equipos como el tuyo en usuarios expertos certificados de ChatGPT + Copilot.
                 </Text>
+
+                <Text style={{ fontSize: 11, color: '#374151', lineHeight: 1.6 }}>
+                  Lo diseñamos para que{' '}
+                  <Text style={{ fontWeight: 'bold', color: '#059669', fontSize: 12 }}>
+                    se pague solo en menos de 30 días
+                  </Text>
+                  {' '}— y garantizamos resultados, o seguimos trabajando contigo gratis.
+                </Text>
+
+                {/* Urgency Section */}
+                <View style={{ borderTopWidth: 1, borderTopColor: '#E5E7EB', paddingTop: 16, marginTop: 8 }}>
+                  <Text style={{ fontSize: 11, color: '#374151', marginBottom: 16 }}>
+                    Solo 20 empresas por cohorte. El próximo grupo inicia en 15 días.
+                  </Text>
+                </View>
+
+                {/* CTA Button */}
+                <View style={{ backgroundColor: '#F5B614', borderRadius: 8, padding: 16, alignItems: 'center' }}>
+                  <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'white', textAlign: 'center', marginBottom: 6 }}>
+                    Agenda tu llamada estratégica ahora
+                  </Text>
+                  <Text style={{ fontSize: 11, color: 'white', textAlign: 'center', lineHeight: 1.4 }}>
+                    y construyamos la ventaja competitiva IA de tu equipo, empezando hoy.
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
+
+
         </View>
 
         {/* Footer for third page */}
@@ -1148,31 +1215,51 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats }) => {
 };
 
 // Export Button Component
-export const PDFExportButton: React.FC<PDFReportProps> = ({ companyName, stats }) => {
+export const PDFExportButton: React.FC<PDFReportProps> = ({ companyName, stats, isBlurred = false }) => {
+  const buttonStyle = isBlurred 
+    ? "inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-lg transition-colors duration-200"
+    : "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200";
+  
+  const fileName = isBlurred 
+    ? `diagnostico-ia-preview-${companyName.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`
+    : `diagnostico-ia-${companyName.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`;
+
   return (
     <PDFDownloadLink
-      document={<PDFReport companyName={companyName} stats={stats} />}
-      fileName={`diagnostico-ia-${companyName.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`}
-      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
+      document={<PDFReport companyName={companyName} stats={stats} isBlurred={isBlurred} />}
+      fileName={fileName}
+      className={buttonStyle}
     >
-      {({ loading }) =>
-        loading ? (
-          <>
-            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-            Generando PDF...
-          </>
-        ) : (
-          <>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Descargar PDF
-          </>
-        )
-      }
+              {({ loading }) =>
+          loading ? (
+            <>
+              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Generando PDF...
+            </>
+          ) : (
+            <>
+              {isBlurred ? (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  Vista Previa PDF
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Descargar PDF Completo
+                </>
+              )}
+            </>
+          )
+        }
     </PDFDownloadLink>
   );
 }; 
