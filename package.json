@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "vercel-check": "vercel --prod",
+    "vercel-push": "vercel --prod --confirm",
+    "typecheck": "tsc --noEmit",
+    "npm-build": "npm run build"
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.18",
