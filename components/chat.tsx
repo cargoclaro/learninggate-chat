@@ -215,7 +215,7 @@ export default function Page() {
         <>
           {/* Full screen background image - responsive positioning */}
           <div className="fixed inset-0 opacity-60 pointer-events-none z-0 hidden md:block" 
-               style={{ transform: 'translateX(20px)' }}>
+               style={{ transform: 'translateX(0px)' }}>
             <Image 
               src="/ctawomanmodel1.png" 
               alt="" 
