@@ -37,6 +37,21 @@ export default function Page() {
 
   // Reference to the textarea element for resizing
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  // State for responsive placeholder text
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Check if screen is mobile size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640); // sm breakpoint
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, append } = useChat({
     // Add throttling configuration to slow down streaming
@@ -65,9 +80,9 @@ export default function Page() {
     
     const userInfo = [];
     if (formData.name) userInfo.push(`mi nombre es ${formData.name}`);
-    if (formData.company) userInfo.push(`trabajo en ${formData.company}`);
-    if (formData.area) userInfo.push(`en el área de ${formData.area}`);
-    if (formData.age) userInfo.push(`tengo ${formData.age} años`);
+    if (formData.company) userInfo.push(`el nombre de la empresa es ${formData.company}`);
+    if (formData.area) userInfo.push(`en el área de trabajo es ${formData.area}`);
+    if (formData.age) userInfo.push(`tengo ${formData.age} años de edad`);
     
     if (userInfo.length > 0) {
       initialMessage = `Hola, ${userInfo.join(', ')}. Estoy listo para comenzar la evaluación de IA.`;
@@ -210,7 +225,7 @@ export default function Page() {
   }, [isLoading]);
 
   return (
-    <div className="flex flex-col min-h-screen font-manrope bg-white relative">
+    <div className="flex flex-col h-screen font-manrope bg-white relative overflow-hidden">
       {messages.length === 0 && !isLoading && showForm && (
         <>
           {/* Full screen background image - responsive positioning */}
@@ -343,10 +358,22 @@ export default function Page() {
       )}
 
       {(messages.length > 0 || isLoading) && (
-        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 
-                      relative z-10 flex flex-col min-h-screen">
-          <div className="flex-1 overflow-y-auto mb-4 space-y-3 sm:space-y-4 
-                        flex flex-col z-10 relative">
+        <>
+          {/* Background logo during chat */}
+          <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
+            <Image 
+              src="/logo.png" 
+              alt="" 
+              width={400} 
+              height={400} 
+              className="object-contain opacity-20 w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96" 
+            />
+          </div>
+          
+          <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 
+                        relative z-10 flex flex-col flex-1">
+            <div className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 
+                          flex flex-col z-10 relative min-h-0">
             
             {messages.map((message: Message) => (
               <div
@@ -381,11 +408,12 @@ export default function Page() {
             <div ref={messagesEndRef} />
           </div>
         </div>
+        </>
       )}
 
       {/* Display Evaluation Status Message - responsive */} 
       {evaluationStatus && (
-        <div className={`mx-4 sm:mx-6 lg:mx-auto lg:max-w-4xl text-center p-3 my-3 
+        <div className={`mx-4 sm:mx-6 lg:mx-auto lg:max-w-4xl text-center p-3 mb-3 
                        rounded-2xl shadow-sm text-sm z-20 relative transition-all duration-300 ${
           evaluationStatus.includes("éxito") || evaluationStatus.includes("completada") 
           ? "bg-[#FFF8E6] border-2 border-[#F5B614] text-gray-800"  
@@ -415,9 +443,10 @@ export default function Page() {
       {/* Chat input - responsive */}
       {!showForm && (
         <div className="border-t border-gray-100 pt-4 z-10 relative 
-                      px-4 sm:px-6 lg:px-8">
+                      px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6 lg:pb-8 
+                      bg-white">
           <div className="max-w-4xl mx-auto">
-            <form onSubmit={handleSubmit} className="relative flex items-end">
+            <form onSubmit={handleSubmit} className="relative flex items-center">
               <textarea
                 ref={textareaRef}
                 name="prompt"
@@ -430,7 +459,7 @@ export default function Page() {
                     handleSubmit(e);
                   }
                 }}
-                placeholder="Envía un mensaje... (Shift+Enter para nueva línea)"
+                placeholder={isMobile ? "Envía un mensaje..." : "Envía un mensaje... (Shift+Enter para nueva línea)"}
                 rows={1}
                 className="flex-1 rounded-2xl border border-gray-200 
                          px-4 sm:px-6 py-3 pr-12 sm:pr-14
@@ -453,7 +482,8 @@ export default function Page() {
               <button
                 type="submit"
                 disabled={!input.trim()}
-                className="absolute right-3 bottom-3 bg-[#F5B614] text-white rounded-full 
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 
+                         bg-[#F5B614] text-white rounded-full 
                          w-9 h-9 sm:w-10 sm:h-10 
                          flex items-center justify-center 
                          hover:bg-[#E5A604] active:bg-[#D49604] 
@@ -476,17 +506,19 @@ export default function Page() {
         </div>
       )}
 
-      {/* Bottom Logo - responsive sizing */}
-      <div className="flex justify-center mt-4 pb-4 sm:pb-6 lg:pb-8 relative z-20 
-                    px-4 sm:px-6 lg:px-8">
-        <Image 
-          src="/logo.png" 
-          alt="Logo" 
-          width={180} 
-          height={180} 
-          className="object-contain w-32 h-32 sm:w-40 sm:h-40 lg:w-60 lg:h-60" 
-        />
-      </div>
+      {/* Bottom Logo - only show when form is visible */}
+      {showForm && (
+        <div className="flex justify-center mt-4 pb-4 sm:pb-6 lg:pb-8 relative z-20 
+                      px-4 sm:px-6 lg:px-8">
+          <Image 
+            src="/logo.png" 
+            alt="Logo" 
+            width={180} 
+            height={180} 
+            className="object-contain w-32 h-32 sm:w-40 sm:h-40 lg:w-60 lg:h-60" 
+          />
+        </div>
+      )}
     </div>
   );
 }
