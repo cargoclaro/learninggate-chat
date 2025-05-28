@@ -216,7 +216,7 @@ export default function Page() {
           {/* Full screen background image with slight x-axis offset */}
           <div className="fixed inset-0 opacity-60 pointer-events-none z-0" style={{ transform: 'translateX(20px)' }}>
             <Image 
-              src="/ctawoman.png" 
+              src="/ctawomanmodel1.png" 
               alt="" 
               fill
               className="object-cover object-center"
