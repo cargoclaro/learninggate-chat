@@ -102,6 +102,18 @@ const styles = StyleSheet.create({
     borderColor: '#F5B614',
     backgroundColor: '#fefce8',
   },
+  cardOrange: {
+    borderColor: '#fed7aa',
+    backgroundColor: '#fff7ed',
+  },
+  cardPurple: {
+    borderColor: '#e9d5ff',
+    backgroundColor: '#faf5ff',
+  },
+  cardRed: {
+    borderColor: '#fecaca',
+    backgroundColor: '#fef2f2',
+  },
   cardLeftBorder: {
     borderLeftWidth: 4,
   },
@@ -335,6 +347,20 @@ const getSingleValue = (stats: StatKV[], key: string, decimals = 1) => {
   return found ? Number(found.value.toFixed(decimals)) : 0;
 };
 
+// Helper function to convert age scale to readable format
+/*
+const convertAgeScale = (ageScale: number) => {
+  switch(Math.round(ageScale)) {
+    case 1: return "18-25";
+    case 2: return "26-35";
+    case 3: return "36-45";
+    case 4: return "46-55";
+    case 5: return "56+";
+    default: return "N/A";
+  }
+};
+*/
+
 // Helper function to calculate AI maturity - matching dashboard logic
 const calculateAIMaturity = (stats: StatKV[]) => {
   const avgSkill = getSingleValue(stats, "avgPromptSkill");
@@ -342,7 +368,6 @@ const calculateAIMaturity = (stats: StatKV[]) => {
   const avgHours = getSingleValue(stats, "avgHoursIAWeek");
   const avgSaved = getSingleValue(stats, "avgMinutesSaved");
   const pctKnowLLM = getSingleValue(stats, "pctKnowLLM");
-  // const pctKnowPromptParts = getSingleValue(stats, "pctKnowPromptParts"); // Not used in maturity calculation
   const pctFormalTraining = getSingleValue(stats, "pctFormalTraining");
   
   const skillScore = (avgSkill / 5) * 20;
@@ -393,6 +418,10 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
     currentHoursPerWeek: getSingleValue(stats, 'roi.currentHoursPerWeek', 1),
     currentMinutesSavedPerDay: getSingleValue(stats, 'roi.currentMinutesSavedPerDay', 1)
   };
+
+  // Get age data
+  // const avgAgeScale = getSingleValue(stats, "avgAge", 1);
+  // const avgAgeRange = convertAgeScale(avgAgeScale);
 
   return (
     <Document>
@@ -454,7 +483,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
             </View>
             
             {/* ROI Card */}
-            <View style={[styles.card, styles.cardBordered, styles.cardGreen, styles.col]}>
+            <View style={[styles.card, styles.cardBordered, styles.cardOrange, styles.col]}>
               <View style={styles.cardHeader}>
                 <View style={styles.cardTitleWithIcon}>
                   <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
@@ -477,19 +506,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                   </Text>
                 </View>
                 <View style={{ borderTop: '1 solid #d1fae5', paddingTop: 6, marginTop: 3 }}>
-                  <View style={styles.row}>
-                    <Text style={{ fontSize: 8, fontWeight: 'bold' }}>Oportunidad adicional:</Text>
-                    <Text style={{ fontSize: 11, fontWeight: 'bold', color: '#dc2626' }}>
-                      ${roi.opportunity.toLocaleString()}
-                    </Text>
-                  </View>
-                </View>
-                <View style={{ borderTop: '1 solid #d1fae5', paddingTop: 6, marginTop: 3 }}>
-                  <Text style={{ fontSize: 6, color: '#6b7280', lineHeight: 1.3 }}>
-                    Uso actual: {roi.currentHoursPerWeek}h/semana, {roi.currentMinutesSavedPerDay} min/día ahorrados
-                  </Text>
-                  <Text style={{ fontSize: 6, color: '#6b7280', lineHeight: 1.3 }}>
-                    Basado en 30,000 MXN/mes por empleado y potencial de 2h/día con IA optimizada
+                  <Text style={{ fontSize: 6, color: '#6b7280' }}>Oportunidad adicional:</Text>
+                  <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#15803d' }}>
+                    ${roi.opportunity.toLocaleString()}
                   </Text>
                 </View>
               </View>
@@ -509,9 +528,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                   </Svg>
                   <Text style={[styles.cardTitle, { fontSize: 8 }]}>Empleados evaluados</Text>
                 </View>
-                <View style={[styles.badge, { backgroundColor: getSingleValue(stats, 'employeeCount', 0) >= 50 ? '#0F9D58' : getSingleValue(stats, 'employeeCount', 0) >= 35 ? '#F5B614' : '#DB4437', paddingHorizontal: 4, paddingVertical: 2, marginTop: 2 }]}>
+                <View style={[styles.badge, { backgroundColor: getSingleValue(stats, 'employeeCount', 0) >= 50 ? '#0F9D58' : '#DB4437', paddingHorizontal: 4, paddingVertical: 2, marginTop: 2 }]}>
                   <Text style={[styles.badgeText, { fontSize: 6 }]}>
-                    {getSingleValue(stats, 'employeeCount', 0) >= 50 ? 'Exc' : getSingleValue(stats, 'employeeCount', 0) >= 35 ? 'Bien' : 'Bajo'}
+                    {getSingleValue(stats, 'employeeCount', 0) >= 50 ? 'Exc' : 'Bajo'}
                   </Text>
                 </View>
               </View>
@@ -523,7 +542,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
             </View>
 
             {/* Horas IA */}
-            <View style={[styles.card, styles.cardLeftBorder, { width: '19%', minWidth: 90, borderLeftColor: getSingleValue(stats, 'avgHoursIAWeek', 1) >= 12 ? '#0F9D58' : getSingleValue(stats, 'avgHoursIAWeek', 1) >= 8.4 ? '#F5B614' : '#DB4437', padding: 10 }]}>
+            <View style={[styles.card, styles.cardLeftBorder, { width: '19%', minWidth: 90, borderLeftColor: getSingleValue(stats, 'avgHoursIAWeek', 1) >= 12 ? '#0F9D58' : '#DB4437', padding: 10 }]}>
               <View style={{ marginBottom: 6 }}>
                 <View style={styles.cardTitleWithIcon}>
                   <Svg width="8" height="8" viewBox="0 0 24 24" fill="none">
@@ -532,9 +551,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                   </Svg>
                   <Text style={[styles.cardTitle, { fontSize: 8 }]}>Horas IA/semana</Text>
                 </View>
-                <View style={[styles.badge, { backgroundColor: getSingleValue(stats, 'avgHoursIAWeek', 1) >= 12 ? '#0F9D58' : getSingleValue(stats, 'avgHoursIAWeek', 1) >= 8.4 ? '#F5B614' : '#DB4437', paddingHorizontal: 4, paddingVertical: 2, marginTop: 2 }]}>
+                <View style={[styles.badge, { backgroundColor: getSingleValue(stats, 'avgHoursIAWeek', 1) >= 12 ? '#0F9D58' : '#DB4437', paddingHorizontal: 4, paddingVertical: 2, marginTop: 2 }]}>
                   <Text style={[styles.badgeText, { fontSize: 6 }]}>
-                    {getSingleValue(stats, 'avgHoursIAWeek', 1) >= 12 ? 'Exc' : getSingleValue(stats, 'avgHoursIAWeek', 1) >= 8.4 ? 'Bien' : 'Bajo'}
+                    {getSingleValue(stats, 'avgHoursIAWeek', 1) >= 12 ? 'Exc' : 'Bajo'}
                   </Text>
                 </View>
               </View>
@@ -546,7 +565,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
             </View>
 
             {/* Minutos ahorrados */}
-            <View style={[styles.card, styles.cardLeftBorder, { width: '19%', minWidth: 90, borderLeftColor: getSingleValue(stats, 'avgMinutesSaved', 1) >= 120 ? '#0F9D58' : getSingleValue(stats, 'avgMinutesSaved', 1) >= 84 ? '#F5B614' : '#DB4437', padding: 10 }]}>
+            <View style={[styles.card, styles.cardLeftBorder, { width: '19%', minWidth: 90, borderLeftColor: getSingleValue(stats, 'avgMinutesSaved', 1) >= 120 ? '#0F9D58' : '#DB4437', padding: 10 }]}>
               <View style={{ marginBottom: 6 }}>
                 <View style={styles.cardTitleWithIcon}>
                   <Svg width="8" height="8" viewBox="0 0 24 24" fill="none">
@@ -554,9 +573,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                   </Svg>
                   <Text style={[styles.cardTitle, { fontSize: 8 }]}>Minutos ahorrados/día</Text>
                 </View>
-                <View style={[styles.badge, { backgroundColor: getSingleValue(stats, 'avgMinutesSaved', 1) >= 120 ? '#0F9D58' : getSingleValue(stats, 'avgMinutesSaved', 1) >= 84 ? '#F5B614' : '#DB4437', paddingHorizontal: 4, paddingVertical: 2, marginTop: 2 }]}>
+                <View style={[styles.badge, { backgroundColor: getSingleValue(stats, 'avgMinutesSaved', 1) >= 120 ? '#0F9D58' : '#DB4437', paddingHorizontal: 4, paddingVertical: 2, marginTop: 2 }]}>
                   <Text style={[styles.badgeText, { fontSize: 6 }]}>
-                    {getSingleValue(stats, 'avgMinutesSaved', 1) >= 120 ? 'Exc' : getSingleValue(stats, 'avgMinutesSaved', 1) >= 84 ? 'Bien' : 'Bajo'}
+                    {getSingleValue(stats, 'avgMinutesSaved', 1) >= 120 ? 'Exc' : 'Bajo'}
                   </Text>
                 </View>
               </View>
@@ -568,7 +587,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
             </View>
 
             {/* Skill prompting */}
-            <View style={[styles.card, styles.cardLeftBorder, { width: '19%', minWidth: 90, borderLeftColor: getSingleValue(stats, 'avgPromptSkill', 1) >= 5 ? '#0F9D58' : getSingleValue(stats, 'avgPromptSkill', 1) >= 3.5 ? '#F5B614' : '#DB4437', padding: 10 }]}>
+            <View style={[styles.card, styles.cardLeftBorder, { width: '19%', minWidth: 90, borderLeftColor: getSingleValue(stats, 'avgPromptSkill', 1) >= 5 ? '#0F9D58' : '#DB4437', padding: 10 }]}>
               <View style={{ marginBottom: 6 }}>
                 <View style={styles.cardTitleWithIcon}>
                   <Svg width="8" height="8" viewBox="0 0 24 24" fill="none">
@@ -577,9 +596,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                   </Svg>
                   <Text style={[styles.cardTitle, { fontSize: 8 }]}>Skill prompting</Text>
                 </View>
-                <View style={[styles.badge, { backgroundColor: getSingleValue(stats, 'avgPromptSkill', 1) >= 5 ? '#0F9D58' : getSingleValue(stats, 'avgPromptSkill', 1) >= 3.5 ? '#F5B614' : '#DB4437', paddingHorizontal: 4, paddingVertical: 2, marginTop: 2 }]}>
+                <View style={[styles.badge, { backgroundColor: getSingleValue(stats, 'avgPromptSkill', 1) >= 5 ? '#0F9D58' : '#DB4437', paddingHorizontal: 4, paddingVertical: 2, marginTop: 2 }]}>
                   <Text style={[styles.badgeText, { fontSize: 6 }]}>
-                    {getSingleValue(stats, 'avgPromptSkill', 1) >= 5 ? 'Exc' : getSingleValue(stats, 'avgPromptSkill', 1) >= 3.5 ? 'Bien' : 'Bajo'}
+                    {getSingleValue(stats, 'avgPromptSkill', 1) >= 5 ? 'Exc' : 'Bajo'}
                   </Text>
                 </View>
               </View>
@@ -591,7 +610,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
             </View>
 
             {/* % Conoce LLMs */}
-            <View style={[styles.card, styles.cardLeftBorder, { width: '19%', minWidth: 90, borderLeftColor: getSingleValue(stats, 'pctKnowLLM', 0) >= 100 ? '#0F9D58' : getSingleValue(stats, 'pctKnowLLM', 0) >= 70 ? '#F5B614' : '#DB4437', padding: 10 }]}>
+            <View style={[styles.card, styles.cardLeftBorder, { width: '19%', minWidth: 90, borderLeftColor: getSingleValue(stats, 'pctKnowLLM', 0) >= 100 ? '#0F9D58' : '#DB4437', padding: 10 }]}>
               <View style={{ marginBottom: 6 }}>
                 <View style={styles.cardTitleWithIcon}>
                   <Svg width="8" height="8" viewBox="0 0 24 24" fill="none">
@@ -599,9 +618,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                   </Svg>
                   <Text style={[styles.cardTitle, { fontSize: 8 }]}>% Conoce LLMs</Text>
                 </View>
-                <View style={[styles.badge, { backgroundColor: getSingleValue(stats, 'pctKnowLLM', 0) >= 100 ? '#0F9D58' : getSingleValue(stats, 'pctKnowLLM', 0) >= 70 ? '#F5B614' : '#DB4437', paddingHorizontal: 4, paddingVertical: 2, marginTop: 2 }]}>
+                <View style={[styles.badge, { backgroundColor: getSingleValue(stats, 'pctKnowLLM', 0) >= 100 ? '#0F9D58' : '#DB4437', paddingHorizontal: 4, paddingVertical: 2, marginTop: 2 }]}>
                   <Text style={[styles.badgeText, { fontSize: 6 }]}>
-                    {getSingleValue(stats, 'pctKnowLLM', 0) >= 100 ? 'Exc' : getSingleValue(stats, 'pctKnowLLM', 0) >= 70 ? 'Bien' : 'Bajo'}
+                    {getSingleValue(stats, 'pctKnowLLM', 0) >= 100 ? 'Exc' : 'Bajo'}
                   </Text>
                 </View>
               </View>
@@ -613,8 +632,6 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
             </View>
           </View>
         </View>
-
-
 
         {/* Knowledge Assessment Section - Container for blur overlay */}
         <View style={{ position: 'relative' }}>
@@ -777,8 +794,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
               left: 0, 
               right: 0, 
               bottom: 0,
-              width: '100%',
-              height: '100%'
+              width: '100%'
             }]}>
               <Text style={styles.blurText}>Motivación de tu equipo</Text>
               <Text style={styles.blurSubtext}>Desbloquea el análisis completo</Text>
@@ -787,342 +803,601 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
         </View>
       </Page>
 
-      {/* Second Page - Company vs Industry - Data Visualizations */}
-        <Page size="A4" style={styles.page}>
-          {/* Page Title */}
-          <View style={{ marginBottom: 20, paddingBottom: 12, borderBottomWidth: 2, borderBottomColor: '#F5B614' }}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#374151', textAlign: 'center' }}>
-              {companyName} vs Industria
-            </Text>
-          </View>
-
-
+      {/* Second Page - Company vs Industry and New Metrics */}
+      <Page size="A4" style={styles.page}>
+        {/* Page Title */}
+        <View style={{ marginBottom: 20, paddingBottom: 12, borderBottomWidth: 2, borderBottomColor: '#F5B614' }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#374151', textAlign: 'center' }}>
+            {companyName} vs Industria
+          </Text>
+        </View>
 
         {/* Container for blurred content on second page */}
         <View style={{ position: 'relative', flex: 1 }}>
-          {/* Charts Section - Data Visualizations */}
-          <View style={styles.section} wrap={false}>
-          <View style={{ flexDirection: 'row', gap: 12 }}>
-            {/* Skills vs Industry */}
-            <View style={[styles.card, styles.cardBordered, { flex: 1, borderColor: '#9333ea' }]}>
-              <View style={styles.cardHeader}>
-                <View style={styles.cardTitleWithIcon}>
-                  <Svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <Circle cx="12" cy="12" r="10" stroke="#9333ea" strokeWidth="1.5" fill="none"/>
-                    <Path d="M12 6V12L16 14" stroke="#9333ea" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-                  </Svg>
-                  <Text style={[styles.cardTitle, { color: '#7c3aed', fontWeight: 'bold' }]}>Skills vs Industria</Text>
-                </View>
-                <Text style={[styles.cardSubtitle, { color: '#9333ea' }]}>Comparación con benchmarks del mercado</Text>
-              </View>
-              
-              {/* Radar Chart using overlapping triangles */}
-              <View style={{ alignItems: 'center', marginTop: 20 }}>
-                <Svg width="180" height="180" viewBox="0 0 200 200">
-                  {/* Grid circles */}
-                  {[20, 40, 60, 80, 100].map((radius) => (
-                    <Circle
-                      key={radius}
-                      cx="100"
-                      cy="100"
-                      r={radius}
-                      fill="none"
-                      stroke="#e5e7eb"
-                      strokeWidth="1"
-                    />
-                  ))}
-                  
-                  {/* Grid lines */}
-                  {[0, 120, 240].map((angle) => {
-                    const rad = (angle * Math.PI) / 180;
-                    const x = 100 + 100 * Math.cos(rad - Math.PI/2);
-                    const y = 100 + 100 * Math.sin(rad - Math.PI/2);
-                    return (
-                      <Path
-                        key={angle}
-                        d={`M 100 100 L ${x} ${y}`}
-                        stroke="#e5e7eb"
-                        strokeWidth="1"
-                        fill="none"
-                      />
-                    );
-                  })}
-                  
-                  {/* Industry benchmark triangle (background) */}
-                  <Path
-                    d={(() => {
-                      const industryValues = [3.2, 3.5, 3.8]; // Industry averages for skill, confidence, curiosity
-                      const points = industryValues.map((value, i) => {
-                        const angle = (i * 120 - 90) * Math.PI / 180;
-                        const radius = (value / 5) * 100;
-                        const x = 100 + radius * Math.cos(angle);
-                        const y = 100 + radius * Math.sin(angle);
-                        return `${x},${y}`;
-                      });
-                      return `M ${points.join(' L ')} Z`;
-                    })()}
-                    fill="#ef4444"
-                    fillOpacity="0.1"
-                    stroke="#ef4444"
-                    strokeWidth="2"
-                    strokeDasharray="5,5"
-                  />
-                  
-                  {/* Company values triangle (foreground) */}
-                  <Path
-                    d={(() => {
-                      const companyValues = [
-                        getSingleValue(stats, 'avgPromptSkill', 2),
-                        getSingleValue(stats, 'avgConfidence', 2),
-                        getSingleValue(stats, 'avgCuriosity', 2)
-                      ];
-                      const points = companyValues.map((value, i) => {
-                        const angle = (i * 120 - 90) * Math.PI / 180;
-                        const radius = (value / 5) * 100;
-                        const x = 100 + radius * Math.cos(angle);
-                        const y = 100 + radius * Math.sin(angle);
-                        return `${x},${y}`;
-                      });
-                      return `M ${points.join(' L ')} Z`;
-                    })()}
-                    fill="#3b82f6"
-                    fillOpacity="0.3"
-                    stroke="#3b82f6"
-                    strokeWidth="3"
-                  />
-                  
-                  {/* Labels */}
-                  <Text x="100" y="10" textAnchor="middle" style={{ fontSize: 10, fill: '#374151' }}>
-                    Habilidad prompts
-                  </Text>
-                  <Text x="180" y="180" textAnchor="middle" style={{ fontSize: 10, fill: '#374151' }}>
-                    Confianza IA
-                  </Text>
-                  <Text x="20" y="180" textAnchor="middle" style={{ fontSize: 10, fill: '#374151' }}>
-                    Curiosidad IA
-                  </Text>
-                  
-                  {/* Value labels */}
-                  <Text x="100" y="30" textAnchor="middle" style={{ fontSize: 9, fill: '#3b82f6', fontWeight: 'bold' }}>
-                    {getSingleValue(stats, 'avgPromptSkill', 1)}/5
-                  </Text>
-                  <Text x="160" y="160" textAnchor="middle" style={{ fontSize: 9, fill: '#3b82f6', fontWeight: 'bold' }}>
-                    {getSingleValue(stats, 'avgConfidence', 1)}/5
-                  </Text>
-                  <Text x="40" y="160" textAnchor="middle" style={{ fontSize: 9, fill: '#3b82f6', fontWeight: 'bold' }}>
-                    {getSingleValue(stats, 'avgCuriosity', 1)}/5
-                  </Text>
-                </Svg>
-                
-                {/* Legend */}
-                <View style={{ flexDirection: 'row', gap: 20, marginTop: 10 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <View style={{ width: 20, height: 3, backgroundColor: '#3b82f6' }} />
-                    <Text style={{ fontSize: 8, color: '#374151' }}>Tu empresa</Text>
+          {/* New Diagnostic Metrics Section */}
+          <View style={styles.section}>
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              {/* Autonomy and Skills */}
+              <View style={[styles.card, styles.cardBordered, styles.cardPurple, { flex: 1, padding: 12 }]}>
+                <View style={{ marginBottom: 10 }}>
+                  <View style={[styles.cardTitleWithIcon, { gap: 6 }]}>
+                    <Svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                      <Path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#9333ea" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                    </Svg>
+                    <Text style={[styles.cardTitle, { color: '#7c3aed', fontWeight: 'bold', fontSize: 11 }]}>Autonomía y Habilidades Prácticas</Text>
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <View style={{ width: 20, height: 3, backgroundColor: '#ef4444', opacity: 0.5 }} />
-                    <Text style={{ fontSize: 8, color: '#374151' }}>Promedio industria</Text>
+                  <Text style={[styles.cardSubtitle, { color: '#9333ea', fontSize: 7 }]}>Nivel de independencia en el uso de IA</Text>
+                </View>
+                <View style={{ gap: 8 }}>
+                  <View style={[styles.card, { backgroundColor: 'white', padding: 10, border: '1 solid #e9d5ff', borderRadius: 6 }]}>
+                    <View style={[styles.row, { alignItems: 'center' }]}>
+                      <View style={[styles.cardTitleWithIcon, { flex: 1, gap: 6 }]}>
+                        <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <Circle cx="12" cy="12" r="10" stroke="#9333ea" strokeWidth="1.5" fill="none"/>
+                          <Circle cx="12" cy="12" r="4" stroke="#9333ea" strokeWidth="1.5" fill="none"/>
+                        </Svg>
+                        <View>
+                          <Text style={{ fontSize: 8, color: '#4b5563' }}>Nivel de autonomía:</Text>
+                          <Text style={{ fontSize: 6, color: '#9ca3af' }}>1=Necesita ayuda, 5=Totalmente autónomo</Text>
+                        </View>
+                      </View>
+                      <View style={{ alignItems: 'flex-end' }}>
+                        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#7c3aed' }}>{getSingleValue(stats, 'avgAutonomyLevel', 1).toFixed(1)}</Text>
+                        <Text style={{ fontSize: 10, color: '#9333ea' }}>/5</Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={[styles.card, { backgroundColor: 'white', padding: 10, border: '1 solid #e9d5ff', borderRadius: 6 }]}>
+                    <View style={[styles.row, { alignItems: 'center' }]}>
+                      <View style={[styles.cardTitleWithIcon, { flex: 1, gap: 6 }]}>
+                        <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <Path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#9333ea" strokeWidth="1.5" fill="none"/>
+                        </Svg>
+                        <View>
+                          <Text style={{ fontSize: 8, color: '#4b5563' }}>Calidad de prompts:</Text>
+                          <Text style={{ fontSize: 6, color: '#9ca3af' }}>1=Muy básico, 5=Excelente</Text>
+                        </View>
+                      </View>
+                      <View style={{ alignItems: 'flex-end' }}>
+                        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#7c3aed' }}>{getSingleValue(stats, 'avgPromptQuality', 1).toFixed(1)}</Text>
+                        <Text style={{ fontSize: 10, color: '#9333ea' }}>/5</Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={[styles.card, { backgroundColor: '#faf5ff', padding: 8, borderRadius: 6 }]}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                      <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                        <Path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="#9333ea" strokeWidth="1.5" fill="none"/>
+                      </Svg>
+                      <Text style={{ fontSize: 8, color: '#7c3aed', fontWeight: 'bold' }}>Empleados con alta autonomía (4-5):</Text>
+                    </View>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#7c3aed', marginTop: 4 }}>{getSingleValue(stats, 'pctHighAutonomy', 0)}%</Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* Impact and Opportunities */}
+              <View style={[styles.card, styles.cardBordered, styles.cardOrange, { flex: 1, padding: 12 }]}>
+                <View style={{ marginBottom: 10 }}>
+                  <View style={[styles.cardTitleWithIcon, { gap: 6 }]}>
+                    <Svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                      <Path d="M2 20h20L12 4z" stroke="#ea580c" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
+                    </Svg>
+                    <Text style={[styles.cardTitle, { color: '#ea580c', fontWeight: 'bold', fontSize: 11 }]}>Impacto y Oportunidades</Text>
+                  </View>
+                  <Text style={[styles.cardSubtitle, { color: '#f97316', fontSize: 7 }]}>Resultados actuales y potencial de mejora</Text>
+                </View>
+                <View style={{ gap: 8 }}>
+                  <View style={[styles.card, { backgroundColor: 'white', padding: 10, border: '1 solid #fed7aa', borderRadius: 6 }]}>
+                    <View style={[styles.row, { alignItems: 'center' }]}>
+                      <View style={[styles.cardTitleWithIcon, { flex: 1, gap: 6 }]}>
+                        <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <Rect x="3" y="11" width="18" height="10" rx="2" stroke="#ea580c" strokeWidth="1.5" fill="none"/>
+                          <Path d="M8 7V11M12 5V11M16 9V11" stroke="#ea580c" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                        </Svg>
+                        <View>
+                          <Text style={{ fontSize: 8, color: '#4b5563' }}>Impacto en KPIs:</Text>
+                          <Text style={{ fontSize: 6, color: '#9ca3af' }}>1=Sin impacto, 5=Muy alto</Text>
+                        </View>
+                      </View>
+                      <View style={{ alignItems: 'flex-end' }}>
+                        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#ea580c' }}>{getSingleValue(stats, 'avgKPIImpact', 1).toFixed(1)}</Text>
+                        <Text style={{ fontSize: 10, color: '#f97316' }}>/5</Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={[styles.card, { backgroundColor: 'white', padding: 10, border: '1 solid #fed7aa', borderRadius: 6 }]}>
+                    <View style={[styles.row, { alignItems: 'center' }]}>
+                      <View style={[styles.cardTitleWithIcon, { flex: 1, gap: 6 }]}>
+                        <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <Circle cx="12" cy="12" r="10" stroke="#ea580c" strokeWidth="1.5" fill="none"/>
+                          <Path d="M12 7v5l3 3" stroke="#ea580c" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                        </Svg>
+                        <View>
+                          <Text style={{ fontSize: 8, color: '#4b5563' }}>Oportunidad de mejora:</Text>
+                          <Text style={{ fontSize: 6, color: '#9ca3af' }}>1=Baja, 5=Muy alta</Text>
+                        </View>
+                      </View>
+                      <View style={{ alignItems: 'flex-end' }}>
+                        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#ea580c' }}>{getSingleValue(stats, 'avgImprovementOpportunity', 1).toFixed(1)}</Text>
+                        <Text style={{ fontSize: 10, color: '#f97316' }}>/5</Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={[styles.card, { backgroundColor: '#fff7ed', padding: 8, borderRadius: 6 }]}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                      <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                        <Path d="M9 11l3 3L22 4" stroke="#ea580c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                      </Svg>
+                      <Text style={{ fontSize: 8, color: '#ea580c', fontWeight: 'bold' }}>Empleados con alto impacto en KPIs (4-5):</Text>
+                    </View>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#ea580c', marginTop: 4 }}>{getSingleValue(stats, 'pctHighKPIImpact', 0)}%</Text>
                   </View>
                 </View>
               </View>
             </View>
+          </View>
 
-            {/* Device Distribution - Fixed */}
-            <View style={[styles.card, { flex: 1 }]}>
+          {/* Organizational Barriers Analysis */}
+          <View style={styles.section}>
+            <View style={[styles.card, styles.cardBordered, styles.cardRed]}>
+              <View style={{ marginBottom: 10 }}>
+                <View style={[styles.cardTitleWithIcon, { gap: 6 }]}>
+                  <Svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                    <Path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#dc2626" strokeWidth="1.5" fill="none"/>
+                    <Path d="M12 9v4M12 17h.01" stroke="#dc2626" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                  </Svg>
+                  <Text style={[styles.cardTitle, { color: '#dc2626', fontWeight: 'bold', fontSize: 11 }]}>Análisis de Barreras Organizacionales</Text>
+                </View>
+                <Text style={[styles.cardSubtitle, { color: '#ef4444', fontSize: 7 }]}>Obstáculos internos para la adopción de IA</Text>
+              </View>
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <View style={[styles.card, { backgroundColor: 'white', padding: 10, flex: 1 }]}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                    <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                      <Path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#dc2626" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                    </Svg>
+                    <Text style={{ fontSize: 8, fontWeight: 'bold' }}>Nivel de barreras:</Text>
+                  </View>
+                  <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#dc2626' }}>
+                    {getSingleValue(stats, 'avgOrganizationalBarriers', 1).toFixed(1)}/5
+                  </Text>
+                  <Text style={{ fontSize: 6, color: '#9ca3af' }}>1=Ninguna, 5=Extremas</Text>
+                </View>
+                <View style={[styles.card, { backgroundColor: 'white', padding: 10, flex: 1 }]}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                    <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                      <Path d="M9 11l3 3L22 4" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                    </Svg>
+                    <Text style={{ fontSize: 8, fontWeight: 'bold' }}>Empleados sin barreras:</Text>
+                  </View>
+                  <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#16a34a' }}>
+                    {getSingleValue(stats, 'pctLowBarriers', 0)}%
+                  </Text>
+                  <Text style={{ fontSize: 6, color: '#9ca3af' }}>Puntuación 1-2 en barreras</Text>
+                </View>
+                <View style={[styles.card, { backgroundColor: 'white', padding: 10, flex: 1 }]}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                    <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                      <Path d="M2 20h20L12 4z" stroke="#3b82f6" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
+                    </Svg>
+                    <Text style={{ fontSize: 8, fontWeight: 'bold' }}>Potencial de mejora:</Text>
+                  </View>
+                  <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#3b82f6' }}>
+                    {getSingleValue(stats, 'pctHighImprovementOpportunity', 0)}%
+                  </Text>
+                  <Text style={{ fontSize: 6, color: '#9ca3af' }}>Alta oportunidad (4-5)</Text>
+                </View>
+              </View>
+              
+              {/* Barriers Interpretation */}
+              <View style={{ marginTop: 10, padding: 10, backgroundColor: '#fef3c7', border: '1 solid #fde68a', borderRadius: 6 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                  <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                    <Circle cx="12" cy="12" r="10" stroke="#f59e0b" strokeWidth="1.5" fill="none"/>
+                    <Path d="M12 7v5l3 3" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                  </Svg>
+                  <Text style={{ fontSize: 9, color: '#d97706', fontWeight: 'bold' }}>Interpretación de Barreras</Text>
+                </View>
+                <Text style={{ fontSize: 8, color: '#92400e', lineHeight: 1.4 }}>
+                  {(() => {
+                    const barrierLevel = getSingleValue(stats, "avgOrganizationalBarriers", 1);
+                    if (barrierLevel <= 2) {
+                      return "🟢 Excelente: Pocas barreras organizacionales. El equipo tiene libertad para experimentar con IA.";
+                    } else if (barrierLevel <= 3) {
+                      return "🟡 Moderado: Algunas barreras presentes. Se recomienda trabajar en políticas y comunicación interna.";
+                    } else if (barrierLevel <= 4) {
+                      return "🟠 Alto: Barreras significativas. Necesario involucrar liderazgo y crear estrategia de cambio.";
+                    } else {
+                      return "🔴 Crítico: Barreras extremas. Requiere intervención ejecutiva y plan de transformación cultural.";
+                    }
+                  })()}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Charts Section - Data Visualizations */}
+          <View style={styles.section} wrap={false}>
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              {/* Skills vs Industry - Updated with 6 metrics */}
+              <View style={[styles.card, styles.cardBordered, { flex: 1, borderColor: '#9333ea' }]}>
+                <View style={styles.cardHeader}>
+                  <View style={styles.cardTitleWithIcon}>
+                    <Svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                      <Circle cx="12" cy="12" r="10" stroke="#9333ea" strokeWidth="1.5" fill="none"/>
+                      <Path d="M12 6V12L16 14" stroke="#9333ea" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                    </Svg>
+                    <Text style={[styles.cardTitle, { color: '#7c3aed', fontWeight: 'bold' }]}>Skills vs Industria</Text>
+                  </View>
+                  <Text style={[styles.cardSubtitle, { color: '#9333ea' }]}>Comparación con benchmarks del mercado</Text>
+                </View>
+                
+                {/* Radar Chart using hexagon for 6 points */}
+                <View style={{ alignItems: 'center', marginTop: 20 }}>
+                  <Svg width="180" height="180" viewBox="0 0 200 200">
+                    {/* Grid circles */}
+                    {[20, 40, 60, 80, 100].map((radius) => (
+                      <Circle
+                        key={radius}
+                        cx="100"
+                        cy="100"
+                        r={radius}
+                        fill="none"
+                        stroke="#e5e7eb"
+                        strokeWidth="1"
+                      />
+                    ))}
+                    
+                    {/* Grid lines for 6 points */}
+                    {[0, 60, 120, 180, 240, 300].map((angle) => {
+                      const rad = (angle * Math.PI) / 180;
+                      const x = 100 + 100 * Math.cos(rad - Math.PI/2);
+                      const y = 100 + 100 * Math.sin(rad - Math.PI/2);
+                      return (
+                        <Path
+                          key={angle}
+                          d={`M 100 100 L ${x} ${y}`}
+                          stroke="#e5e7eb"
+                          strokeWidth="1"
+                          fill="none"
+                        />
+                      );
+                    })}
+                    
+                    {/* Industry benchmark hexagon (background) */}
+                    <Path
+                      d={(() => {
+                        const industryValues = [3.2, 3.5, 3.8, 3.0, 2.8, 3.1]; // Industry averages
+                        const points = industryValues.map((value, i) => {
+                          const angle = (i * 60 - 90) * Math.PI / 180;
+                          const radius = (value / 5) * 100;
+                          const x = 100 + radius * Math.cos(angle);
+                          const y = 100 + radius * Math.sin(angle);
+                          return `${x},${y}`;
+                        });
+                        return `M ${points.join(' L ')} Z`;
+                      })()}
+                      fill="#ef4444"
+                      fillOpacity="0.1"
+                      stroke="#ef4444"
+                      strokeWidth="2"
+                      strokeDasharray="5,5"
+                    />
+                    
+                    {/* Company values hexagon (foreground) */}
+                    <Path
+                      d={(() => {
+                        const companyValues = [
+                          getSingleValue(stats, 'avgPromptSkill', 2),
+                          getSingleValue(stats, 'avgConfidence', 2),
+                          getSingleValue(stats, 'avgCuriosity', 2),
+                          getSingleValue(stats, 'avgAutonomyLevel', 2),
+                          getSingleValue(stats, 'avgKPIImpact', 2),
+                          getSingleValue(stats, 'avgPromptQuality', 2)
+                        ];
+                        const points = companyValues.map((value, i) => {
+                          const angle = (i * 60 - 90) * Math.PI / 180;
+                          const radius = (value / 5) * 100;
+                          const x = 100 + radius * Math.cos(angle);
+                          const y = 100 + radius * Math.sin(angle);
+                          return `${x},${y}`;
+                        });
+                        return `M ${points.join(' L ')} Z`;
+                      })()}
+                      fill="#3b82f6"
+                      fillOpacity="0.3"
+                      stroke="#3b82f6"
+                      strokeWidth="3"
+                    />
+                    
+                    {/* Labels for 6 metrics */}
+                    <Text x="100" y="10" textAnchor="middle" style={{ fontSize: 9, fill: '#374151' }}>
+                      Habilidad prompts
+                    </Text>
+                    <Text x="180" y="60" textAnchor="middle" style={{ fontSize: 9, fill: '#374151' }}>
+                      Confianza IA
+                    </Text>
+                    <Text x="180" y="140" textAnchor="middle" style={{ fontSize: 9, fill: '#374151' }}>
+                      Curiosidad IA
+                    </Text>
+                    <Text x="100" y="190" textAnchor="middle" style={{ fontSize: 9, fill: '#374151' }}>
+                      Autonomía IA
+                    </Text>
+                    <Text x="20" y="140" textAnchor="middle" style={{ fontSize: 9, fill: '#374151' }}>
+                      Impacto KPIs
+                    </Text>
+                    <Text x="20" y="60" textAnchor="middle" style={{ fontSize: 9, fill: '#374151' }}>
+                      Calidad prompts
+                    </Text>
+                  </Svg>
+                  
+                  {/* Legend */}
+                  <View style={{ flexDirection: 'row', gap: 20, marginTop: 10 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                      <View style={{ width: 20, height: 3, backgroundColor: '#3b82f6' }} />
+                      <Text style={{ fontSize: 8, color: '#374151' }}>Tu empresa</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                      <View style={{ width: 20, height: 3, backgroundColor: '#ef4444', opacity: 0.5 }} />
+                      <Text style={{ fontSize: 8, color: '#374151' }}>Promedio industria</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+              {/* Device Distribution - Fixed */}
+              <View style={[styles.card, { flex: 1 }]}>
+                <View style={styles.cardHeader}>
+                  <View style={styles.cardTitleWithIcon}>
+                    <Svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                      <Path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#6b7280" strokeWidth="1.5" fill="none"/>
+                    </Svg>
+                    <Text style={styles.cardTitle}>Dispositivos donde usan IA</Text>
+                  </View>
+                </View>
+                <View style={styles.barChart}>
+                  {[
+                    { name: 'Laptop', key: 'device.laptop' },
+                    { name: 'Desktop', key: 'device.desktop' },
+                    { name: 'Móvil', key: 'device.phone' },
+                    { name: 'Tablet', key: 'device.tablet' }
+                  ].map((device, idx) => {
+                    const value = getSingleValue(stats, device.key, 0);
+                    return (
+                      <View key={device.name} style={styles.bar}>
+                        <Text style={styles.barLabel}>{device.name}</Text>
+                        <View style={styles.barContainer}>
+                          <View style={[styles.barFill, { 
+                            width: `${value}%`, 
+                            backgroundColor: ['#4285F4', '#DB4437', '#F5B614', '#0F9D58'][idx] 
+                          }]} />
+                        </View>
+                        <Text style={styles.barValue}>{value}%</Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Opportunities and Risks - Updated with new logic */}
+          <View style={styles.section} wrap={false}>
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              {/* Opportunities */}
+              <View style={[styles.card, { flex: 1 }]}>
+                <View style={styles.cardHeader}>
+                  <View style={styles.cardTitleWithIcon}>
+                    <Svg width="14" height="14" viewBox="0 0 24 24" fill="transparent">
+                      <Path d="M2 20h20L12 4z" stroke="#0F9D58" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
+                    </Svg>
+                    <Text style={[styles.cardTitle, { color: '#0F9D58' }]}>Oportunidades de Crecimiento</Text>
+                  </View>
+                </View>
+                <View style={styles.list}>
+                  {(() => {
+                    const opportunities = [];
+                    
+                    // Base opportunities by maturity level
+                    if (maturity.score < 25) {
+                      opportunities.push("Implementar programa básico de alfabetización IA");
+                      opportunities.push("Capacitación en herramientas fundamentales (ChatGPT, Copilot)");
+                      opportunities.push("Establecer políticas de uso responsable de IA");
+                    } else if (maturity.score < 50) {
+                      opportunities.push("Desarrollar prompts especializados por área");
+                      opportunities.push("Implementar workflows automatizados");
+                      opportunities.push("Capacitación avanzada en herramientas específicas");
+                    } else if (maturity.score < 75) {
+                      opportunities.push("Desarrollar soluciones IA personalizadas");
+                      opportunities.push("Implementar IA en procesos críticos");
+                      opportunities.push("Crear centro de excelencia en IA");
+                    } else {
+                      opportunities.push("Liderar innovación en el sector");
+                      opportunities.push("Desarrollar productos con IA integrada");
+                      opportunities.push("Monetizar capacidades IA");
+                    }
+
+                    // Add specific opportunities based on new metrics
+                    if (getSingleValue(stats, "avgAutonomyLevel") < 3) {
+                      opportunities.push("Programa de mentoría para aumentar autonomía en IA");
+                    }
+                    if (getSingleValue(stats, "avgKPIImpact") < 3) {
+                      opportunities.push("Identificar y medir KPIs específicos impactados por IA");
+                    }
+                    if (getSingleValue(stats, "avgPromptQuality") < 3) {
+                      opportunities.push("Workshop intensivo de prompt engineering avanzado");
+                    }
+                    if (getSingleValue(stats, "avgImprovementOpportunity") >= 4) {
+                      opportunities.push("Aprovechar alta motivación del equipo para proyectos piloto");
+                    }
+                    if (getSingleValue(stats, "pctLowBarriers") >= 70) {
+                      opportunities.push("Acelerar adopción aprovechando baja resistencia organizacional");
+                    }
+
+                    return opportunities.slice(0, 4).map((item, idx) => (
+                      <View key={idx} style={styles.listItem}>
+                        <View style={[styles.bullet, { backgroundColor: '#0F9D58' }]} />
+                        <Text style={styles.listText}>{item}</Text>
+                      </View>
+                    ));
+                  })()}
+                </View>
+              </View>
+
+              {/* Risks - Updated with new logic */}
+              <View style={[styles.card, { flex: 1 }]}>
+                <View style={styles.cardHeader}>
+                  <View style={styles.cardTitleWithIcon}>
+                    <Svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                      <Path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#DB4437" strokeWidth="1.5" fill="none"/>
+                      <Path d="M12 9v4M12 17h.01" stroke="#DB4437" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                    </Svg>
+                    <Text style={[styles.cardTitle, { color: '#DB4437' }]}>Riesgos Identificados</Text>
+                  </View>
+                </View>
+                <View style={styles.list}>
+                  {(() => {
+                    const risks = [];
+                    
+                    // Based on actual API metrics
+                    if (getSingleValue(stats, "avgPromptSkill") < 3) {
+                      risks.push("Baja competencia en prompting limita resultados");
+                    }
+                    if (getSingleValue(stats, "avgHoursIAWeek") < 2) {
+                      risks.push("Subutilización de herramientas disponibles");
+                    }
+                    if (getSingleValue(stats, "avgConfidence") < 3) {
+                      risks.push("Resistencia al cambio puede frenar adopción");
+                    }
+                    if (getSingleValue(stats, "pctKnowLLM") < 50) {
+                      risks.push("Falta conocimiento básico sobre IA generativa");
+                    }
+                    if (getSingleValue(stats, "pctFormalTraining") < 30) {
+                      risks.push("Ausencia de capacitación formal estructurada");
+                    }
+                    
+                    // Add risks based on new metrics
+                    if (getSingleValue(stats, "avgOrganizationalBarriers") >= 4) {
+                      risks.push("Barreras organizacionales extremas bloquean progreso");
+                    }
+                    if (getSingleValue(stats, "avgAutonomyLevel") < 2.5) {
+                      risks.push("Dependencia excesiva limita escalabilidad de IA");
+                    }
+                    if (getSingleValue(stats, "avgKPIImpact") < 2) {
+                      risks.push("Falta de impacto medible puede reducir inversión en IA");
+                    }
+                    if (getSingleValue(stats, "avgPromptQuality") < 2.5) {
+                      risks.push("Prompts de baja calidad generan resultados inconsistentes");
+                    }
+                    if (getSingleValue(stats, "pctLowBarriers") < 30) {
+                      risks.push("Alta resistencia organizacional frena implementación");
+                    }
+                    
+                    if (risks.length === 0) {
+                      risks.push("Riesgo de quedarse atrás sin mejora continua");
+                    }
+                    
+                    return risks.slice(0, 4).map((item, idx) => (
+                      <View key={idx} style={styles.listItem}>
+                        <View style={[styles.bullet, { backgroundColor: '#DB4437' }]} />
+                        <Text style={styles.listText}>{item}</Text>
+                      </View>
+                    ));
+                  })()}
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* AI Tools Adoption - Updated from Copilot */}
+          <View style={styles.section} wrap={false}>
+            <View style={[styles.card, styles.cardBordered, styles.cardBlue]}>
               <View style={styles.cardHeader}>
                 <View style={styles.cardTitleWithIcon}>
                   <Svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <Path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#6b7280" strokeWidth="1.5" fill="none"/>
+                    <Rect x="3" y="11" width="18" height="10" rx="2" stroke="#3b82f6" strokeWidth="1.5" fill="none"/>
+                    <Path d="M8 7V11M12 5V11M16 9V11" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                   </Svg>
-                  <Text style={styles.cardTitle}>Dispositivos donde usan IA</Text>
+                  <Text style={[styles.cardTitle, { color: '#2563eb', fontWeight: 'bold', fontSize: 14 }]}>Herramientas IA Disponibles</Text>
                 </View>
+                <Text style={[styles.cardSubtitle, { color: '#3b82f6' }]}>Porcentaje de uso por herramienta</Text>
               </View>
               <View style={styles.barChart}>
                 {[
-                  { name: 'Laptop', key: 'device.laptop' },
-                  { name: 'Desktop', key: 'device.desktop' },
-                  { name: 'Móvil', key: 'device.phone' },
-                  { name: 'Tablet', key: 'device.tablet' }
-                ].map((device, idx) => {
-                  const value = getSingleValue(stats, device.key, 0);
-                  return (
-                    <View key={device.name} style={styles.bar}>
-                      <Text style={styles.barLabel}>{device.name}</Text>
-                      <View style={styles.barContainer}>
-                        <View style={[styles.barFill, { 
-                          width: `${value}%`, 
-                          backgroundColor: ['#4285F4', '#DB4437', '#F5B614', '#0F9D58'][idx] 
-                        }]} />
-                      </View>
-                      <Text style={styles.barValue}>{value}%</Text>
+                  { name: '🤖 ChatGPT', key: 'tool.chatgpt', color: '#10B981' },
+                  { name: '🔧 Copilot', key: 'tool.copilot', color: '#3B82F6' },
+                  { name: '💎 Gemini', key: 'tool.gemini', color: '#8B5CF6' },
+                  { name: '🔍 Perplexity', key: 'tool.perplexity', color: '#F59E0B' },
+                  { name: '⚡ Cursor', key: 'tool.cursor', color: '#EF4444' },
+                  { name: '🧠 Claude', key: 'tool.claude', color: '#06B6D4' },
+                  { name: '🔧 Otro', key: 'tool.otro', color: '#6B7280' }
+                ].map((tool) => (
+                  <View key={tool.key} style={styles.bar}>
+                    <View style={[styles.barLabel, { width: 120 }]}>
+                      <Text>{tool.name}</Text>
                     </View>
-                  );
-                })}
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* Opportunities and Risks */}
-        <View style={styles.section} wrap={false}>
-          <View style={{ flexDirection: 'row', gap: 12 }}>
-            {/* Opportunities */}
-            <View style={[styles.card, { flex: 1 }]}>
-              <View style={styles.cardHeader}>
-                <View style={styles.cardTitleWithIcon}>
-                  <Svg width="14" height="14" viewBox="0 0 24 24" fill="transparent">
-                    <Path d="M2 20h20L12 4z" stroke="#0F9D58" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
-                  </Svg>
-                  <Text style={[styles.cardTitle, { color: '#0F9D58' }]}>Oportunidades de Crecimiento</Text>
-                </View>
-              </View>
-              <View style={styles.list}>
-                {(() => {
-                  const opportunities = maturity.score < 25 ? [
-                    "Implementar programa básico de alfabetización IA",
-                    "Capacitación en herramientas fundamentales (ChatGPT, Copilot)",
-                    "Establecer políticas de uso responsable de IA",
-                    "Identificar casos de uso de alto impacto"
-                  ] : maturity.score < 50 ? [
-                    "Desarrollar prompts especializados por área",
-                    "Implementar workflows automatizados",
-                    "Capacitación avanzada en herramientas específicas",
-                    "Medir y optimizar ROI de herramientas IA"
-                  ] : maturity.score < 75 ? [
-                    "Desarrollar soluciones IA personalizadas",
-                    "Implementar IA en procesos críticos",
-                    "Crear centro de excelencia en IA",
-                    "Explorar IA generativa avanzada"
-                  ] : [
-                    "Liderar innovación en el sector",
-                    "Desarrollar productos con IA integrada",
-                    "Monetizar capacidades IA",
-                    "Establecer partnerships tecnológicos"
-                  ];
-                  
-                  return opportunities.map((item, idx) => (
-                    <View key={idx} style={styles.listItem}>
-                      <View style={[styles.bullet, { backgroundColor: '#0F9D58' }]} />
-                      <Text style={styles.listText}>{item}</Text>
+                    <View style={styles.barContainer}>
+                      <View style={[styles.barFill, { 
+                        width: `${getSingleValue(stats, tool.key, 0)}%`, 
+                        backgroundColor: tool.color 
+                      }]} />
                     </View>
-                  ));
-                })()}
-              </View>
-            </View>
-
-            {/* Risks */}
-            <View style={[styles.card, { flex: 1 }]}>
-              <View style={styles.cardHeader}>
-                <View style={styles.cardTitleWithIcon}>
-                  <Svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <Path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#DB4437" strokeWidth="1.5" fill="none"/>
-                    <Path d="M12 9v4M12 17h.01" stroke="#DB4437" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-                  </Svg>
-                  <Text style={[styles.cardTitle, { color: '#DB4437' }]}>Riesgos Identificados</Text>
-                </View>
-              </View>
-              <View style={styles.list}>
-                {(() => {
-                  const risks = [];
-                  
-                  if (getSingleValue(stats, "avgPromptSkill") < 3) {
-                    risks.push("Baja competencia en prompting limita resultados");
-                  }
-                  if (getSingleValue(stats, "avgHoursIAWeek") < 2) {
-                    risks.push("Subutilización de herramientas disponibles");
-                  }
-                  if (getSingleValue(stats, "avgConfidence") < 3) {
-                    risks.push("Resistencia al cambio puede frenar adopción");
-                  }
-                  if (getSingleValue(stats, "pctKnowLLM") < 50) {
-                    risks.push("Falta conocimiento básico sobre IA generativa");
-                  }
-                  if (getSingleValue(stats, "pctFormalTraining") < 30) {
-                    risks.push("Ausencia de capacitación formal estructurada");
-                  }
-                  
-                  if (risks.length === 0) {
-                    risks.push("Riesgo de quedarse atrás sin mejora continua");
-                  }
-                  
-                  return risks.map((item, idx) => (
-                    <View key={idx} style={styles.listItem}>
-                      <View style={[styles.bullet, { backgroundColor: '#DB4437' }]} />
-                      <Text style={styles.listText}>{item}</Text>
-                    </View>
-                  ));
-                })()}
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* Copilot Adoption */}
-        <View style={styles.section} wrap={false}>
-          <View style={[styles.card, styles.cardBordered, styles.cardBlue]}>
-            <View style={styles.cardHeader}>
-              <View style={styles.cardTitleWithIcon}>
-                <Svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                  <Rect x="3" y="11" width="18" height="10" rx="2" stroke="#3b82f6" strokeWidth="1.5" fill="none"/>
-                  <Path d="M8 7V11M12 5V11M16 9V11" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-                </Svg>
-                <Text style={[styles.cardTitle, { color: '#2563eb', fontWeight: 'bold', fontSize: 14 }]}>Adopción Microsoft Copilot</Text>
-              </View>
-              <Text style={[styles.cardSubtitle, { color: '#3b82f6' }]}>Porcentaje de uso por herramienta</Text>
-            </View>
-            <View style={styles.barChart}>
-              {[
-                { name: 'Web', key: 'copilot.web', color: '#1f77b4' },
-                { name: 'Excel', key: 'copilot.excel', color: '#2ca02c' },
-                { name: 'Word', key: 'copilot.word', color: '#ff7f0e' },
-                { name: 'Outlook', key: 'copilot.outlook', color: '#d62728' },
-                { name: 'Power Platform', key: 'copilot.powerPlat', color: '#9467bd' }
-              ].map((tool) => (
-                <View key={tool.key} style={styles.bar}>
-                  <View style={[styles.barLabel, { width: 120 }]}>
-                    <Text>{tool.name}</Text>
+                    <Text style={styles.barValue}>{getSingleValue(stats, tool.key, 0)}%</Text>
                   </View>
-                  <View style={styles.barContainer}>
-                    <View style={[styles.barFill, { 
-                      width: `${getSingleValue(stats, tool.key, 0)}%`, 
-                      backgroundColor: tool.color 
-                    }]} />
-                  </View>
-                  <Text style={styles.barValue}>{getSingleValue(stats, tool.key, 0)}%</Text>
+                ))}
+              </View>
+              
+              {/* Discovery Summary */}
+              <View style={{ marginTop: 10, padding: 8, backgroundColor: '#fef3c7', border: '1 solid #fde68a', borderRadius: 6 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                  <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                    <Circle cx="12" cy="12" r="10" stroke="#f59e0b" strokeWidth="1.5" fill="none"/>
+                    <Path d="M12 7v5l3 3" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                  </Svg>
+                  <Text style={{ fontSize: 8, color: '#d97706', fontWeight: 'bold' }}>Oportunidad de Descubrimiento</Text>
                 </View>
-              ))}
+                <Text style={{ fontSize: 7, color: '#92400e' }}>
+                  {(() => {
+                    const toolsInUse = ['chatgpt', 'copilot', 'gemini', 'perplexity', 'cursor', 'claude', 'otro']
+                      .filter(tool => getSingleValue(stats, `tool.${tool}`, 0) > 0).length;
+                    const totalTools = 7;
+                    const unusedTools = totalTools - toolsInUse;
+                    const employeeCount = getSingleValue(stats, 'employeeCount', 0);
+                    return `${toolsInUse} herramientas en uso de ${totalTools} disponibles. ${unusedTools} herramientas sin explorar por ${employeeCount} empleados.`;
+                  })()}
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
 
-        {/* Footer for second page */}
-        <View style={[styles.footer, { marginTop: 15, paddingTop: 8 }]}>
-          <Text style={{ fontSize: 8, color: '#9ca3af', textAlign: 'center' }}>
-            Reporte generado por LearningGate • {today} • Confidencial
-          </Text>
-          <Text style={{ fontSize: 7, color: '#d1d5db', textAlign: 'center', marginTop: 4 }}>
-            Este reporte contiene información propietaria y confidencial. Prohibida su distribución sin autorización.
-          </Text>
-        </View>
-
-        {/* Blur overlay for second page */}
-        {isBlurred && (
-          <View style={[styles.blurOverlay, { 
-            top: 0, 
-            left: 0, 
-            right: 0, 
-            bottom: 40,
-            width: '100%'
-          }]}>
-            <Text style={styles.blurText}>Análisis Avanzado</Text>
-            <Text style={styles.blurSubtext}>Comparativas vs industria y métricas detalladas</Text>
+          {/* Footer for second page */}
+          <View style={[styles.footer, { marginTop: 15, paddingTop: 8 }]}>
+            <Text style={{ fontSize: 8, color: '#9ca3af', textAlign: 'center' }}>
+              Reporte generado por LearningGate • {today} • Confidencial
+            </Text>
+            <Text style={{ fontSize: 7, color: '#d1d5db', textAlign: 'center', marginTop: 4 }}>
+              Este reporte contiene información propietaria y confidencial. Prohibida su distribución sin autorización.
+            </Text>
           </View>
-        )}
-      </View>
+
+          {/* Blur overlay for second page */}
+          {isBlurred && (
+            <View style={[styles.blurOverlay, { 
+              top: 0, 
+              left: 0, 
+              right: 0, 
+              bottom: 40,
+              width: '100%'
+            }]}>
+              <Text style={styles.blurText}>Análisis Avanzado</Text>
+              <Text style={styles.blurSubtext}>Comparativas vs industria y métricas detalladas</Text>
+            </View>
+          )}
+        </View>
       </Page>
 
-      {/* Third Page - Program Offer */}
+      {/* Third Page - Program Offers */}
       <Page size="A4" style={styles.page}>
         {/* Header for third page */}
         <View style={styles.header}>
@@ -1139,67 +1414,165 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
           </View>
         </View>
 
-
-
         {/* Container for program content with blur overlay */}
         <View style={{ position: 'relative', flex: 1 }}>
-          {/* Program Hero Section - Simplified */}
+          {/* Complete Program - Main Offer */}
           <View style={[styles.section, { marginBottom: 16 }]}>
             <View style={[styles.card, styles.cardBordered, { borderColor: '#F5B614', borderWidth: 3, backgroundColor: '#FFFBF0', padding: 20 }]}>
-              {/* Alert Icon and Opening */}
-              <View style={{ marginBottom: 20 }}>
-                <Text style={{ fontSize: 13, fontWeight: 'bold', color: '#374151', lineHeight: 1.5 }}>
-                  Ya conoces la brecha. La pregunta es: ¿qué harás al respecto?
-                </Text>
-              </View>
+              {/* Calculate program values */}
+              {(() => {
+                const employeeCount = Math.max(25, roi.employeeCount);
+                const potentialGain = roi.potential - roi.current;
+                const programBase = 50000;
+                const employeeScaling = employeeCount > 25 ? (employeeCount - 25) * 1500 : 0;
+                const savingsValue = potentialGain * 0.15;
+                const totalValue = Math.max(programBase + employeeScaling + savingsValue, programBase);
+                const price = Math.round(totalValue * 0.5);
 
-              {/* Main Message */}
-              <View style={{ gap: 18 }}>
-                <Text style={{ fontSize: 11, color: '#374151', lineHeight: 1.6 }}>
-                  Basado en tu nivel de madurez actual y el ROI perdido de{' '}
-                  <Text style={{ fontWeight: 'bold', color: '#DC2626', fontSize: 12 }}>
-                    ${roi.opportunity.toLocaleString()}
-                  </Text>
-                  , tu equipo está sentado sobre una mina de oro de productividad sin explotar.
-                </Text>
+                return (
+                  <>
+                    {/* Program Title */}
+                    <View style={{ alignItems: 'center', marginBottom: 16 }}>
+                      <Text style={{ fontSize: 10, color: '#6b7280', marginBottom: 4 }}>PROGRAMA CHATGPT BÁSICO + MICROSOFT COPILOT IA / GOOGLE GEMINI</Text>
+                      <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#374151' }}>
+                        De {maturity.level} a Experto en 90 Días
+                      </Text>
+                      <Text style={{ fontSize: 10, color: '#6b7280', marginTop: 2 }}>
+                        Para {employeeCount} empleados — Certificación en IA aplicada
+                      </Text>
+                    </View>
 
-                <Text style={{ fontSize: 11, color: '#374151', lineHeight: 1.6 }}>
-                  Por eso creamos el{' '}
-                  <Text style={{ fontWeight: 'bold', color: '#F5B614', fontSize: 12 }}>
-                    Programa de Transformación IA
-                  </Text>
-                  {' '}— un sprint de 90 días para convertir equipos como el tuyo en usuarios expertos certificados de ChatGPT + Copilot.
-                </Text>
+                    {/* Value Comparison */}
+                    <View style={{ flexDirection: 'row', gap: 10, marginBottom: 12 }}>
+                      <View style={{ flex: 1, backgroundColor: '#fef2f2', borderLeftWidth: 3, borderLeftColor: '#dc2626', padding: 10, borderRadius: 4 }}>
+                        <Text style={{ fontSize: 10, color: '#dc2626', fontWeight: 'bold', marginBottom: 6 }}>⚠️ Sin el programa</Text>
+                        <View style={{ gap: 4 }}>
+                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>💸 Pierdes ${Math.round(roi.opportunity / 12).toLocaleString()} / mes</Text>
+                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>🕒 Ahorro actual: {roi.currentMinutesSavedPerDay} min/día</Text>
+                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>📉 Skill IA: {getSingleValue(stats, "avgPromptSkill", 1)}/5</Text>
+                        </View>
+                        <View style={{ borderTop: '1 solid #fecaca', marginTop: 6, paddingTop: 6, alignItems: 'center' }}>
+                          <Text style={{ fontSize: 8, color: '#dc2626' }}>Costo anual de oportunidad</Text>
+                          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#dc2626' }}>${Math.round(roi.opportunity).toLocaleString()}</Text>
+                        </View>
+                      </View>
+                      <View style={{ flex: 1, backgroundColor: '#f0fdf4', borderLeftWidth: 3, borderLeftColor: '#16a34a', padding: 10, borderRadius: 4 }}>
+                        <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold', marginBottom: 6 }}>✓ Con el programa</Text>
+                        <View style={{ gap: 4 }}>
+                          <Text style={{ fontSize: 8, color: '#14532d' }}>📈 Ganas ${Math.round(roi.potential / 12).toLocaleString()} / mes</Text>
+                          <Text style={{ fontSize: 8, color: '#14532d' }}>⏱️ 120+ min/día ahorrados</Text>
+                          <Text style={{ fontSize: 8, color: '#14532d' }}>🏆 Skill IA: 5/5 certificado</Text>
+                        </View>
+                        <View style={{ borderTop: '1 solid #bbf7d0', marginTop: 6, paddingTop: 6, alignItems: 'center' }}>
+                          <Text style={{ fontSize: 8, color: '#16a34a' }}>Beneficio anual total</Text>
+                          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a' }}>${Math.round(roi.potential).toLocaleString()}</Text>
+                        </View>
+                      </View>
+                    </View>
 
-                <Text style={{ fontSize: 11, color: '#374151', lineHeight: 1.6 }}>
-                  Lo diseñamos para que{' '}
-                  <Text style={{ fontWeight: 'bold', color: '#059669', fontSize: 12 }}>
-                    se pague solo en menos de 30 días
-                  </Text>
-                  {' '}— y garantizamos resultados, o seguimos trabajando contigo gratis.
-                </Text>
+                    {/* Price */}
+                    <View style={{ backgroundColor: '#fef3c7', padding: 10, borderRadius: 6, alignItems: 'center', marginBottom: 10 }}>
+                      <Text style={{ fontSize: 9, color: '#6b7280' }}>Precio del programa</Text>
+                      <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#374151' }}>${price.toLocaleString()}</Text>
+                    </View>
 
-                {/* Urgency Section */}
-                <View style={{ borderTopWidth: 1, borderTopColor: '#E5E7EB', paddingTop: 16, marginTop: 8 }}>
-                  <Text style={{ fontSize: 11, color: '#374151', marginBottom: 16 }}>
-                    Solo 20 empresas por cohorte. El próximo grupo inicia en 15 días.
-                  </Text>
-                </View>
+                    {/* Guarantee */}
+                    <View style={{ backgroundColor: '#f0fdf4', border: '1 solid #bbf7d0', padding: 10, borderRadius: 6, marginBottom: 10 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 6 }}>
+                        <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <Path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#16a34a" strokeWidth="1.5" fill="none"/>
+                        </Svg>
+                        <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold' }}>Garantía Triple</Text>
+                      </View>
+                      <View style={{ gap: 2 }}>
+                        <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Recuperas ${Math.round(potentialGain).toLocaleString()} o reembolso</Text>
+                        <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Skill sube a 5/5 o extensión gratis</Text>
+                        <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Satisfacción o no pagas</Text>
+                      </View>
+                    </View>
 
-                {/* CTA Button */}
-                <View style={{ backgroundColor: '#F5B614', borderRadius: 8, padding: 16, alignItems: 'center' }}>
-                  <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'white', textAlign: 'center', marginBottom: 6 }}>
-                    Agenda tu llamada estratégica ahora
-                  </Text>
-                  <Text style={{ fontSize: 11, color: 'white', textAlign: 'center', lineHeight: 1.4 }}>
-                    y construyamos la ventaja competitiva IA de tu equipo, empezando hoy.
-                  </Text>
-                </View>
-              </View>
+                    {/* Urgency */}
+                    <View style={{ backgroundColor: '#fef2f2', borderLeftWidth: 3, borderLeftColor: '#dc2626', padding: 8, borderRadius: 4, marginBottom: 10 }}>
+                      <Text style={{ fontSize: 9, color: '#dc2626' }}>
+                        Solo 20 empresas por cohorte — Próximo inicio en <Text style={{ fontWeight: 'bold' }}>15 días</Text>
+                      </Text>
+                    </View>
+
+                    {/* CTA */}
+                    <View style={{ backgroundColor: '#F5B614', borderRadius: 6, padding: 12, alignItems: 'center' }}>
+                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'white' }}>RESERVAR CUPO</Text>
+                      <Text style={{ fontSize: 8, color: 'white', marginTop: 2 }}>
+                        Incluye llamada estratégica gratuita y análisis ROI personalizado
+                      </Text>
+                    </View>
+                  </>
+                );
+              })()}
             </View>
           </View>
 
+          {/* ChatGPT Only Program - Alternative Offer */}
+          <View style={styles.section}>
+            <View style={[styles.card, styles.cardBordered, { borderColor: '#3b82f6', borderWidth: 2, padding: 16 }]}>
+              {(() => {
+                const employeeCount = Math.max(25, roi.employeeCount);
+                const potentialGain = (roi.potential - roi.current) * 0.5;
+                const pricePerEmployee = 999;
+                const totalPrice = employeeCount * pricePerEmployee;
 
+                return (
+                  <>
+                    {/* Program Title */}
+                    <View style={{ alignItems: 'center', marginBottom: 12 }}>
+                      <Text style={{ fontSize: 9, color: '#6b7280', marginBottom: 2 }}>PROGRAMA CHATGPT BÁSICO</Text>
+                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#374151' }}>
+                        De {maturity.level} a Intermedio en 60 Días
+                      </Text>
+                      <Text style={{ fontSize: 9, color: '#6b7280', marginTop: 2 }}>
+                        Para {employeeCount} empleados — Certificación ChatGPT
+                      </Text>
+                    </View>
+
+                    {/* Price */}
+                    <View style={{ backgroundColor: '#eff6ff', padding: 8, borderRadius: 6, alignItems: 'center', marginBottom: 10 }}>
+                      <Text style={{ fontSize: 8, color: '#6b7280' }}>Precio del programa</Text>
+                      <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#374151' }}>${totalPrice.toLocaleString()}</Text>
+                      <Text style={{ fontSize: 8, color: '#6b7280' }}>${pricePerEmployee} por empleado</Text>
+                    </View>
+
+                    {/* Benefits Summary */}
+                    <View style={{ backgroundColor: '#f0fdf4', border: '1 solid #bbf7d0', padding: 8, borderRadius: 6, marginBottom: 10 }}>
+                      <View style={{ gap: 2 }}>
+                        <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Recuperas ${Math.round(potentialGain).toLocaleString()} o reembolso</Text>
+                        <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Skill sube a 4/5 o extensión gratis</Text>
+                        <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Disponible inmediatamente</Text>
+                      </View>
+                    </View>
+
+                    {/* CTA */}
+                    <View style={{ backgroundColor: '#3b82f6', borderRadius: 6, padding: 10, alignItems: 'center' }}>
+                      <Text style={{ fontSize: 11, fontWeight: 'bold', color: 'white' }}>EMPEZAR AHORA</Text>
+                      <Text style={{ fontSize: 7, color: 'white', marginTop: 2 }}>
+                        Incluye acceso inmediato y soporte básico
+                      </Text>
+                    </View>
+                  </>
+                );
+              })()}
+            </View>
+          </View>
+
+          {/* Social Proof */}
+          <View style={{ borderTop: '1 solid #e5e7eb', paddingTop: 12, marginTop: 16, alignItems: 'center' }}>
+            <Text style={{ fontSize: 9, color: '#6b7280', marginBottom: 6 }}>
+              <Text style={{ fontWeight: 'bold', color: '#F5B614' }}>+500 empleados</Text> transformados en <Text style={{ fontWeight: 'bold' }}>+50 empresas</Text>
+            </Text>
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              <Text style={{ fontSize: 8, color: '#9ca3af' }}>VISIONA</Text>
+              <Text style={{ fontSize: 8, color: '#9ca3af' }}>TECH CORP</Text>
+              <Text style={{ fontSize: 8, color: '#9ca3af' }}>INNOVATE SA</Text>
+            </View>
+          </View>
         </View>
 
         {/* Footer for third page */}
@@ -1232,36 +1605,35 @@ export const PDFExportButton: React.FC<PDFReportProps> = ({ companyName, stats, 
       fileName={fileName}
       className={buttonStyle}
     >
-              {({ loading }) =>
-          loading ? (
-            <>
-              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-              Generando PDF...
-            </>
-          ) : (
-            <>
-              {isBlurred ? (
-                <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                  Vista Previa PDF
-                </>
-              ) : (
-                <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  Descargar PDF Completo
-                </>
-              )}
-            </>
-          )
-        }
+      {({ loading }) =>
+        loading ? (
+          <>
+            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+            Generando PDF...
+          </>
+        ) : (
+          <>
+            {isBlurred ? (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Vista Previa PDF
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Descargar PDF Completo
+              </>
+            )}
+          </>
+        )}
     </PDFDownloadLink>
   );
 }; 
