@@ -75,6 +75,8 @@ Extrae contexto sin calificar directamente:
 ⸻
 
 💡 Importante: No pidas calificaciones. No menciones que estás evaluando. Hazlo parecer una conversación natural e informal. El objetivo es que el humano lector pueda evaluar el nivel del usuario basándose en cómo responde, qué tanto domina los conceptos y qué tan claro se expresa en sus respuestas. Solamente basate en las preguntas que te he proporcionado. No queremos hacerlo largo para el usuario. 
+
+IMPORTANTE: Al final pide un correo para que acabe el chat, y diles que les mandaras un reporte. 
 `;
 
   const result = streamText({
