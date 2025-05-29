@@ -12,6 +12,7 @@ import {
   Path,
   Circle,
   Rect,
+  Link,
 } from '@react-pdf/renderer';
 
 // Register fonts for better typography
@@ -419,6 +420,10 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
     currentMinutesSavedPerDay: getSingleValue(stats, 'roi.currentMinutesSavedPerDay', 1)
   };
 
+  const currentMonthly = Math.round(roi.current / 12);
+  const potentialMonthly = Math.round(roi.potential / 12);
+  const opportunityMonthly = Math.round(roi.opportunity / 12);
+
   // Get age data
   // const avgAgeScale = getSingleValue(stats, "avgAge", 1);
   // const avgAgeRange = convertAgeScale(avgAgeScale);
@@ -489,26 +494,26 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                   <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
                     <Path d="M12 2V22M17 5H9.5C8.57 5 7.81 5.13 7.19 5.4C5.81 6 5 7.38 5 9C5 10.09 5.41 11.08 6.11 11.79C6.81 12.5 7.8 12.91 8.89 12.91H15.11C16.2 12.91 17.19 13.32 17.89 14.03C18.59 14.74 19 15.73 19 16.82C19 18.98 17.35 20.76 15.25 20.97C14.74 21.01 14.26 21 13.8 20.95" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                   </Svg>
-                  <Text style={styles.cardTitle}>Potencial ROI Anual ({roi.employeeCount} empleados)</Text>
+                  <Text style={styles.cardTitle}>Potencial ROI Mensual ({roi.employeeCount} empleados)</Text>
                 </View>
               </View>
               <View style={{ gap: 6 }}>
                 <View style={styles.row}>
                   <Text style={styles.listText}>Ahorro actual:</Text>
                   <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#16a34a' }}>
-                    ${roi.current.toLocaleString()}
+                    ${currentMonthly.toLocaleString()}/mes
                   </Text>
                 </View>
                 <View style={styles.row}>
                   <Text style={styles.listText}>Potencial con training:</Text>
                   <Text style={{ fontSize: 11, fontWeight: 'bold', color: '#15803d' }}>
-                    ${roi.potential.toLocaleString()}
+                    ${potentialMonthly.toLocaleString()}/mes
                   </Text>
                 </View>
                 <View style={{ borderTop: '1 solid #d1fae5', paddingTop: 6, marginTop: 3 }}>
-                  <Text style={{ fontSize: 6, color: '#6b7280' }}>Oportunidad adicional:</Text>
-                  <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#15803d' }}>
-                    ${roi.opportunity.toLocaleString()}
+                  <Text style={{ fontSize: 6, color: '#6b7280' }}>Costo de oportunidad:</Text>
+                  <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#DB4437' }}>
+                    ${opportunityMonthly.toLocaleString()}/mes
                   </Text>
                 </View>
               </View>
@@ -1003,13 +1008,13 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                   {(() => {
                     const barrierLevel = getSingleValue(stats, "avgOrganizationalBarriers", 1);
                     if (barrierLevel <= 2) {
-                      return "🟢 Excelente: Pocas barreras organizacionales. El equipo tiene libertad para experimentar con IA.";
+                      return "Excelente: Pocas barreras organizacionales. El equipo tiene libertad para experimentar con IA.";
                     } else if (barrierLevel <= 3) {
-                      return "🟡 Moderado: Algunas barreras presentes. Se recomienda trabajar en políticas y comunicación interna.";
+                      return "Moderado: Algunas barreras presentes. Se recomienda trabajar en políticas y comunicación interna.";
                     } else if (barrierLevel <= 4) {
-                      return "🟠 Alto: Barreras significativas. Necesario involucrar liderazgo y crear estrategia de cambio.";
+                      return "Alto: Barreras significativas. Necesario involucrar liderazgo y crear estrategia de cambio.";
                     } else {
-                      return "🔴 Crítico: Barreras extremas. Requiere intervención ejecutiva y plan de transformación cultural.";
+                      return "Crítico: Barreras extremas. Requiere intervención ejecutiva y plan de transformación cultural.";
                     }
                   })()}
                 </Text>
@@ -1325,13 +1330,13 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
               </View>
               <View style={styles.barChart}>
                 {[
-                  { name: '🤖 ChatGPT', key: 'tool.chatgpt', color: '#10B981' },
-                  { name: '🔧 Copilot', key: 'tool.copilot', color: '#3B82F6' },
-                  { name: '💎 Gemini', key: 'tool.gemini', color: '#8B5CF6' },
-                  { name: '🔍 Perplexity', key: 'tool.perplexity', color: '#F59E0B' },
-                  { name: '⚡ Cursor', key: 'tool.cursor', color: '#EF4444' },
-                  { name: '🧠 Claude', key: 'tool.claude', color: '#06B6D4' },
-                  { name: '🔧 Otro', key: 'tool.otro', color: '#6B7280' }
+                  { name: 'ChatGPT', key: 'tool.chatgpt', color: '#10B981' },
+                  { name: 'Copilot', key: 'tool.copilot', color: '#3B82F6' },
+                  { name: 'Gemini', key: 'tool.gemini', color: '#8B5CF6' },
+                  { name: 'Perplexity', key: 'tool.perplexity', color: '#F59E0B' },
+                  { name: 'Cursor', key: 'tool.cursor', color: '#EF4444' },
+                  { name: 'Claude', key: 'tool.claude', color: '#06B6D4' },
+                  { name: 'Otro', key: 'tool.otro', color: '#6B7280' }
                 ].map((tool) => (
                   <View key={tool.key} style={styles.bar}>
                     <View style={[styles.barLabel, { width: 120 }]}>
@@ -1371,16 +1376,6 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
             </View>
           </View>
 
-          {/* Footer for second page */}
-          <View style={[styles.footer, { marginTop: 15, paddingTop: 8 }]}>
-            <Text style={{ fontSize: 8, color: '#9ca3af', textAlign: 'center' }}>
-              Reporte generado por LearningGate • {today} • Confidencial
-            </Text>
-            <Text style={{ fontSize: 7, color: '#d1d5db', textAlign: 'center', marginTop: 4 }}>
-              Este reporte contiene información propietaria y confidencial. Prohibida su distribución sin autorización.
-            </Text>
-          </View>
-
           {/* Blur overlay for second page */}
           {isBlurred && (
             <View style={[styles.blurOverlay, { 
@@ -1418,16 +1413,47 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
         <View style={{ position: 'relative', flex: 1 }}>
           {/* Complete Program - Main Offer */}
           <View style={[styles.section, { marginBottom: 16 }]}>
-            <View style={[styles.card, styles.cardBordered, { borderColor: '#F5B614', borderWidth: 3, backgroundColor: '#FFFBF0', padding: 20 }]}>
+            <View style={[styles.card, styles.cardBordered, { 
+              borderColor: '#F5B614', 
+              borderWidth: 3, 
+              backgroundColor: '#FFFBF0', 
+              padding: 20, 
+              position: 'relative' // Needed for absolute positioning of the banner
+            }]}>
+              {/* Recommended Banner */}
+              <View style={{
+                position: 'absolute',
+                top: -2, // Adjusted for potentially larger banner
+                left: 12, // Adjusted for potentially larger banner
+                backgroundColor: '#F5B614',
+                paddingHorizontal: 12, // Increased padding
+                paddingVertical: 5,    // Increased padding
+                borderBottomLeftRadius: 6, // Slightly larger radius
+                borderBottomRightRadius: 6, // Slightly larger radius
+                zIndex: 1
+              }}>
+                <Text style={{ fontSize: 9, fontWeight: 'bold', color: 'white' }}> {/* Increased font size */}
+                  Recomendado para {companyName}
+                </Text>
+              </View>
+
               {/* Calculate program values */}
               {(() => {
-                const employeeCount = Math.max(25, roi.employeeCount);
+                // Use actual employee count for decision, not Math.max for this part
+                const actualEmployeeCount = roi.employeeCount;
+                let calculatedPrice: number;
+
+                if (actualEmployeeCount < 25) {
+                  calculatedPrice = 25 * 1800;
+                } else {
+                  calculatedPrice = actualEmployeeCount * 1800;
+                }
+                
+                const price = calculatedPrice; // Final price based on new logic
+
+                // Values for display, keeping some of the existing structure if needed for text
+                const displayEmployeeCount = Math.max(25, actualEmployeeCount); 
                 const potentialGain = roi.potential - roi.current;
-                const programBase = 50000;
-                const employeeScaling = employeeCount > 25 ? (employeeCount - 25) * 1500 : 0;
-                const savingsValue = potentialGain * 0.15;
-                const totalValue = Math.max(programBase + employeeScaling + savingsValue, programBase);
-                const price = Math.round(totalValue * 0.5);
 
                 return (
                   <>
@@ -1438,18 +1464,18 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                         De {maturity.level} a Experto en 90 Días
                       </Text>
                       <Text style={{ fontSize: 10, color: '#6b7280', marginTop: 2 }}>
-                        Para {employeeCount} empleados — Certificación en IA aplicada
+                        Para {displayEmployeeCount} empleados — Certificación en IA aplicada
                       </Text>
                     </View>
 
                     {/* Value Comparison */}
                     <View style={{ flexDirection: 'row', gap: 10, marginBottom: 12 }}>
                       <View style={{ flex: 1, backgroundColor: '#fef2f2', borderLeftWidth: 3, borderLeftColor: '#dc2626', padding: 10, borderRadius: 4 }}>
-                        <Text style={{ fontSize: 10, color: '#dc2626', fontWeight: 'bold', marginBottom: 6 }}>⚠️ Sin el programa</Text>
+                        <Text style={{ fontSize: 10, color: '#dc2626', fontWeight: 'bold', marginBottom: 6 }}>Sin el programa</Text>
                         <View style={{ gap: 4 }}>
-                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>💸 Pierdes ${Math.round(roi.opportunity / 12).toLocaleString()} / mes</Text>
-                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>🕒 Ahorro actual: {roi.currentMinutesSavedPerDay} min/día</Text>
-                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>📉 Skill IA: {getSingleValue(stats, "avgPromptSkill", 1)}/5</Text>
+                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Pierdes ${Math.round(roi.opportunity / 12).toLocaleString()} / mes</Text>
+                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Ahorro actual: {roi.currentMinutesSavedPerDay} min/día</Text>
+                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Skill IA: {getSingleValue(stats, "avgPromptSkill", 1)}/5</Text>
                         </View>
                         <View style={{ borderTop: '1 solid #fecaca', marginTop: 6, paddingTop: 6, alignItems: 'center' }}>
                           <Text style={{ fontSize: 8, color: '#dc2626' }}>Costo anual de oportunidad</Text>
@@ -1457,11 +1483,11 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                         </View>
                       </View>
                       <View style={{ flex: 1, backgroundColor: '#f0fdf4', borderLeftWidth: 3, borderLeftColor: '#16a34a', padding: 10, borderRadius: 4 }}>
-                        <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold', marginBottom: 6 }}>✓ Con el programa</Text>
+                        <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold', marginBottom: 6 }}>Con el programa</Text>
                         <View style={{ gap: 4 }}>
-                          <Text style={{ fontSize: 8, color: '#14532d' }}>📈 Ganas ${Math.round(roi.potential / 12).toLocaleString()} / mes</Text>
-                          <Text style={{ fontSize: 8, color: '#14532d' }}>⏱️ 120+ min/día ahorrados</Text>
-                          <Text style={{ fontSize: 8, color: '#14532d' }}>🏆 Skill IA: 5/5 certificado</Text>
+                          <Text style={{ fontSize: 8, color: '#14532d' }}>Ganas ${Math.round(roi.potential / 12).toLocaleString()} / mes</Text>
+                          <Text style={{ fontSize: 8, color: '#14532d' }}>120+ min/día ahorrados</Text>
+                          <Text style={{ fontSize: 8, color: '#14532d' }}>Skill IA: 5/5 certificado</Text>
                         </View>
                         <View style={{ borderTop: '1 solid #bbf7d0', marginTop: 6, paddingTop: 6, alignItems: 'center' }}>
                           <Text style={{ fontSize: 8, color: '#16a34a' }}>Beneficio anual total</Text>
@@ -1499,70 +1525,21 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     </View>
 
                     {/* CTA */}
-                    <View style={{ backgroundColor: '#F5B614', borderRadius: 6, padding: 12, alignItems: 'center' }}>
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'white' }}>RESERVAR CUPO</Text>
-                      <Text style={{ fontSize: 8, color: 'white', marginTop: 2 }}>
-                        Incluye llamada estratégica gratuita y análisis ROI personalizado
-                      </Text>
-                    </View>
-                  </>
-                );
-              })()}
-            </View>
-          </View>
-
-          {/* ChatGPT Only Program - Alternative Offer */}
-          <View style={styles.section}>
-            <View style={[styles.card, styles.cardBordered, { borderColor: '#3b82f6', borderWidth: 2, padding: 16 }]}>
-              {(() => {
-                const employeeCount = Math.max(25, roi.employeeCount);
-                const potentialGain = (roi.potential - roi.current) * 0.5;
-                const pricePerEmployee = 999;
-                const totalPrice = employeeCount * pricePerEmployee;
-
-                return (
-                  <>
-                    {/* Program Title */}
-                    <View style={{ alignItems: 'center', marginBottom: 12 }}>
-                      <Text style={{ fontSize: 9, color: '#6b7280', marginBottom: 2 }}>PROGRAMA CHATGPT BÁSICO</Text>
-                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#374151' }}>
-                        De {maturity.level} a Intermedio en 60 Días
-                      </Text>
-                      <Text style={{ fontSize: 9, color: '#6b7280', marginTop: 2 }}>
-                        Para {employeeCount} empleados — Certificación ChatGPT
-                      </Text>
-                    </View>
-
-                    {/* Price */}
-                    <View style={{ backgroundColor: '#eff6ff', padding: 8, borderRadius: 6, alignItems: 'center', marginBottom: 10 }}>
-                      <Text style={{ fontSize: 8, color: '#6b7280' }}>Precio del programa</Text>
-                      <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#374151' }}>${totalPrice.toLocaleString()}</Text>
-                      <Text style={{ fontSize: 8, color: '#6b7280' }}>${pricePerEmployee} por empleado</Text>
-                    </View>
-
-                    {/* Benefits Summary */}
-                    <View style={{ backgroundColor: '#f0fdf4', border: '1 solid #bbf7d0', padding: 8, borderRadius: 6, marginBottom: 10 }}>
-                      <View style={{ gap: 2 }}>
-                        <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Recuperas ${Math.round(potentialGain).toLocaleString()} o reembolso</Text>
-                        <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Skill sube a 4/5 o extensión gratis</Text>
-                        <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Disponible inmediatamente</Text>
+                    <Link src="https://learninggate-ai.com" style={{ textDecoration: 'none' }}>
+                      <View style={{ backgroundColor: '#F5B614', borderRadius: 6, padding: 12, alignItems: 'center' }}>
+                        <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'white' }}>RESERVAR CUPO</Text>
+                        <Text style={{ fontSize: 8, color: 'white', marginTop: 2 }}>
+                          Incluye llamada estratégica gratuita y análisis ROI personalizado
+                        </Text>
                       </View>
-                    </View>
-
-                    {/* CTA */}
-                    <View style={{ backgroundColor: '#3b82f6', borderRadius: 6, padding: 10, alignItems: 'center' }}>
-                      <Text style={{ fontSize: 11, fontWeight: 'bold', color: 'white' }}>EMPEZAR AHORA</Text>
-                      <Text style={{ fontSize: 7, color: 'white', marginTop: 2 }}>
-                        Incluye acceso inmediato y soporte básico
-                      </Text>
-                    </View>
+                    </Link>
                   </>
                 );
               })()}
             </View>
           </View>
 
-          {/* Social Proof */}
+          {/* Social Proof - This now clearly belongs to the page with the first offer */}
           <View style={{ borderTop: '1 solid #e5e7eb', paddingTop: 12, marginTop: 16, alignItems: 'center' }}>
             <Text style={{ fontSize: 9, color: '#6b7280', marginBottom: 6 }}>
               <Text style={{ fontWeight: 'bold', color: '#F5B614' }}>+500 empleados</Text> transformados en <Text style={{ fontWeight: 'bold' }}>+50 empresas</Text>
@@ -1573,9 +1550,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
               <Text style={{ fontSize: 8, color: '#9ca3af' }}>INNOVATE SA</Text>
             </View>
           </View>
-        </View>
+        </View> {/* Closes the main content View of the third page (position: relative, flex: 1) */}
 
-        {/* Footer for third page */}
+        {/* Footer for third page (containing the first offer) */}
         <View style={styles.footer}>
           <Text style={{ fontSize: 8, color: '#9ca3af', textAlign: 'center' }}>
             Programa de Transformación IA • LearningGate • {today}
@@ -1584,10 +1561,122 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
             Propuesta comercial confidencial. Válida por 30 días.
           </Text>
         </View>
-      </Page>
+      </Page> {/* End of the Third Page */}
+
+      {/* FOURTH PAGE - Starting with the second program offer */}
+      <Page size="A4" style={styles.page}>
+        {/* Header for fourth page (optional, can be added if needed) */}
+        {/* The marginTop for the section ensures it respects the page's top padding */}
+        <View style={[styles.section, { marginTop: styles.page.padding || 20, flexGrow: 1 }]}>
+          {/* ChatGPT Only Program - Alternative Offer - RESTRUCTURED */}
+          <View style={[styles.card, styles.cardBordered, { borderColor: '#3b82f6', borderWidth: 3, backgroundColor: '#EFF6FF', padding: 20 }]}>
+            {(() => {
+              const actualEmployeeCountLocal = roi.employeeCount;
+              const displayEmployeeCountLocal = Math.max(25, actualEmployeeCountLocal);
+              
+              const pricePerEmployee = 999;
+              const programPrice = displayEmployeeCountLocal * pricePerEmployee;
+
+              const basicProgramAdditionalAnnualGain = (roi.potential - roi.current) * 0.5;
+              const totalAnnualSavingWithBasicProgram = roi.current + basicProgramAdditionalAnnualGain;
+              const basicProgramAdditionalMonthlyGain = Math.round(basicProgramAdditionalAnnualGain / 12);
+              const totalMonthlyValueWithBasicProgram = currentMonthly + basicProgramAdditionalMonthlyGain;
+
+              return (
+                <>
+                  {/* Program Title */}
+                  <View style={{ alignItems: 'center', marginBottom: 16 }}>
+                    <Text style={{ fontSize: 10, color: '#6b7280', marginBottom: 4 }}>PROGRAMA CHATGPT BÁSICO</Text>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1e3a8a' }}> {/* Darker Blue for title text */}
+                      De {maturity.level} a Intermedio en 60 Días
+                    </Text>
+                    <Text style={{ fontSize: 10, color: '#6b7280', marginTop: 2 }}>
+                      Para {displayEmployeeCountLocal} empleados — Certificación ChatGPT
+                    </Text>
+                  </View>
+
+                  {/* Value Comparison */}
+                  <View style={{ flexDirection: 'row', gap: 10, marginBottom: 12 }}>
+                    <View style={{ flex: 1, backgroundColor: '#fef2f2', borderLeftWidth: 3, borderLeftColor: '#dc2626', padding: 10, borderRadius: 4 }}>
+                      <Text style={{ fontSize: 10, color: '#dc2626', fontWeight: 'bold', marginBottom: 6 }}>⚠️ Sin capacitación IA</Text>
+                      <View style={{ gap: 4 }}>
+                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>💸 Pierdes ${opportunityMonthly.toLocaleString()} / mes</Text>
+                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>🕒 Ahorro actual: {roi.currentMinutesSavedPerDay} min/día</Text>
+                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>📉 Skill IA: {getSingleValue(stats, "avgPromptSkill", 1)}/5</Text>
+                      </View>
+                      <View style={{ borderTop: '1 solid #fecaca', marginTop: 6, paddingTop: 6, alignItems: 'center' }}>
+                        <Text style={{ fontSize: 8, color: '#dc2626' }}>Costo anual de oportunidad</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#dc2626' }}>${roi.opportunity.toLocaleString()}</Text>
+                      </View>
+                    </View>
+                    
+                    <View style={{ flex: 1, backgroundColor: '#f0fdf4', borderLeftWidth: 3, borderLeftColor: '#16a34a', padding: 10, borderRadius: 4 }}>
+                      <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold', marginBottom: 6 }}>✓ Con Programa Básico</Text>
+                      <View style={{ gap: 4 }}>
+                        <Text style={{ fontSize: 8, color: '#14532d' }}>📈 Ganas ${totalMonthlyValueWithBasicProgram.toLocaleString()} / mes</Text>
+                        <Text style={{ fontSize: 8, color: '#14532d' }}>⏱️ 60+ min/día ahorrados</Text>
+                        <Text style={{ fontSize: 8, color: '#14532d' }}>🏆 Skill IA: 4/5 certificado</Text>
+                      </View>
+                      <View style={{ borderTop: '1 solid #bbf7d0', marginTop: 6, paddingTop: 6, alignItems: 'center' }}>
+                        <Text style={{ fontSize: 8, color: '#16a34a' }}>Beneficio anual total</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a' }}>${totalAnnualSavingWithBasicProgram.toLocaleString()}</Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  {/* Price */}
+                  <View style={{ backgroundColor: '#DBEAFE', padding: 10, borderRadius: 6, alignItems: 'center', marginBottom: 10 }}>
+                    <Text style={{ fontSize: 9, color: '#1e3a8a' }}>Precio del programa</Text>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#1e40af' }}>${programPrice.toLocaleString()}</Text>
+                    <Text style={{ fontSize: 8, color: '#1e40af', marginTop: 1 }}>(${pricePerEmployee} por empleado, min. {displayEmployeeCountLocal})</Text>
+                  </View>
+
+                  {/* Guarantee */}
+                  <View style={{ backgroundColor: '#f0fdf4', border: '1 solid #bbf7d0', padding: 10, borderRadius: 6, marginBottom: 10 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 6 }}>
+                      <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                        <Path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#16a34a" strokeWidth="1.5" fill="none"/>
+                      </Svg>
+                      <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold' }}>Garantía del Programa Básico</Text>
+                    </View>
+                    <View style={{ gap: 2 }}>
+                      <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Recuperas ${Math.round(basicProgramAdditionalAnnualGain).toLocaleString()} en valor o reembolso</Text>
+                      <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Skill IA sube a 4/5 o extensión formativa gratis</Text>
+                      <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Satisfacción garantizada o revisión del programa</Text>
+                    </View>
+                  </View>
+                  
+                  <View style={{ backgroundColor: '#E0E7FF', borderLeftWidth: 3, borderLeftColor: '#4338CA', padding: 8, borderRadius: 4, marginBottom: 10 }}>
+                     <Text style={{ fontSize: 9, color: '#4338CA' }}>
+                      Inicia tu transformación básica en IA — <Text style={{ fontWeight: 'bold' }}>¡Comienza la próxima semana!</Text>
+                    </Text>
+                  </View>
+
+                  {/* CTA */}
+                  <Link src="https://learninggate-ai.com" style={{ textDecoration: 'none' }}>
+                    <View style={{ backgroundColor: '#3b82f6', borderRadius: 6, padding: 12, alignItems: 'center' }}>
+                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'white' }}>EMPEZAR PROGRAMA BÁSICO</Text>
+                      <Text style={{ fontSize: 8, color: 'white', marginTop: 2 }}>
+                        Acceso a plataforma y primeros módulos en 24h
+                      </Text>
+                    </View>
+                  </Link>
+                </>
+              );
+            })()}
+          </View>
+        </View>
+
+        {/* Footer for fourth page */}
+        <View style={[styles.footer, { position: 'absolute', left: 0, right: 0, bottom: 0, borderTopWidth: 1, borderTopColor: '#e5e7eb'}]}>
+          <Text style={{ fontSize: 8, color: '#9ca3af', textAlign: 'center' }}>
+            Programas Adicionales • LearningGate • {today}
+          </Text>
+        </View>
+      </Page> {/* End of the Fourth Page */}
     </Document>
   );
-};
+}; 
 
 // Export Button Component
 export const PDFExportButton: React.FC<PDFReportProps> = ({ companyName, stats, isBlurred = false }) => {
