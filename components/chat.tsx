@@ -4,6 +4,7 @@ import { useChat, type Message } from '@ai-sdk/react';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
+import ProgressBar from './ProgressBar';
 
 export default function Page() {
   // State to track if the interview evaluation process has started
@@ -11,6 +12,8 @@ export default function Page() {
   // State to provide feedback to the user about the evaluation process
   const [evaluationStatus, setEvaluationStatus] = useState<string | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [currentProgressStep, setCurrentProgressStep] = useState(0);
+  const totalInterviewSteps = 12;
   
   // New state for the CTA form
   const [showForm, setShowForm] = useState(true);
@@ -70,6 +73,13 @@ export default function Page() {
       setEvaluationStatus("Error en el chat. Por favor, intente de nuevo.");
     }
   });
+
+  // Effect to update progress based on the number of assistant messages
+  useEffect(() => {
+    const assistantMessagesCount = messages.filter(m => m.role === 'assistant').length;
+    // Ensure progress doesn't exceed total steps
+    setCurrentProgressStep(Math.min(assistantMessagesCount, totalInterviewSteps));
+  }, [messages, totalInterviewSteps]);
 
   // Function to handle form submission and start conversation
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -227,6 +237,11 @@ export default function Page() {
 
   return (
     <div className="flex flex-col h-screen font-manrope bg-white relative overflow-hidden">
+      {/* Conditionally render ProgressBar only when the form is hidden (chat has started) */}
+      {!showForm && messages.length > 0 && (
+        <ProgressBar currentStep={currentProgressStep} totalSteps={totalInterviewSteps} />
+      )}
+
       {messages.length === 0 && !isLoading && showForm && (
         <>
           {/* Full screen background image - responsive positioning */}
