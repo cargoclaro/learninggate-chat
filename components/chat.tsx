@@ -93,6 +93,7 @@ export default function Page() {
     
     // Send the initial message to start the conversation
     await append({
+      
       role: 'user',
       content: initialMessage
     });
@@ -464,7 +465,7 @@ export default function Page() {
                 className="flex-1 rounded-2xl border border-gray-200 
                          px-4 sm:px-6 py-3 pr-12 sm:pr-14
                          focus:outline-none focus:ring-2 focus:ring-[#F5B614] focus:border-transparent 
-                         font-manrope text-sm sm:text-base w-full bg-gray-50 
+                         font-manrope text-base w-full bg-gray-50 
                          resize-none min-h-[48px] max-h-32 overflow-y-auto
                          transition-all duration-200
                          touch-manipulation"
