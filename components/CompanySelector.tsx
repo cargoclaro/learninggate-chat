@@ -183,7 +183,7 @@ export default function CompanySelector({ onCompanySelect }: CompanySelectorProp
 
       {isInputFocused && filter && filteredCompanies.length === 0 && !loading && (
          <p style={{ textAlign: 'center', padding: '10px 20px', color: '#555', border: '1px solid #dfe1e5', borderRadius: '0 0 8px 8px', margin: '0 20px 20px 20px', boxShadow: '0 4px 6px rgba(32,33,36,0.28)', backgroundColor: '#fff' }}>
-           No companies found matching "{filter}".
+           No companies found matching &quot;{filter}&quot;.
          </p>
       )}
     </div>
