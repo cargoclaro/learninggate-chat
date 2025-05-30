@@ -1,17 +1,18 @@
 'use client'; // This directive is necessary for using hooks like useState and event handlers
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react'; // Import the back arrow icon
 import CompanyIADashboard from './report'; // Import the dashboard component
 
 // Define a type for the component props
 interface ReportGeneratorFormProps {
   onReportStateChange?: (hasReport: boolean) => void; // Callback to notify parent about report state
+  initialCompanyName?: string; // Optional: To pre-fill the company name
 }
 
-export default function ReportGeneratorForm({ onReportStateChange }: ReportGeneratorFormProps) {
+export default function ReportGeneratorForm({ onReportStateChange, initialCompanyName }: ReportGeneratorFormProps) {
   // State to store the company name entered by the user
-  const [companyName, setCompanyName] = useState('');
+  const [companyName, setCompanyName] = useState(initialCompanyName || '');
   // State to indicate if the report is currently being generated (for loading indicators)
   const [isLoading, setIsLoading] = useState(false);
   // State to store any error messages
@@ -19,9 +20,28 @@ export default function ReportGeneratorForm({ onReportStateChange }: ReportGener
   // State to store the fetched stats
   const [stats, setStats] = useState<{ key: string; value: number }[] | null>(null);
 
+  // useEffect to update companyName if initialCompanyName prop changes
+  useEffect(() => {
+    if (initialCompanyName) {
+      setCompanyName(initialCompanyName);
+      // Automatically trigger report generation if an initial company name is provided
+      // and we are not already showing a report (stats is null)
+      // and it's not already loading.
+      // This makes the UX smoother by directly showing the report form for the selected company.
+      if (!stats && !isLoading) {
+         // We won't call handleGenerateReport directly here to avoid an infinite loop
+         // if the parent re-renders. Instead, we set the company name, and the user
+         // can then click "Generate Report".
+         // If you want to auto-generate, you'd need a more complex state management
+         // to prevent re-triggering, e.g., a flag to indicate if auto-generation for the
+         // current initialCompanyName has already occurred.
+      }
+    }
+  }, [initialCompanyName, stats, isLoading]); // Rerun effect if initialCompanyName, stats, or isLoading changes
+
   // This function will be called when the "Generate Report" button is clicked
   const handleGenerateReport = async () => {
-    // Basic validation: ensure company name is not empty
+    // Basic validation: ensure companyName is not empty
     if (!companyName.trim()) {
       setError('Please enter a company name.');
       return; // Stop execution if validation fails
@@ -71,8 +91,9 @@ export default function ReportGeneratorForm({ onReportStateChange }: ReportGener
   const handleBackToForm = () => {
     setStats(null); // Clear the stats to show the form again
     setError(null); // Clear any errors
-    setCompanyName(''); // Reset the company name
-    // Notify parent that we're back to form view
+    // setCompanyName(''); // We don't want to clear company name here if it was pre-selected.
+                        // The parent component will handle showing the selector again.
+    // Notify parent that we're back to form view (or rather, that a report is no longer shown)
     onReportStateChange?.(false);
   };
 
@@ -91,6 +112,7 @@ export default function ReportGeneratorForm({ onReportStateChange }: ReportGener
 
       <div className="space-y-8">
         {/* Show form only when no stats are loaded */}
+        {/* Also, always show the form if an initialCompanyName is provided, allowing generation */}
         {!stats && (
           <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
             <div className="mb-4">
@@ -103,16 +125,16 @@ export default function ReportGeneratorForm({ onReportStateChange }: ReportGener
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)} // Update companyName state on change
                 placeholder="E.g., Acme Corporation"
-                disabled={isLoading} // Disable input while loading
+                disabled={isLoading || !!initialCompanyName} // Disable if loading or if name came from selector
                 className="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             
             <button 
               onClick={handleGenerateReport} 
-              disabled={isLoading} // Disable button while loading
+              disabled={isLoading || !companyName.trim()} // Disable button if loading or companyName is empty
               className={`w-full py-2 px-4 rounded-md text-white font-medium ${
-                isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                isLoading || !companyName.trim() ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >
               {isLoading ? 'Generating...' : 'Generate Report'} {/* Change text when loading */}
