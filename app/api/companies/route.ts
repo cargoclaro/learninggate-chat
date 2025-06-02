@@ -20,10 +20,10 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export async function GET() {
   const table_name = 'evaluations';       // The table containing company names
   const column_name = 'nombre';           // The column with the company names
-  const desiredUniqueLimit = 10;
+  // const desiredUniqueLimit = 10; // Removed: We want all unique companies
   // Fetch a slightly larger number of rows to account for potential duplicates before finding unique names.
   // Ordering by name to make the "first 10" consistent (alphabetically).
-  const fetchLimit = 30; 
+  // const fetchLimit = 30; // Removed: We want all unique companies
 
   try {
     // Fetch distinct company names using the Supabase client library
@@ -37,8 +37,8 @@ export async function GET() {
       .select(`${column_name}`)
       .not(column_name, 'eq', '') // Ensure the column is not an empty string
       .not(column_name, 'is', null)
-      .order(column_name, { ascending: true }) // Order alphabetically
-      .limit(fetchLimit); // Fetch up to 30 rows
+      .order(column_name, { ascending: true }); // Order alphabetically
+      // .limit(fetchLimit); // Removed: Fetch all records
       
     if (error) {
       console.error('Supabase query error:', error);
@@ -47,22 +47,23 @@ export async function GET() {
 
     // Process data to get the first N unique company names, maintaining order
     const uniqueOrderedCompanyNames = new Set<string>();
-    const limitedFormattedData: { [key: string]: string }[] = [];
+    const allUniqueFormattedData: { [key: string]: string }[] = [];
 
     if (data) {
       for (const item of data) {
         const companyName = item[column_name];
         if (companyName && !uniqueOrderedCompanyNames.has(companyName)) {
           uniqueOrderedCompanyNames.add(companyName);
-          limitedFormattedData.push({ [column_name]: companyName });
-          if (limitedFormattedData.length === desiredUniqueLimit) {
-            break; // Stop once we have the desired number of unique names
-          }
+          allUniqueFormattedData.push({ [column_name]: companyName });
+          // Removed limit condition:
+          // if (limitedFormattedData.length === desiredUniqueLimit) {
+          //   break; // Stop once we have the desired number of unique names
+          // }
         }
       }
     }
     
-    return NextResponse.json(limitedFormattedData);
+    return NextResponse.json(allUniqueFormattedData);
 
   } catch (err) {
     // Catch any other unexpected errors during the process

@@ -186,6 +186,46 @@ export default function CompanySelector({ onCompanySelect }: CompanySelectorProp
            No companies found matching &quot;{filter}&quot;.
          </p>
       )}
+
+      {/* Section for listing all companies */}
+      <div style={{ marginTop: '20px', padding: '0 20px 20px 20px' }}>
+        <h3 style={{ color: '#333', marginBottom: '10px', fontSize: '18px', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
+          All Companies
+        </h3>
+        {companies.length > 0 ? (
+          <ul style={{
+            listStyleType: 'none',
+            padding: '0',
+            margin: '0',
+            maxHeight: '300px', // Max height for the list
+            overflowY: 'auto', // Scroll if content exceeds max height
+            border: '1px solid #e0e0e0', // Light border for the list container
+            borderRadius: '8px' // Rounded corners for the list container
+          }}>
+            {companies.map((company, index) => (
+              <li
+                key={`all-${company.nombre}-${index}`} // More unique key
+                onClick={() => handleSelectCompany(company.nombre)}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f5f5f5')} // Slightly different hover
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#fff')}
+                style={{
+                  padding: '12px 15px',
+                  cursor: 'pointer',
+                  borderBottom: index < companies.length - 1 ? '1px solid #eee' : 'none',
+                  fontSize: '15px'
+                }}
+              >
+                {company.nombre}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          // This message will show if companies array is empty after loading,
+          // but before error/loading states are handled globally.
+          // Global loading/error messages will take precedence.
+          !loading && !error && <p style={{ textAlign: 'center', color: '#757575', padding: '10px 0' }}>No companies available to list.</p>
+        )}
+      </div>
     </div>
   );
 } 
