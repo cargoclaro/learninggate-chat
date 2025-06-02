@@ -73,6 +73,8 @@ interface ROIData {
   employeeCount: number;
   currentHoursPerWeek: number;
   currentMinutesSavedPerDay: number;
+  adoptionEffectiveness: number;
+  missedHoursPerDay?: number;
 }
 
 const COLORS = [
@@ -164,7 +166,9 @@ const getROIFromStats = (stats: StatKV[]) => {
     opportunity: singleValue(stats, "roi.opportunity", 0),
     employeeCount: singleValue(stats, "employeeCount", 0),
     currentHoursPerWeek: singleValue(stats, "roi.currentHoursPerWeek", 1),
-    currentMinutesSavedPerDay: singleValue(stats, "roi.currentMinutesSavedPerDay", 1)
+    currentMinutesSavedPerDay: singleValue(stats, "roi.currentMinutesSavedPerDay", 1),
+    adoptionEffectiveness: singleValue(stats, "roi.adoptionEffectiveness", 1),
+    missedHoursPerDay: singleValue(stats, "roi.missedHoursPerDay", 2)
   };
 };
 
@@ -204,10 +208,11 @@ const MaturityCard: React.FC<{ maturity: MaturityData }> = ({ maturity }) => (
 );
 
 const ROICard: React.FC<{ roi: ROIData }> = ({ roi }) => {
-  // Calculate monthly values for easier understanding
-  const currentMonthly = Math.round(roi.current / 12);
-  const potentialMonthly = Math.round(roi.potential / 12);
-  const opportunityMonthly = Math.round(roi.opportunity / 12);
+  // roi.current, roi.potential, and roi.opportunity are now TOTAL MONTHLY values.
+  // No need to divide by 12 anymore.
+  const currentMonthlyTotal = roi.current;
+  const potentialMonthlyTotal = roi.potential;
+  const opportunityMonthlyTotal = roi.opportunity;
 
   return (
     <Card className="border-2 border-orange-200 bg-orange-50/50">
@@ -220,29 +225,47 @@ const ROICard: React.FC<{ roi: ROIData }> = ({ roi }) => {
       <CardContent className="pt-0 space-y-3">
         {/* Current Value */}
         <div className="flex justify-between items-center p-2 bg-blue-50 rounded border border-blue-200">
-          <span className="text-sm font-medium text-blue-700">💰 Valor actual generado:</span>
-          <span className="font-bold text-blue-700">${currentMonthly.toLocaleString()}/mes</span>
+          <span className="text-sm font-medium text-blue-700">💰 Valor actual generado (total):</span>
+          <span className="font-bold text-blue-700">${currentMonthlyTotal.toLocaleString()}/mes</span>
         </div>
         
         {/* Opportunity Cost - What they're losing */}
         <div className="flex justify-between items-center p-2 bg-red-50 rounded border border-red-200">
-          <span className="text-sm font-medium text-red-700">⚠️ Dinero que pierden:</span>
-          <span className="font-bold text-red-700">${opportunityMonthly.toLocaleString()}/mes</span>
+          <span className="text-sm font-medium text-red-700">⚠️ Dinero que pierden (total):</span>
+          <span className="font-bold text-red-700">${opportunityMonthlyTotal.toLocaleString()}/mes</span>
         </div>
         
         {/* Maximum Potential */}
         <div className="flex justify-between items-center p-2 bg-green-50 rounded border border-green-200">
-          <span className="text-sm font-medium text-green-700">🎯 Potencial con training:</span>
-          <span className="font-bold text-green-700">${potentialMonthly.toLocaleString()}/mes</span>
+          <span className="text-sm font-medium text-green-700">🎯 Potencial con training (total):</span>
+          <span className="font-bold text-green-700">${potentialMonthlyTotal.toLocaleString()}/mes</span>
         </div>
         
         {/* Context */}
         <div className="border-t pt-2 text-xs text-muted-foreground space-y-1">
-          <div>Uso actual: {roi.currentMinutesSavedPerDay} min/día por empleado</div>
-          <div>Potencial: 2h/día con IA optimizada (187.5 MXN/hora)</div>
-          <div className="font-medium text-red-600">
-            Están perdiendo {Math.round((roi.opportunity / roi.current) * 100)}% más valor del que generan
-          </div>
+          <div><strong>Tiempo ahorrado (reportado):</strong> {roi.currentMinutesSavedPerDay.toFixed(1)} min/día por empleado.</div>
+          <div><strong>Eficiencia de Adopción IA (real):</strong> {roi.adoptionEffectiveness.toFixed(1)}%.</div>
+          
+          {/* Display missed hours if not 100% effective and missedHoursPerDay is available and numeric */}
+          {roi.adoptionEffectiveness < 99.9 && typeof roi.missedHoursPerDay === 'number' && (
+            <div className="text-gray-600">
+              ↳ Potencial no alcanzado: {roi.missedHoursPerDay.toFixed(2)} hrs/día por empleado.
+            </div>
+          )}
+          
+          {/* Conditional text about opportunity vs current */}
+          {roi.current > 0 && roi.opportunity > 0 && (
+            <div className="font-medium text-red-600">
+              El costo de oportunidad (${opportunityMonthlyTotal.toLocaleString()}/mes) es un {Math.round((roi.opportunity / roi.current) * 100)}% del valor que ya generan.
+            </div>
+          )}
+          {/* If current value is zero but there's an opportunity cost */}
+          {roi.current === 0 && roi.opportunity > 0 && (
+            <div className="font-medium text-red-700">
+              Actualmente no se está capitalizando el valor de la IA, perdiendo el potencial de ${opportunityMonthlyTotal.toLocaleString()}/mes.
+            </div>
+          )}
+          <div>(Potencial máx. ahorro: 2 hrs/día/empleado con IA optimizada).</div>
         </div>
       </CardContent>
     </Card>
@@ -1008,12 +1031,10 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
             {(() => {
               const employeeCount = Math.max(25, roi.employeeCount);
               const isMinimumTeam = roi.employeeCount < 25;
-              const potentialGain = roi.potential - roi.current;
-              const programBase = 50000;
-              const employeeScaling = employeeCount > 25 ? (employeeCount - 25) * 1500 : 0;
-              const savingsValue = potentialGain * 0.15;
-              const totalValue = Math.max(programBase + employeeScaling + savingsValue, programBase);
-              const price = Math.round(totalValue * 0.5);
+
+              // Simplified pricing logic as per new requirement:
+              // Price is the adjusted employee count (min 25) times 1800.
+              const price = employeeCount * 1800;
 
               return (
                 <>
@@ -1034,7 +1055,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
                       PROGRAMA CHATGPT BÁSICO + MICROSOFT COPILOT IA / GOOGLE GEMINI
                     </div>
                     <h3 className="text-2xl font-bold mb-1">
-                      De {maturity.level} a Experto en 90 Días
+                      De {maturity.level} a Experto en 2 Días
                     </h3>
                     <p className="text-base text-muted-foreground">
                       Para {employeeCount} empleados — Certificación en IA aplicada
@@ -1062,7 +1083,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
                       <ul className="text-base text-red-600 space-y-2">
                         <li className="flex items-center gap-2">
                           <span className="text-red-500">💸</span>
-                          <span>Pierdes ${Math.round(roi.opportunity / 12).toLocaleString()} / mes</span>
+                          <span>Pierdes ${Math.round(roi.opportunity).toLocaleString()} / mes</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <span className="text-red-500">🕒</span>
@@ -1075,7 +1096,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
                       </ul>
                       <div className="border-t border-red-200 mt-3 pt-3 text-center">
                         <div className="text-base text-red-600 mb-2">Costo anual de oportunidad</div>
-                        <div className="text-3xl font-bold text-red-700 bg-white rounded-lg py-2 px-4">${Math.round(roi.opportunity).toLocaleString()}</div>
+                        <div className="text-3xl font-bold text-red-700 bg-white rounded-lg py-2 px-4">${Math.round(roi.opportunity * 12).toLocaleString()}</div>
                       </div>
                     </div>
                     <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
@@ -1085,7 +1106,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
                       <ul className="text-base text-green-600 space-y-2">
                         <li className="flex items-center gap-2">
                           <span className="text-green-500">📈</span>
-                          <span>Ganas ${Math.round(roi.potential / 12).toLocaleString()} / mes</span>
+                          <span>Ganas ${Math.round(roi.potential).toLocaleString()} / mes</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <span className="text-green-500">⏱️</span>
@@ -1098,14 +1119,17 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
                       </ul>
                       <div className="border-t border-green-200 mt-3 pt-3 text-center">
                         <div className="text-base text-green-600 mb-2">Beneficio anual total</div>
-                        <div className="text-3xl font-bold text-green-700 bg-white rounded-lg py-2 px-4">${Math.round(roi.potential).toLocaleString()}</div>
+                        <div className="text-3xl font-bold text-green-700 bg-white rounded-lg py-2 px-4">${Math.round(roi.potential * 12).toLocaleString()}</div>
                       </div>
                     </div>
                   </div>
 
                   <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg text-center mb-4">
                     <div className="text-sm text-gray-600 mb-1">Precio del programa</div>
-                    <div className="text-2xl font-bold text-gray-900">${price.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-gray-900">
+                      ${price.toLocaleString()}
+                      <span className="text-xs text-gray-500 font-normal ml-1">más IVA</span>
+                    </div>
                   </div>
 
                   <div className="bg-green-50 border border-green-200 p-4 rounded-lg mb-4">
@@ -1113,9 +1137,9 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
                       <Shield className="w-5 h-5" /> Garantía Triple
                     </div>
                     <ul className="text-sm text-green-600 space-y-1">
-                      <li>✓ Recuperas ${Math.round(potentialGain).toLocaleString()} o reembolso</li>
-                      <li>✓ Skill sube a 5/5 o extensión gratis</li>
-                      <li>✓ Satisfacción o no pagas</li>
+                      <li>✓ Si no te gusta el programa te devolvemos el dinero</li>
+                      <li>✓ Skill sube a 4/5 o extensión gratis</li>
+                      <li>✓ Domina el uso de IA en tu empresa</li>
                     </ul>
                   </div>
 
@@ -1157,7 +1181,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
             {(() => {
               const employeeCount = Math.max(25, roi.employeeCount);
               const isMinimumTeam = roi.employeeCount < 25;
-              const potentialGain = (roi.potential - roi.current) * 0.5; // Half the ROI
+              const potentialGain = (roi.potential - roi.current) * 0.5;
               const pricePerEmployee = 999;
               const totalPrice = employeeCount * pricePerEmployee;
 
@@ -1208,7 +1232,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
                       <ul className="text-base text-red-600 space-y-2">
                         <li className="flex items-center gap-2">
                           <span className="text-red-500">💸</span>
-                          <span>Pierdes ${Math.round((roi.opportunity * 0.5) / 12).toLocaleString()} / mes</span>
+                          <span>Pierdes ${Math.round(roi.opportunity * 0.5).toLocaleString()} / mes</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <span className="text-red-500">🕒</span>
@@ -1221,7 +1245,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
                       </ul>
                       <div className="border-t border-red-200 mt-3 pt-3 text-center">
                         <div className="text-base text-red-600 mb-2">Costo anual de oportunidad</div>
-                        <div className="text-3xl font-bold text-red-700 bg-white rounded-lg py-2 px-4">${Math.round(roi.opportunity * 0.5).toLocaleString()}</div>
+                        <div className="text-3xl font-bold text-red-700 bg-white rounded-lg py-2 px-4">${Math.round(roi.opportunity * 0.5 * 12).toLocaleString()}</div>
                       </div>
                     </div>
                     <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
@@ -1231,7 +1255,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
                       <ul className="text-base text-green-600 space-y-2">
                         <li className="flex items-center gap-2">
                           <span className="text-green-500">📈</span>
-                          <span>Ganas ${Math.round((roi.current + potentialGain) / 12).toLocaleString()} / mes</span>
+                          <span>Ganas ${Math.round(roi.current + potentialGain).toLocaleString()} / mes</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <span className="text-green-500">⏱️</span>
@@ -1244,7 +1268,7 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
                       </ul>
                       <div className="border-t border-green-200 mt-3 pt-3 text-center">
                         <div className="text-base text-green-600 mb-2">Beneficio anual total</div>
-                        <div className="text-3xl font-bold text-green-700 bg-white rounded-lg py-2 px-4">${Math.round(roi.current + potentialGain).toLocaleString()}</div>
+                        <div className="text-3xl font-bold text-green-700 bg-white rounded-lg py-2 px-4">${Math.round((roi.current + potentialGain) * 12).toLocaleString()}</div>
                       </div>
                     </div>
                   </div>

@@ -325,42 +325,64 @@ export async function computeStatsByCompany(company: string) {
   const topTopics = topN('tema_a_profundizar');
 
   // ----- ROI CALCULATION -----
-  const calculateROI = (employeeCount: number, avgCurrentHoursPerWeek: number, avgCurrentMinutesSaved: number, avgDepartmentUsage: number) => {
+  // Simplified ROI calculation based on new logic
+  const calculateROI = (
+    employeeCount: number, 
+    avgCurrentMinutesSavedDaily: number, // Average minutes saved per day from survey
+    avgPromptQualityScale: number, // Scale 1-5 (0 if no data)
+    avgDepartmentUsageScore: number // For metadata
+  ) => {
     // Basic salary and time constants
-    const monthlyRatePerEmployee = 30000; // MXN
-    const workHoursPerDay = 8;
-    const workDaysPerMonth = 20;
+    const MONTHLY_RATE_PER_EMPLOYEE = 30000; // MXN
+    const WORK_HOURS_PER_DAY = 8;
+    const WORK_DAYS_PER_MONTH = 20;
     
-    // Calculate hourly rate: 30,000 MXN ÷ (8 hours × 20 days) = 187.5 MXN/hour
-    const hourlyRatePerEmployee = monthlyRatePerEmployee / (workHoursPerDay * workDaysPerMonth);
+    const HOURLY_RATE_PER_EMPLOYEE = MONTHLY_RATE_PER_EMPLOYEE / (WORK_HOURS_PER_DAY * WORK_DAYS_PER_MONTH);
+    const VALUE_PER_MINUTE_EMPLOYEE = HOURLY_RATE_PER_EMPLOYEE / 60;
     
-    // CURRENT STATE: What they're achieving with their current AI knowledge/adoption
-    // This is the actual time they report saving (from survey data)
-    const currentSavingsHoursPerDay = avgCurrentMinutesSaved / 60;
-    const currentValuePerDay = currentSavingsHoursPerDay * hourlyRatePerEmployee;
-    const currentValuePerMonth = currentValuePerDay * workDaysPerMonth;
-    const currentValuePerYear = currentValuePerMonth * 12;
-    
-    // POTENTIAL STATE: What they could achieve with PERFECT AI usage
-    // Research shows properly trained employees can save up to 2 hours per day
-    const maxPotentialHoursPerDay = 2;
-    const maxPotentialValuePerDay = maxPotentialHoursPerDay * hourlyRatePerEmployee; // 375 MXN/day
-    const maxPotentialValuePerMonth = maxPotentialValuePerDay * workDaysPerMonth; // ~7,500 MXN/month
-    const maxPotentialValuePerYear = maxPotentialValuePerMonth * 12; // ~90,000 MXN/year
-    
-    // OPPORTUNITY COST: The value they're missing by not using AI to its full potential
-    const missedHoursPerDay = Math.max(0, maxPotentialHoursPerDay - currentSavingsHoursPerDay);
-    const missedValuePerDay = missedHoursPerDay * hourlyRatePerEmployee;
-    const missedValuePerMonth = missedValuePerDay * workDaysPerMonth;
-    const missedValuePerYear = missedValuePerMonth * 12;
-    
+    // Max potential AI can offer (e.g., 2 hours saved per day)
+    const MAX_POTENTIAL_HOURS_PER_DAY = 2;
+    const MAX_POTENTIAL_MINUTES_PER_DAY = MAX_POTENTIAL_HOURS_PER_DAY * 60; // 120 minutes
+
+    // 1. Calculate Nerfed Prompt Factor
+    // Treat invalid/0 scale as worst case (1 for formula), resulting in 0 factor.
+    const safePromptQualityScale = (avgPromptQualityScale >= 1 && avgPromptQualityScale <= 5) 
+      ? avgPromptQualityScale 
+      : 1; 
+    const nerfedPromptFactor = (safePromptQualityScale - 1) / 4; // Ranges from 0 to 1
+
+    // 2. Calculate Current Value Generated (per employee, monthly)
+    // These are the "effective" minutes saved daily after considering prompt quality
+    const currentEffectiveMinutesSavedDaily = avgCurrentMinutesSavedDaily * nerfedPromptFactor;
+    const currentValuePerEmployeeMonthly = currentEffectiveMinutesSavedDaily * VALUE_PER_MINUTE_EMPLOYEE * WORK_DAYS_PER_MONTH;
+
+    // 3. AI Potential (Max Potential) (per employee, monthly)
+    // This is the theoretical max, e.g., 7500 MXN/month based on 120 mins saved daily
+    const aiPotentialPerEmployeeMonthly = MAX_POTENTIAL_MINUTES_PER_DAY * VALUE_PER_MINUTE_EMPLOYEE * WORK_DAYS_PER_MONTH;
+
+    // 4. Opportunity Cost (per employee, monthly)
+    const opportunityCostPerEmployeeMonthly = Math.max(0, aiPotentialPerEmployeeMonthly - currentValuePerEmployeeMonthly);
+
     // Total calculations for all employees
-    const totalCurrentValue = currentValuePerYear * employeeCount;
-    const totalMaxPotential = maxPotentialValuePerYear * employeeCount;
-    const totalOpportunityCost = missedValuePerYear * employeeCount;
+    const totalCurrentValue = currentValuePerEmployeeMonthly * employeeCount;
+    const totalMaxPotential = aiPotentialPerEmployeeMonthly * employeeCount;
+    const totalOpportunityCost = opportunityCostPerEmployeeMonthly * employeeCount;
+
+    // Per employee yearly values
+    const currentValuePerEmployeeYearly = currentValuePerEmployeeMonthly * 12;
+    const aiPotentialPerEmployeeYearly = aiPotentialPerEmployeeMonthly * 12;
+    const opportunityCostPerEmployeeYearly = opportunityCostPerEmployeeMonthly * 12;
     
-    // Calculate adoption effectiveness (how well they're using AI compared to perfect usage)
-    const adoptionEffectiveness = Math.min(1, currentSavingsHoursPerDay / maxPotentialHoursPerDay);
+    // Metadata calculations
+    const currentEffectiveHoursSavedPerDay = currentEffectiveMinutesSavedDaily / 60;
+    
+    let adoptionEffectiveness = 0;
+    if (MAX_POTENTIAL_HOURS_PER_DAY > 0) {
+      adoptionEffectiveness = currentEffectiveHoursSavedPerDay / MAX_POTENTIAL_HOURS_PER_DAY;
+    }
+    adoptionEffectiveness = Math.min(1, Math.max(0, adoptionEffectiveness)); // Clamp between 0 and 1
+    
+    const missedHoursPerDay = Math.max(0, MAX_POTENTIAL_HOURS_PER_DAY - currentEffectiveHoursSavedPerDay);
     
     return {
       // Current value they're getting from AI with their current knowledge/adoption
@@ -371,24 +393,30 @@ export async function computeStatsByCompany(company: string) {
       opportunityCost: Math.round(totalOpportunityCost),
       // Per employee breakdown
       perEmployee: {
-        currentMonthly: Math.round(currentValuePerMonth),
-        maxPotentialMonthly: Math.round(maxPotentialValuePerMonth),
-        missedMonthly: Math.round(missedValuePerMonth),
-        currentYearly: Math.round(currentValuePerYear),
-        maxPotentialYearly: Math.round(maxPotentialValuePerYear),
-        missedYearly: Math.round(missedValuePerYear)
+        currentMonthly: Math.round(currentValuePerEmployeeMonthly),
+        maxPotentialMonthly: Math.round(aiPotentialPerEmployeeMonthly),
+        missedMonthly: Math.round(opportunityCostPerEmployeeMonthly),
+        currentYearly: Math.round(currentValuePerEmployeeYearly),
+        maxPotentialYearly: Math.round(aiPotentialPerEmployeeYearly),
+        missedYearly: Math.round(opportunityCostPerEmployeeYearly)
       },
       // Metadata
       employeeCount: employeeCount,
-      currentHoursPerDay: +currentSavingsHoursPerDay.toFixed(2),
+      // This reflects the "effective" hours saved daily after prompt quality nerf
+      currentHoursPerDay: +currentEffectiveHoursSavedPerDay.toFixed(2), 
       missedHoursPerDay: +missedHoursPerDay.toFixed(2),
-      currentMinutesSavedPerDay: +avgCurrentMinutesSaved.toFixed(1),
+      // This is the raw average minutes saved from survey data, before nerfing
+      currentMinutesSavedPerDay: +avgCurrentMinutesSavedDaily.toFixed(1), 
       adoptionEffectiveness: +(adoptionEffectiveness * 100).toFixed(1), // As percentage
-      departmentUsageScore: +avgDepartmentUsage.toFixed(2) // Keep original 1-5 score for reference
+      // Keep original 1-5 score for reference
+      departmentUsageScore: +avgDepartmentUsageScore.toFixed(2) 
     };
   };
 
-  const roiData = calculateROI(total, avgHours, avgMinutesSaved, avgDepartmentUsage);
+  // Call the updated ROI function
+  // avgHours (avgHoursIAWeek) is no longer passed to calculateROI
+  // avgPromptQuality (scale 1-5, or 0) is passed as avgPromptQualityScale
+  const roiData = calculateROI(total, avgMinutesSaved, avgPromptQuality, avgDepartmentUsage);
 
   // ----- RESULTADO PLANO -----
   return [
@@ -469,7 +497,7 @@ export async function computeStatsByCompany(company: string) {
     { key: 'roi.current', value: roiData.currentValue },
     { key: 'roi.potential', value: roiData.maxPotential },
     { key: 'roi.opportunity', value: roiData.opportunityCost },
-    { key: 'roi.currentHoursPerWeek', value: roiData.currentHoursPerDay * 5 }, // Convert daily to weekly
+    { key: 'roi.currentHoursPerDay', value: roiData.currentHoursPerDay },
     { key: 'roi.currentMinutesSavedPerDay', value: roiData.currentMinutesSavedPerDay },
     
     // Additional detailed ROI metrics
@@ -479,8 +507,6 @@ export async function computeStatsByCompany(company: string) {
     { key: 'roi.perEmployee.currentYearly', value: roiData.perEmployee.currentYearly },
     { key: 'roi.perEmployee.maxPotentialYearly', value: roiData.perEmployee.maxPotentialYearly },
     { key: 'roi.perEmployee.missedYearly', value: roiData.perEmployee.missedYearly },
-    { key: 'roi.currentHoursPerDay', value: roiData.currentHoursPerDay },
-    { key: 'roi.missedHoursPerDay', value: roiData.missedHoursPerDay },
     { key: 'roi.adoptionEffectiveness', value: roiData.adoptionEffectiveness },
     { key: 'roi.departmentUsageScore', value: roiData.departmentUsageScore },
   ];

@@ -416,13 +416,19 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
     potential: getSingleValue(stats, 'roi.potential', 0),
     opportunity: getSingleValue(stats, 'roi.opportunity', 0),
     employeeCount: getSingleValue(stats, 'employeeCount', 0),
-    currentHoursPerWeek: getSingleValue(stats, 'roi.currentHoursPerWeek', 1),
-    currentMinutesSavedPerDay: getSingleValue(stats, 'roi.currentMinutesSavedPerDay', 1)
+    // currentHoursPerWeek is likely no longer directly used in PDF ROI display, but kept if other parts use it.
+    currentHoursPerWeek: getSingleValue(stats, 'roi.currentHoursPerWeek', 1), 
+    currentMinutesSavedPerDay: getSingleValue(stats, 'roi.currentMinutesSavedPerDay', 1),
+    // Add new ROI fields
+    adoptionEffectiveness: getSingleValue(stats, 'roi.adoptionEffectiveness', 1),
+    missedHoursPerDay: getSingleValue(stats, 'roi.missedHoursPerDay', 2) // Assuming 2 decimal places if needed
   };
 
-  const currentMonthly = Math.round(roi.current / 12);
-  const potentialMonthly = Math.round(roi.potential / 12);
-  const opportunityMonthly = Math.round(roi.opportunity / 12);
+  // Corrected: roi.current, roi.potential, roi.opportunity are already monthly.
+  // No need to divide by 12.
+  const currentMonthly = roi.current;
+  const potentialMonthly = roi.potential;
+  const opportunityMonthly = roi.opportunity;
 
   // Get age data
   // const avgAgeScale = getSingleValue(stats, "avgAge", 1);
