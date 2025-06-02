@@ -1479,25 +1479,25 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                       <View style={{ flex: 1, backgroundColor: '#fef2f2', borderLeftWidth: 3, borderLeftColor: '#dc2626', padding: 10, borderRadius: 4 }}>
                         <Text style={{ fontSize: 10, color: '#dc2626', fontWeight: 'bold', marginBottom: 6 }}>Sin el programa</Text>
                         <View style={{ gap: 4 }}>
-                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Pierdes ${Math.round(roi.opportunity / 12).toLocaleString()} / mes</Text>
+                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Pierdes ${Math.round(roi.opportunity * 12).toLocaleString()} / año</Text>
                           <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Ahorro actual: {roi.currentMinutesSavedPerDay} min/día</Text>
                           <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Skill IA: {getSingleValue(stats, "avgPromptSkill", 1)}/5</Text>
                         </View>
                         <View style={{ borderTop: '1 solid #fecaca', marginTop: 6, paddingTop: 6, alignItems: 'center' }}>
                           <Text style={{ fontSize: 8, color: '#dc2626' }}>Costo anual de oportunidad</Text>
-                          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#dc2626' }}>${Math.round(roi.opportunity).toLocaleString()}</Text>
+                          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#dc2626' }}>${Math.round(roi.opportunity * 12).toLocaleString()}</Text>
                         </View>
                       </View>
                       <View style={{ flex: 1, backgroundColor: '#f0fdf4', borderLeftWidth: 3, borderLeftColor: '#16a34a', padding: 10, borderRadius: 4 }}>
                         <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold', marginBottom: 6 }}>Con el programa</Text>
                         <View style={{ gap: 4 }}>
-                          <Text style={{ fontSize: 8, color: '#14532d' }}>Ganas ${Math.round(roi.potential / 12).toLocaleString()} / mes</Text>
+                          <Text style={{ fontSize: 8, color: '#14532d' }}>Ganas ${Math.round(roi.potential * 12).toLocaleString()} / año</Text>
                           <Text style={{ fontSize: 8, color: '#14532d' }}>120+ min/día ahorrados</Text>
                           <Text style={{ fontSize: 8, color: '#14532d' }}>Skill IA: 5/5 certificado</Text>
                         </View>
                         <View style={{ borderTop: '1 solid #bbf7d0', marginTop: 6, paddingTop: 6, alignItems: 'center' }}>
                           <Text style={{ fontSize: 8, color: '#16a34a' }}>Beneficio anual total</Text>
-                          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a' }}>${Math.round(roi.potential).toLocaleString()}</Text>
+                          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a' }}>${Math.round(roi.potential * 12).toLocaleString()}</Text>
                         </View>
                       </View>
                     </View>
@@ -1583,10 +1583,14 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
               const pricePerEmployee = 999;
               const programPrice = displayEmployeeCountLocal * pricePerEmployee;
 
-              const basicProgramAdditionalAnnualGain = (roi.potential - roi.current) * 0.5;
-              const totalAnnualSavingWithBasicProgram = roi.current + basicProgramAdditionalAnnualGain;
-              const basicProgramAdditionalMonthlyGain = Math.round(basicProgramAdditionalAnnualGain / 12);
-              const totalMonthlyValueWithBasicProgram = currentMonthly + basicProgramAdditionalMonthlyGain;
+              // Corrected annual calculations
+              const currentAnnualSaving = roi.current * 12;
+              // basicProgramAdditionalAnnualGain: 50% of the difference between potential monthly and current monthly, then annualized.
+              const basicProgramAdditionalAnnualGain = (roi.potential - roi.current) * 0.5 * 12;
+              const totalAnnualSavingWithBasicProgram = currentAnnualSaving + basicProgramAdditionalAnnualGain;
+              
+              // opportunityMonthly is already defined outside, representing roi.opportunity (monthly)
+              const annualOpportunityCost = opportunityMonthly * 12;
 
               return (
                 <>
@@ -1604,24 +1608,24 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                   {/* Value Comparison */}
                   <View style={{ flexDirection: 'row', gap: 10, marginBottom: 12 }}>
                     <View style={{ flex: 1, backgroundColor: '#fef2f2', borderLeftWidth: 3, borderLeftColor: '#dc2626', padding: 10, borderRadius: 4 }}>
-                      <Text style={{ fontSize: 10, color: '#dc2626', fontWeight: 'bold', marginBottom: 6 }}>⚠️ Sin capacitación IA</Text>
+                      <Text style={{ fontSize: 10, color: '#dc2626', fontWeight: 'bold', marginBottom: 6 }}>Sin capacitación IA</Text>
                       <View style={{ gap: 4 }}>
-                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>💸 Pierdes ${opportunityMonthly.toLocaleString()} / mes</Text>
-                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>🕒 Ahorro actual: {roi.currentMinutesSavedPerDay} min/día</Text>
-                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>📉 Skill IA: {getSingleValue(stats, "avgPromptSkill", 1)}/5</Text>
+                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Pierdes ${annualOpportunityCost.toLocaleString()} / año</Text>
+                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Ahorro actual: {roi.currentMinutesSavedPerDay} min/día</Text>
+                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Skill IA: {getSingleValue(stats, "avgPromptSkill", 1)}/5</Text>
                       </View>
                       <View style={{ borderTop: '1 solid #fecaca', marginTop: 6, paddingTop: 6, alignItems: 'center' }}>
                         <Text style={{ fontSize: 8, color: '#dc2626' }}>Costo anual de oportunidad</Text>
-                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#dc2626' }}>${roi.opportunity.toLocaleString()}</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#dc2626' }}>${annualOpportunityCost.toLocaleString()}</Text>
                       </View>
                     </View>
                     
                     <View style={{ flex: 1, backgroundColor: '#f0fdf4', borderLeftWidth: 3, borderLeftColor: '#16a34a', padding: 10, borderRadius: 4 }}>
-                      <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold', marginBottom: 6 }}>✓ Con Programa Básico</Text>
+                      <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold', marginBottom: 6 }}>Con Programa Básico</Text>
                       <View style={{ gap: 4 }}>
-                        <Text style={{ fontSize: 8, color: '#14532d' }}>📈 Ganas ${totalMonthlyValueWithBasicProgram.toLocaleString()} / mes</Text>
-                        <Text style={{ fontSize: 8, color: '#14532d' }}>⏱️ 60+ min/día ahorrados</Text>
-                        <Text style={{ fontSize: 8, color: '#14532d' }}>🏆 Skill IA: 4/5 certificado</Text>
+                        <Text style={{ fontSize: 8, color: '#14532d' }}>Ganas ${totalAnnualSavingWithBasicProgram.toLocaleString()} / año</Text>
+                        <Text style={{ fontSize: 8, color: '#14532d' }}>60+ min/día ahorrados</Text>
+                        <Text style={{ fontSize: 8, color: '#14532d' }}>Skill IA: 4/5 certificado</Text>
                       </View>
                       <View style={{ borderTop: '1 solid #bbf7d0', marginTop: 6, paddingTop: 6, alignItems: 'center' }}>
                         <Text style={{ fontSize: 8, color: '#16a34a' }}>Beneficio anual total</Text>
