@@ -25,6 +25,13 @@
     ├── report-generator.tsx
     ├── report-pdf.tsx
     ├── report.tsx
+    ├── report
+    │   ├── MaturityCard.tsx
+    │   ├── ROICard.tsx
+    │   ├── OpportunityCard.tsx
+    │   ├── SummaryCard.tsx
+    │   ├── TasksByAreaSection.tsx
+    │   └── types.ts
     └── ui
     │   ├── badge.tsx
     │   └── card.tsx

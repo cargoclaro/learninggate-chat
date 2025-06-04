@@ -149,7 +149,8 @@ The application follows a multi-stage workflow, from initial user interaction to
     *   `chat.tsx`: Manages the entire chat interview flow, including form input, AI interaction, progress tracking, and triggering evaluation.
     *   `CompanySelector.tsx`: UI for fetching and selecting a company.
     *   `report-generator.tsx`: Form and logic for fetching and then displaying a specific company's report via `CompanyIADashboard`.
-    *   `report.tsx` (exports `CompanyIADashboard`): The main dashboard component that visually presents all statistics, charts, and insights for a company.
+    *   `report.tsx` (exports `CompanyIADashboard`): The main dashboard component that visually presents all statistics, charts, and insights for a company. It now imports several subcomponents from `components/report/` for better organization.
+    *   `report/`: Holds `MaturityCard.tsx`, `ROICard.tsx`, `OpportunityCard.tsx`, `SummaryCard.tsx`, `TasksByAreaSection.tsx`, and shared `types.ts`.
     *   `pdf-export-wrapper.tsx`: Provides UI options (like a dropdown) for PDF export and dynamically loads the PDF button.
     *   `report-pdf.tsx` (exports `PDFReport` and `PDFExportButton`): Defines the actual PDF document structure and content using `@react-pdf/renderer`.
     *   `ProgressBar.tsx`: A simple visual component to show progress during the chat.
