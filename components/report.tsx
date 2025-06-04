@@ -1,79 +1,55 @@
 import React from "react";
-import Image from "next/image";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "./ui/card";
-import { Badge } from "./ui/badge";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  RadarChart,
-  Radar,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  CartesianGrid,
-} from "recharts";
-import { 
-  CalendarDays, 
-  BarChart3, 
-  PieChart as PieIcon, 
-  TrendingUp, 
-  AlertTriangle, 
-  CheckCircle, 
-  Target,
-  DollarSign,
-  Users,
-  Zap,
-  Brain,
-  BookOpen,
-  Award,
-  ShoppingCart,
-  Megaphone,
-  Calculator,
-  GraduationCap,
-  Lightbulb,
-  Shield
-} from "lucide-react";
-import { DropdownPDFExport } from "./pdf-export-wrapper";
+// Removed Image from "next/image";
+// import {
+//   Card, // No longer directly used
+//   CardHeader, // No longer directly used
+//   CardTitle, // No longer directly used
+//   CardContent, // No longer directly used
+// } from "./ui/card"; // Card components are now in children
+// import { Badge } from "./ui/badge"; // No longer directly used here, moved to ReportHeader
 
-interface StatKV {
-  key: string;
-  value: number;
-}
+// All specific Recharts imports are removed as charts are in child components
+
+// Lucide React Icons - Keep only those directly used in report.tsx's JSX (if any after all refactoring)
+// For now, assuming none are directly used and all are in child components.
+// import { 
+//   CalendarDays, 
+//   PieChart as PieIcon, 
+//   TrendingUp,    
+//   AlertTriangle, 
+//   Users,         
+//   BarChart3,     
+//   Zap,           
+//   Target         
+// } from "lucide-react";
+
+// import { DropdownPDFExport } from "./pdf-export-wrapper"; // Moved to ReportHeader
+import { StatKV, MaturityData, ROIData } from "./report/types";
+
+// Imports for all the new child components
+import { MaturityCard } from "./report/MaturityCard";
+import { ROICard } from "./report/ROICard";
+// import { OpportunityCard } from "./report/OpportunityCard"; // Only used by OpportunitiesRisksSection
+// import { SummaryCard } from "./report/SummaryCard"; // Only used by KeyMetricsSection
+import { TasksByAreaSection } from "./report/TasksByAreaSection";
+import { KnowledgeAssessmentCard } from "./report/KnowledgeAssessmentCard";
+import { DepartmentUsageCard } from "./report/DepartmentUsageCard";
+import { TrainingStatusCard } from "./report/TrainingStatusCard";
+import { DiagnosticMetricsSection } from "./report/DiagnosticMetricsSection";
+import { OrganizationalBarriersCard } from "./report/OrganizationalBarriersCard";
+import { DeviceDistributionChart } from "./report/DeviceDistributionChart";
+import { SkillsRadarChart } from "./report/SkillsRadarChart";
+import { AIToolsAdoptionChart } from "./report/AIToolsAdoptionChart";
+import { CourseOfferCard } from "./report/CourseOfferCard";
+import { AlternativeOfferCard } from "./report/AlternativeOfferCard";
+import { ReportHeader } from "./report/ReportHeader";
+import { KeyMetricsSection } from "./report/KeyMetricsSection";
+import { OpportunitiesRisksSection } from "./report/OpportunitiesRisksSection";
+import { ReportFooter } from "./report/ReportFooter";
 
 interface Props {
   companyName: string;
   stats: StatKV[];
-}
-
-interface MaturityData {
-  score: number;
-  level: string;
-  color: string;
-  description: string;
-}
-
-interface ROIData {
-  current: number;
-  potential: number;
-  opportunity: number;
-  employeeCount: number;
-  currentHoursPerWeek: number;
-  currentMinutesSavedPerDay: number;
-  adoptionEffectiveness: number;
-  missedHoursPerDay?: number;
 }
 
 const COLORS = [
@@ -171,342 +147,6 @@ const getROIFromStats = (stats: StatKV[]) => {
   };
 };
 
-const MaturityCard: React.FC<{ maturity: MaturityData }> = ({ maturity }) => (
-  <Card className="border-2" style={{ borderColor: maturity.color }}>
-    <CardHeader className="pb-2">
-      <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-        <Target className="w-4 h-4" />
-        Nivel de Madurez IA
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="pt-0">
-      <div className="flex items-center gap-4">
-        <div className="text-4xl font-bold" style={{ color: maturity.color }}>
-          {maturity.score}
-        </div>
-        <div>
-          <Badge style={{ backgroundColor: maturity.color, color: 'white' }}>
-            {maturity.level}
-          </Badge>
-          <p className="text-sm text-muted-foreground mt-1">
-            {maturity.description}
-          </p>
-        </div>
-      </div>
-      <div className="mt-3 bg-muted/40 rounded-full h-3">
-        <div
-          className="h-3 rounded-full transition-all duration-500"
-          style={{ 
-            width: `${maturity.score}%`, 
-            backgroundColor: maturity.color 
-          }}
-        />
-      </div>
-    </CardContent>
-  </Card>
-);
-
-const ROICard: React.FC<{ roi: ROIData }> = ({ roi }) => {
-  // roi.current, roi.potential, and roi.opportunity are now TOTAL MONTHLY values.
-  // No need to divide by 12 anymore.
-  const currentMonthlyTotal = roi.current;
-  const potentialMonthlyTotal = roi.potential;
-  const opportunityMonthlyTotal = roi.opportunity;
-
-  return (
-    <Card className="border-2 border-orange-200 bg-orange-50/50">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-          <DollarSign className="w-4 h-4" />
-          Análisis ROI Mensual ({roi.employeeCount} empleados)
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0 space-y-3">
-        {/* Current Value */}
-        <div className="flex justify-between items-center p-2 bg-blue-50 rounded border border-blue-200">
-          <span className="text-sm font-medium text-blue-700">💰 Valor actual generado (total):</span>
-          <span className="font-bold text-blue-700">${currentMonthlyTotal.toLocaleString()}/mes</span>
-        </div>
-        
-        {/* Opportunity Cost - What they're losing */}
-        <div className="flex justify-between items-center p-2 bg-red-50 rounded border border-red-200">
-          <span className="text-sm font-medium text-red-700">⚠️ Dinero que pierden (total):</span>
-          <span className="font-bold text-red-700">${opportunityMonthlyTotal.toLocaleString()}/mes</span>
-        </div>
-        
-        {/* Maximum Potential */}
-        <div className="flex justify-between items-center p-2 bg-green-50 rounded border border-green-200">
-          <span className="text-sm font-medium text-green-700">🎯 Potencial con training (total):</span>
-          <span className="font-bold text-green-700">${potentialMonthlyTotal.toLocaleString()}/mes</span>
-        </div>
-        
-        {/* Context */}
-        <div className="border-t pt-2 text-xs text-muted-foreground space-y-1">
-          <div><strong>Tiempo ahorrado (reportado):</strong> {roi.currentMinutesSavedPerDay.toFixed(1)} min/día por empleado.</div>
-          <div><strong>Eficiencia de Adopción IA (real):</strong> {roi.adoptionEffectiveness.toFixed(1)}%.</div>
-          
-          {/* Display missed hours if not 100% effective and missedHoursPerDay is available and numeric */}
-          {roi.adoptionEffectiveness < 99.9 && typeof roi.missedHoursPerDay === 'number' && (
-            <div className="text-gray-600">
-              ↳ Potencial no alcanzado: {roi.missedHoursPerDay.toFixed(2)} hrs/día por empleado.
-            </div>
-          )}
-          
-          {/* Conditional text about opportunity vs current */}
-          {roi.current > 0 && roi.opportunity > 0 && (
-            <div className="font-medium text-red-600">
-              El costo de oportunidad (${opportunityMonthlyTotal.toLocaleString()}/mes) es un {Math.round((roi.opportunity / roi.current) * 100)}% del valor que ya generan.
-            </div>
-          )}
-          {/* If current value is zero but there's an opportunity cost */}
-          {roi.current === 0 && roi.opportunity > 0 && (
-            <div className="font-medium text-red-700">
-              Actualmente no se está capitalizando el valor de la IA, perdiendo el potencial de ${opportunityMonthlyTotal.toLocaleString()}/mes.
-            </div>
-          )}
-          <div>(Potencial máx. ahorro: 2 hrs/día/empleado con IA optimizada).</div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
-const OpportunityCard: React.FC<{ title: string; items: string[]; icon: React.ReactNode; color: string }> = ({
-  title,
-  items,
-  icon,
-  color
-}) => (
-  <Card className="h-full">
-    <CardHeader className="pb-2">
-      <CardTitle className="text-sm font-medium flex items-center gap-2" style={{ color }}>
-        {icon}
-        {title}
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="pt-0">
-      <ul className="space-y-2">
-        {items.map((item, idx) => (
-          <li key={idx} className="flex items-start gap-2 text-sm">
-            <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: color }} />
-            {item}
-          </li>
-        ))}
-      </ul>
-    </CardContent>
-  </Card>
-);
-
-const SummaryCard: React.FC<{ 
-  title: string; 
-  value: number | string; 
-  icon?: React.ReactNode; 
-  benchmark?: number;
-  unit?: string;
-}> = ({
-  title,
-  value,
-  icon,
-  benchmark,
-  unit = ""
-}) => {
-  // Determine status based on benchmark
-  let statusColor = "#DB4437"; // Red by default
-  let statusText = "Bajo";
-  
-  if (benchmark && typeof value === 'number' && value >= benchmark) {
-    statusColor = "#0F9D58"; // Green
-    statusText = "Excelente";
-  } else if (benchmark && typeof value === 'number' && value >= benchmark * 0.7) {
-    statusColor = "#F4B400"; // Yellow
-    statusText = "Bueno";
-  }
-
-  return (
-    <Card className="flex flex-col justify-between h-full border-l-4" style={{ borderLeftColor: statusColor }}>
-      <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-        <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-          {icon}
-          {title}
-        </CardTitle>
-        <Badge style={{ backgroundColor: statusColor, color: 'white' }} className="text-xs">
-          {statusText}
-        </Badge>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="flex items-baseline gap-1">
-          <span className="text-3xl font-semibold text-primary">{value}</span>
-          <span className="text-sm text-muted-foreground">{unit}</span>
-        </div>
-        {benchmark && (
-          <div className="mt-2 text-xs text-muted-foreground">
-            Meta: {benchmark}{unit}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-};
-
-// New component for displaying tasks by area
-interface TasksByAreaProps {
-  data: StatKV[]; // We'll cast the data internally
-}
-
-const TasksByAreaSection: React.FC<TasksByAreaProps> = ({ data }) => {
-  // Extract tasks by area data from the flat data structure
-  const tasksByArea: { [area: string]: { tasks: string[], count: number } } = {};
-  
-  // Parse the flattened data back into structured format
-  data.forEach((item: StatKV) => {
-    if (item.key.startsWith('tasksByArea.') && item.key.endsWith('.tasks')) {
-      const area = item.key.split('.')[1];
-      if (!tasksByArea[area]) {
-        tasksByArea[area] = { tasks: [], count: 0 };
-      }
-      // Cast value to string since tasks are stored as comma-separated strings
-      tasksByArea[area].tasks = item.value ? String(item.value).split(', ') : [];
-    }
-    if (item.key.startsWith('tasksByArea.') && item.key.endsWith('.count')) {
-      const area = item.key.split('.')[1];
-      if (!tasksByArea[area]) {
-        tasksByArea[area] = { tasks: [], count: 0 };
-      }
-      tasksByArea[area].count = Number(item.value) || 0;
-    }
-  });
-
-  // Prepare data for chart
-  const chartData = Object.entries(tasksByArea).map(([area, data]) => ({
-    area: area.charAt(0).toUpperCase() + area.slice(1),
-    count: data.count,
-    tasks: data.tasks
-  })).filter(item => item.count > 0);
-
-  // Area colors mapping
-  const areaColors: { [key: string]: string } = {
-    'Ventas': '#3B82F6',
-    'Marketing': '#10B981', 
-    'Finanzas': '#F59E0B',
-    'Administracion': '#8B5CF6',
-    'Operaciones': '#EF4444',
-    'Recursos humanos': '#06B6D4',
-    'Otro': '#6B7280'
-  };
-
-  if (chartData.length === 0) {
-    return (
-      <div className="text-center py-8 text-gray-500">
-        <p>No se encontraron tareas repetitivas categorizadas para esta empresa.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-700 mb-2">
-          Distribución de Tareas por Área Funcional
-        </h3>
-        <p className="text-sm text-gray-600">
-          Análisis de las tareas más repetitivas identificadas por área de trabajo
-        </p>
-      </div>
-
-      {/* Chart */}
-      <div className="h-64 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis 
-              dataKey="area" 
-              tick={{ fontSize: 12 }}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-            />
-            <YAxis tick={{ fontSize: 12 }} />
-            <Tooltip 
-              content={({ active, payload, label }) => {
-                if (active && payload && payload.length > 0) {
-                  const data = payload[0].payload;
-                  return (
-                    <div className="bg-white p-3 border rounded shadow-lg max-w-xs">
-                      <p className="font-semibold">{label}</p>
-                      <p className="text-sm text-blue-600">
-                        {data.count} tarea{data.count !== 1 ? 's' : ''} identificada{data.count !== 1 ? 's' : ''}
-                      </p>
-                      {data.tasks.length > 0 && (
-                        <div className="mt-2">
-                          <p className="text-xs font-medium text-gray-600">Ejemplos:</p>
-                          <ul className="text-xs text-gray-500 mt-1">
-                            {data.tasks.slice(0, 3).map((task: string, idx: number) => (
-                              <li key={idx} className="truncate">• {task}</li>
-                            ))}
-                            {data.tasks.length > 3 && (
-                              <li className="text-gray-400">... y {data.tasks.length - 3} más</li>
-                            )}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
-            <Bar 
-              dataKey="count" 
-              fill="#3B82F6"
-              radius={[4, 4, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Detailed breakdown */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-        {chartData.map((areaData, index) => (
-          <Card key={index} className="border-l-4" style={{ borderLeftColor: areaColors[areaData.area] || '#6B7280' }}>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium flex items-center justify-between">
-                <span>{areaData.area}</span>
-                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                  {areaData.count} tarea{areaData.count !== 1 ? 's' : ''}
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="space-y-2">
-                {areaData.tasks.slice(0, 3).map((task, idx) => (
-                  <div key={idx} className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
-                    {task}
-                  </div>
-                ))}
-                {areaData.tasks.length > 3 && (
-                  <div className="text-xs text-gray-400 italic">
-                    ... y {areaData.tasks.length - 3} tarea{areaData.tasks.length - 3 !== 1 ? 's' : ''} adicional{areaData.tasks.length - 3 !== 1 ? 'es' : ''}
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Insights */}
-      <div className="bg-blue-50 p-4 rounded-lg">
-        <h4 className="font-medium text-blue-900 mb-2">💡 Oportunidades de Automatización</h4>
-        <p className="text-sm text-blue-800">
-          Las tareas repetitivas identificadas representan excelentes oportunidades para implementar 
-          soluciones de IA. Las áreas con mayor concentración de tareas podrían beneficiarse de 
-          capacitación especializada en herramientas de automatización.
-        </p>
-      </div>
-    </div>
-  );
-};
-
 const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
   // --- datasets ---
   const deviceData = useGroupedStats(stats, "device.");
@@ -521,9 +161,9 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
   const avgAgeScale = singleValue(stats, "avgAge", 1); // This should come from your calculations
   const avgAgeRange = convertAgeScale(avgAgeScale);
 
-  // Calculate AI maturity and ROI
-  const maturity = calculateAIMaturity(stats);
-  const roi = getROIFromStats(stats);
+  // Calculate AI maturity and ROI with explicit types
+  const maturity: MaturityData = calculateAIMaturity(stats);
+  const roi: ROIData = getROIFromStats(stats);
 
   const radarData = [
     {
@@ -689,24 +329,8 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
 
   return (
     <div className="w-full p-6 space-y-8 font-sans">
-      {/* Header */}
-      <header className="flex items-center justify-between mb-4">
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-          <PieIcon className="w-8 h-8 text-primary" />
-          Diagnóstico IA – {companyName}
-        </h1>
-        <div className="flex items-center gap-3">
-          {/* Option 1: Single button (original) */}
-          {/* <PDFExportWrapper companyName={companyName} stats={stats} /> */}
-          
-          {/* Option 2: Single button with dropdown options */}
-          <DropdownPDFExport companyName={companyName} stats={stats} />
-          
-          <Badge className="gap-1">
-            <CalendarDays className="w-4 h-4" /> {today}
-          </Badge>
-        </div>
-      </header>
+      {/* Header - This will be replaced */}
+      <ReportHeader companyName={companyName} stats={stats} today={today} />
 
       {/* Executive Summary */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -714,145 +338,14 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
         <ROICard roi={roi} />
       </section>
 
-      {/* Key Metrics - Updated 5th component to show average age */}
-      <section className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <SummaryCard
-          title="Empleados evaluados"
-          value={singleValue(stats, "employeeCount", 0)}
-          icon={<Users className="w-4 h-4" />}
-          benchmark={50}
-          unit=" empleados"
-        />
-        <SummaryCard
-          title="Horas IA/semana"
-          value={singleValue(stats, "avgHoursIAWeek", 1)}
-          icon={<BarChart3 className="w-4 h-4" />}
-          benchmark={12}
-          unit=" hrs"
-        />
-        <SummaryCard
-          title="Minutos ahorrados/día"
-          value={singleValue(stats, "avgMinutesSaved", 1)}
-          icon={<Zap className="w-4 h-4" />}
-          benchmark={120}
-          unit=" min"
-        />
-        <SummaryCard
-          title="Skill prompting"
-          value={singleValue(stats, "avgPromptSkill", 1)}
-          icon={<Target className="w-4 h-4" />}
-          benchmark={5}
-          unit="/5"
-        />
-        <SummaryCard
-          title="Edad promedio"
-          value={avgAgeRange}
-          icon={<Users className="w-4 h-4" />}
-          unit=" años"
-        />
-      </section>
+      {/* Key Metrics - This will be replaced */}
+      <KeyMetricsSection stats={stats} singleValue={singleValue} avgAgeRange={avgAgeRange} />
 
       {/* Knowledge Assessment */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="border-2 border-blue-200 bg-blue-50/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-semibold text-blue-700 flex items-center gap-2">
-              <Brain className="w-5 h-5" />
-              Conocimiento Básico IA
-            </CardTitle>
-            <p className="text-xs text-blue-600">Promedio en escala 1-5 (donde 5 = excelente)</p>
-          </CardHeader>
-          <CardContent className="pt-0 space-y-4">
-            <div className="flex justify-between items-center p-2 bg-white rounded">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-blue-500" />
-                <span className="text-sm">Sabe qué es un LLM:</span>
-              </div>
-              <span className="font-bold text-lg text-blue-700">{singleValue(stats, "avgLLMKnowledge", 1).toFixed(1)}/5</span>
-            </div>
-            <div className="flex justify-between items-center p-2 bg-white rounded">
-              <div className="flex items-center gap-2">
-                <GraduationCap className="w-4 h-4 text-blue-500" />
-                <span className="text-sm">Conoce pretraining/finetuning:</span>
-              </div>
-              <span className="font-bold text-lg text-blue-700">{singleValue(stats, "avgPretrainingKnowledge", 1).toFixed(1)}/5</span>
-            </div>
-            <div className="flex justify-between items-center p-2 bg-white rounded">
-              <div className="flex items-center gap-2">
-                <Target className="w-4 h-4 text-blue-500" />
-                <span className="text-sm">Conoce 4 partes del prompt:</span>
-              </div>
-              <span className="font-bold text-lg text-blue-700">{singleValue(stats, "avgPromptKnowledge", 1).toFixed(1)}/5</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Uso por Departamento */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <BarChart3 className="w-4 h-4" />
-              Uso por Departamento
-            </CardTitle>
-            <p className="text-xs text-muted-foreground">% con uso avanzado de IA (puntuación 4-5)</p>
-          </CardHeader>
-          <CardContent className="pt-0 space-y-3">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <ShoppingCart className="w-4 h-4 text-green-500" />
-                <span className="text-sm">Ventas:</span>
-              </div>
-              <span className="font-semibold">{singleValue(stats, "pctIAinSales", 0)}%</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Megaphone className="w-4 h-4 text-purple-500" />
-                <span className="text-sm">Marketing:</span>
-              </div>
-              <span className="font-semibold">{singleValue(stats, "pctIAinMarketing", 0)}%</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Calculator className="w-4 h-4 text-blue-500" />
-                <span className="text-sm">Finanzas:</span>
-              </div>
-              <span className="font-semibold">{singleValue(stats, "pctIAinFinance", 0)}%</span>
-            </div>
-          </CardContent>
-        </Card>
-        {/* Estado de Capacitación */}
-        <Card className="border-2 border-green-200 bg-green-50/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-semibold text-green-700 flex items-center gap-2">
-              <Award className="w-5 h-5" />
-              Estado de Capacitación
-            </CardTitle>
-            <p className="text-xs text-green-600">Potencial de desarrollo del equipo</p>
-          </CardHeader>
-          <CardContent className="pt-0 space-y-4">
-            <div className="flex justify-between items-center p-2 bg-white rounded">
-              <div className="flex items-center gap-2">
-                <GraduationCap className="w-4 h-4 text-green-500" />
-                <span className="text-sm">Capacitación formal recibida:</span>
-              </div>
-              <span className="font-bold text-lg text-green-700">{singleValue(stats, "pctFormalTraining", 0)}%</span>
-            </div>
-            <div className="flex justify-between items-center p-2 bg-white rounded">
-              <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-green-500" />
-                <span className="text-sm">Confianza en resultados IA:</span>
-              </div>
-              <span className="font-bold text-lg text-green-700">{singleValue(stats, "avgConfidence", 1)}/5</span>
-            </div>
-            <div className="flex justify-between items-center p-2 bg-white rounded">
-              <div className="flex items-center gap-2">
-                <Lightbulb className="w-4 h-4 text-yellow-500" />
-                <span className="text-sm">Curiosidad por explorar IA:</span>
-              </div>
-              <span className="font-bold text-lg text-green-700">{singleValue(stats, "avgCuriosity", 1)}/5</span>
-            </div>
-          </CardContent>
-        </Card>
+        <KnowledgeAssessmentCard stats={stats} singleValue={singleValue} />
+        <DepartmentUsageCard stats={stats} singleValue={singleValue} />
+        <TrainingStatusCard stats={stats} singleValue={singleValue} />
       </section>
 
       {/* New Section: Tasks by Area */}
@@ -864,631 +357,61 @@ const CompanyIADashboard: React.FC<Props> = ({ companyName, stats }) => {
       </section>
 
       {/* New Diagnostic Metrics Section */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Autonomy and Skills */}
-        <Card className="border-2 border-purple-200 bg-purple-50/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-semibold text-purple-700 flex items-center gap-2">
-              <Zap className="w-5 h-5" />
-              Autonomía y Habilidades Prácticas
-            </CardTitle>
-            <p className="text-xs text-purple-600">Nivel de independencia en el uso de IA</p>
-          </CardHeader>
-          <CardContent className="pt-0 space-y-4">
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg border">
-              <div className="flex items-center gap-2">
-                <Target className="w-5 h-5 text-purple-500" />
-                <div>
-                  <span className="text-sm font-medium">Nivel de autonomía:</span>
-                  <div className="text-xs text-muted-foreground">1=Necesita ayuda, 5=Totalmente autónomo</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="font-bold text-2xl text-purple-700">{singleValue(stats, "avgAutonomyLevel", 1).toFixed(1)}</span>
-                <span className="text-sm text-purple-600">/5</span>
-              </div>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg border">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-purple-500" />
-                <div>
-                  <span className="text-sm font-medium">Calidad de prompts:</span>
-                  <div className="text-xs text-muted-foreground">1=Muy básico, 5=Excelente</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="font-bold text-2xl text-purple-700">{singleValue(stats, "avgPromptQuality", 1).toFixed(1)}</span>
-                <span className="text-sm text-purple-600">/5</span>
-              </div>
-            </div>
-            <div className="bg-purple-100 p-3 rounded-lg">
-              <div className="flex items-center gap-2 text-purple-700 text-sm font-medium mb-1">
-                <Users className="w-4 h-4" />
-                Empleados con alta autonomía (4-5):
-              </div>
-              <div className="text-2xl font-bold text-purple-700">{singleValue(stats, "pctHighAutonomy", 0)}%</div>
-            </div>
-          </CardContent>
-        </Card>
+      <DiagnosticMetricsSection stats={stats} singleValue={singleValue} />
 
-        {/* Impact and Opportunities */}
-        <Card className="border-2 border-orange-200 bg-orange-50/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-semibold text-orange-700 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5" />
-              Impacto y Oportunidades
-            </CardTitle>
-            <p className="text-xs text-orange-600">Resultados actuales y potencial de mejora</p>
-          </CardHeader>
-          <CardContent className="pt-0 space-y-4">
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg border">
-              <div className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-orange-500" />
-                <div>
-                  <span className="text-sm font-medium">Impacto en KPIs:</span>
-                  <div className="text-xs text-muted-foreground">1=Sin impacto, 5=Muy alto</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="font-bold text-2xl text-orange-700">{singleValue(stats, "avgKPIImpact", 1).toFixed(1)}</span>
-                <span className="text-sm text-orange-600">/5</span>
-              </div>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg border">
-              <div className="flex items-center gap-2">
-                <Lightbulb className="w-5 h-5 text-orange-500" />
-                <div>
-                  <span className="text-sm font-medium">Oportunidad de mejora:</span>
-                  <div className="text-xs text-muted-foreground">1=Baja, 5=Muy alta</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="font-bold text-2xl text-orange-700">{singleValue(stats, "avgImprovementOpportunity", 1).toFixed(1)}</span>
-                <span className="text-sm text-orange-600">/5</span>
-              </div>
-            </div>
-            <div className="bg-orange-100 p-3 rounded-lg">
-              <div className="flex items-center gap-2 text-orange-700 text-sm font-medium mb-1">
-                <CheckCircle className="w-4 h-4" />
-                Empleados con alto impacto en KPIs (4-5):
-              </div>
-              <div className="text-2xl font-bold text-orange-700">{singleValue(stats, "pctHighKPIImpact", 0)}%</div>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* Organizational Barriers Analysis */}
+      {/* Organizational Barriers Analysis - This will be replaced */}
       <section>
-        <Card className="border-2 border-red-200 bg-red-50/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-semibold text-red-700 flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5" />
-              Análisis de Barreras Organizacionales
-            </CardTitle>
-            <p className="text-xs text-red-600">Obstáculos internos para la adopción de IA</p>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white p-4 rounded-lg border">
-                <div className="flex items-center gap-2 mb-2">
-                  <Shield className="w-5 h-5 text-red-500" />
-                  <span className="text-sm font-medium">Nivel de barreras:</span>
-                </div>
-                <div className="text-3xl font-bold text-red-700 mb-1">
-                  {singleValue(stats, "avgOrganizationalBarriers", 1).toFixed(1)}/5
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  1=Ninguna, 5=Extremas
-                </div>
-              </div>
-              <div className="bg-white p-4 rounded-lg border">
-                <div className="flex items-center gap-2 mb-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
-                  <span className="text-sm font-medium">Empleados sin barreras:</span>
-                </div>
-                <div className="text-3xl font-bold text-green-700 mb-1">
-                  {singleValue(stats, "pctLowBarriers", 0)}%
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Puntuación 1-2 en barreras
-                </div>
-              </div>
-              <div className="bg-white p-4 rounded-lg border">
-                <div className="flex items-center gap-2 mb-2">
-                  <TrendingUp className="w-5 h-5 text-blue-500" />
-                  <span className="text-sm font-medium">Potencial de mejora:</span>
-                </div>
-                <div className="text-3xl font-bold text-blue-700 mb-1">
-                  {singleValue(stats, "pctHighImprovementOpportunity", 0)}%
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Alta oportunidad (4-5)
-                </div>
-              </div>
-            </div>
-            
-            {/* Barriers Interpretation */}
-            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="flex items-center gap-2 text-yellow-700 text-sm font-medium mb-2">
-                <Lightbulb className="w-4 h-4" />
-                Interpretación de Barreras
-              </div>
-              <div className="text-sm text-yellow-600">
-                {(() => {
-                  const barrierLevel = singleValue(stats, "avgOrganizationalBarriers", 1);
-                  if (barrierLevel <= 2) {
-                    return "🟢 Excelente: Pocas barreras organizacionales. El equipo tiene libertad para experimentar con IA.";
-                  } else if (barrierLevel <= 3) {
-                    return "🟡 Moderado: Algunas barreras presentes. Se recomienda trabajar en políticas y comunicación interna.";
-                  } else if (barrierLevel <= 4) {
-                    return "🟠 Alto: Barreras significativas. Necesario involucrar liderazgo y crear estrategia de cambio.";
-                  } else {
-                    return "🔴 Crítico: Barreras extremas. Requiere intervención ejecutiva y plan de transformación cultural.";
-                  }
-                })()}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <OrganizationalBarriersCard stats={stats} singleValue={singleValue} />
       </section>
 
-      {/* Charts Grid - Updated to show AI Tools instead of Copilot */}
+      {/* Charts Grid */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Device distribution pie */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <PieIcon className="w-5 h-5" />
-              Dispositivos donde usan IA
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={deviceData}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius={40}
-                  outerRadius={80}
-                  paddingAngle={4}
-                  label
-                >
-                  {deviceData.map((_, idx) => (
-                    <Cell key={`cell-${idx}`} fill={COLORS[idx % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Radar skills with benchmark */}
-        <Card className="border-2 border-purple-200 bg-purple-50/50">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-purple-700 flex items-center gap-2">
-              <Target className="w-5 h-5" />
-              Skills vs Industria
-            </CardTitle>
-            <p className="text-xs text-purple-600">Comparación con benchmarks del mercado</p>
-          </CardHeader>
-          <CardContent className="h-72">
-                          <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={radarData}>
-                  <PolarGrid stroke="#d1d5db" strokeWidth={1} />
-                  <PolarAngleAxis dataKey="metric" tick={{ fontSize: 12, fill: "#374151" }} />
-                  <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fontSize: 10, fill: "#6b7280" }} />
-                <Radar
-                  name="Tu empresa"
-                  dataKey="score"
-                  stroke="#2563eb"
-                  fill="#3b82f6"
-                  fillOpacity={0.3}
-                  strokeWidth={3}
-                />
-                <Radar
-                  name="Promedio industria"
-                  dataKey="industry"
-                  stroke="#dc2626"
-                  fill="#ef4444"
-                  fillOpacity={0.1}
-                  strokeWidth={3}
-                  strokeDasharray="8 4"
-                />
-                <Tooltip />
-                <Legend />
-              </RadarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        <DeviceDistributionChart deviceData={deviceData} colors={COLORS} />
+        <SkillsRadarChart radarData={radarData} />
       </section>
 
-      {/* AI Tools Adoption - Updated from Copilot to general AI tools */}
+      {/* AI Tools Adoption - This section will be replaced by the new component */}
       <section>
-        <Card className="border-2 border-blue-200 bg-blue-50/50">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-blue-700 flex items-center gap-2">
-              <BarChart3 className="w-5 h-5" />
-              Herramientas IA Disponibles
-            </CardTitle>
-            <p className="text-sm text-blue-600 mt-1">Número de empleados por herramienta</p>
-          </CardHeader>
-          <CardContent className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart 
-                data={toolChartData} 
-                margin={{ left: 16, right: 16, top: 20, bottom: 20 }}
-              >
-                <XAxis 
-                  dataKey="name" 
-                  tick={{ fontSize: 11 }}
-                  tickFormatter={(value) => {
-                    const item = allPossibleTools.find(tool => tool.name === value);
-                    return `${item?.icon || '🔧'} ${value}`;
-                  }}
-                />
-                <YAxis 
-                  domain={[0, 'dataMax']} 
-                  tickFormatter={(v: number) => `${v} empleados`} 
-                  tick={{ fontSize: 12 }} 
-                />
-                <Tooltip 
-                  formatter={(v: number, name, props) => [
-                    `${v} empleados (${props.payload.percentage.toFixed(1)}%)`, 
-                    props.payload.status === 'En uso' ? 'Empleados actuales' : 'Sin empleados'
-                  ]}
-                  labelFormatter={(label) => `${label}`}
-                  contentStyle={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px'
-                  }}
-                />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                  {allPossibleTools.map((tool, index) => (
-                    <Cell key={`cell-${index}`} fill={tool.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-            
-            {/* Discovery Summary */}
-            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="flex items-center gap-2 text-yellow-700 text-sm font-medium mb-2">
-                <Lightbulb className="w-4 h-4" />
-                Oportunidad de Descubrimiento
-              </div>
-              <div className="text-xs text-yellow-600">
-                {`${usedToolsCount} herramientas en uso de ${totalToolsCount} disponibles. ${unusedToolsCount} herramientas sin explorar por ${totalUsers} empleados.`}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* Opportunities & Risks */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <OpportunityCard
-          title="Oportunidades de Crecimiento"
-          items={getOpportunities()}
-          icon={<TrendingUp className="w-4 h-4" />}
-          color="#0F9D58"
-        />
-        <OpportunityCard
-          title="Riesgos Identificados"
-          items={getRisks()}
-          icon={<AlertTriangle className="w-4 h-4" />}
-          color="#DB4437"
+        <AIToolsAdoptionChart 
+          toolChartData={toolChartData} 
+          allPossibleTools={allPossibleTools}
+          usedToolsCount={usedToolsCount}
+          totalToolsCount={totalToolsCount}
+          unusedToolsCount={unusedToolsCount}
+          totalUsers={totalUsers}
         />
       </section>
 
-      {/* Course Transformation Offer - Hormozi Style */}
+      {/* Opportunities & Risks - This will be replaced */}
+      <OpportunitiesRisksSection 
+        getOpportunities={getOpportunities} 
+        getRisks={getRisks} 
+      />
+
+      {/* Course Transformation Offer */}
       <section className="mt-8">
-        <Card className="border-2 border-[#F5B614] bg-stone-50 shadow-lg relative">
-          {/* Recommended Banner */}
-          <div className="absolute -top-4 -left-4 bg-[#F5B614] text-white px-6 py-3 rounded-lg shadow-lg z-10 transform -rotate-3">
-            <div className="text-sm font-bold">RECOMENDADO PARA</div>
-            <div className="text-lg font-bold">{companyName}</div>
-          </div>
-          <CardContent className="p-6">
-            {(() => {
-              const employeeCount = Math.max(25, roi.employeeCount);
-              const isMinimumTeam = roi.employeeCount < 25;
-
-              // Simplified pricing logic as per new requirement:
-              // Price is the adjusted employee count (min 25) times 1800.
-              const price = employeeCount * 1800;
-
-              return (
-                <>
-                  <div className="text-center mb-6">
-                    <div className="flex justify-center items-center gap-2 mb-3">
-                      <Image 
-                        src="/logo.png" 
-                        alt="Learning Gate" 
-                        width={144} 
-                        height={32} 
-                        quality={100}
-                        priority
-                        className="w-36 h-8 object-contain"
-                      />
-                    </div>
-                    <div className="flex justify-center items-center gap-2 text-sm text-gray-600 font-medium mb-2">
-                      <GraduationCap className="w-5 h-5" />
-                      PROGRAMA CHATGPT BÁSICO + MICROSOFT COPILOT IA / GOOGLE GEMINI
-                    </div>
-                    <h3 className="text-2xl font-bold mb-1">
-                      De {maturity.level} a Experto en 2 Días
-                    </h3>
-                    <p className="text-base text-muted-foreground">
-                      Para {employeeCount} empleados — Certificación en IA aplicada
-                    </p>
-                  </div>
-
-                  {isMinimumTeam && (
-                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded-r-lg mb-4">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Users className="w-5 h-5 text-yellow-600" />
-                        <span className="font-medium text-yellow-700 text-base">Programa Empresarial</span>
-                      </div>
-                      <div className="text-sm text-yellow-600">
-                        Programa diseñado para equipos de mínimo 25 empleados.
-                        <span className="font-medium"> Cotización basada en 25 empleados.</span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
-                      <h4 className="text-red-700 font-medium text-lg flex items-center gap-2 mb-3">
-                        <AlertTriangle className="w-5 h-5" /> Sin el programa
-                      </h4>
-                      <ul className="text-base text-red-600 space-y-2">
-                        <li className="flex items-center gap-2">
-                          <span className="text-red-500">💸</span>
-                          <span>Pierdes ${Math.round(roi.opportunity).toLocaleString()} / mes</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-red-500">🕒</span>
-                          <span>Ahorro actual: {roi.currentMinutesSavedPerDay} min/día</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-red-500">📉</span>
-                          <span>Skill IA: {singleValue(stats, "avgPromptSkill", 1)}/5</span>
-                        </li>
-                      </ul>
-                      <div className="border-t border-red-200 mt-3 pt-3 text-center">
-                        <div className="text-base text-red-600 mb-2">Costo anual de oportunidad</div>
-                        <div className="text-3xl font-bold text-red-700 bg-white rounded-lg py-2 px-4">${Math.round(roi.opportunity * 12).toLocaleString()}</div>
-                      </div>
-                    </div>
-                    <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
-                      <h4 className="text-green-700 font-medium text-lg flex items-center gap-2 mb-3">
-                        <CheckCircle className="w-5 h-5" /> Con el programa
-                      </h4>
-                      <ul className="text-base text-green-600 space-y-2">
-                        <li className="flex items-center gap-2">
-                          <span className="text-green-500">📈</span>
-                          <span>Ganas ${Math.round(roi.potential).toLocaleString()} / mes</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-green-500">⏱️</span>
-                          <span>120+ min/día ahorrados</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-green-500">🏆</span>
-                          <span>Skill IA: 5/5 certificado</span>
-                        </li>
-                      </ul>
-                      <div className="border-t border-green-200 mt-3 pt-3 text-center">
-                        <div className="text-base text-green-600 mb-2">Beneficio anual total</div>
-                        <div className="text-3xl font-bold text-green-700 bg-white rounded-lg py-2 px-4">${Math.round(roi.potential * 12).toLocaleString()}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg text-center mb-4">
-                    <div className="text-sm text-gray-600 mb-1">Precio del programa</div>
-                    <div className="text-2xl font-bold text-gray-900">
-                      ${price.toLocaleString()}
-                      <span className="text-xs text-gray-500 font-normal ml-1">más IVA</span>
-                    </div>
-                  </div>
-
-                  <div className="bg-green-50 border border-green-200 p-4 rounded-lg mb-4">
-                    <div className="flex items-center justify-center gap-2 text-green-700 text-base font-medium mb-2">
-                      <Shield className="w-5 h-5" /> Garantía Triple
-                    </div>
-                    <ul className="text-sm text-green-600 space-y-1">
-                      <li>✓ Si no te gusta el programa te devolvemos el dinero</li>
-                      <li>✓ Skill sube a 4/5 o extensión gratis</li>
-                      <li>✓ Domina el uso de IA en tu empresa</li>
-                    </ul>
-                  </div>
-
-                  <div className="bg-red-50 border-l-4 border-red-400 p-3 rounded-r-lg mb-4 text-sm text-red-600">
-                    Solo 20 empresas por cohorte — Próximo inicio en <strong>15 días</strong>
-                  </div>
-
-                  <div className="text-center">
-                    <button className="w-full bg-[#F5B614] hover:bg-[#e4a900] text-white font-medium py-3 rounded-lg transition duration-200 text-base">
-                      RESERVAR CUPO
-                    </button>
-                    <div className="text-sm text-muted-foreground mt-2">
-                      Incluye llamada estratégica gratuita y análisis ROI personalizado
-                    </div>
-                  </div>
-
-                  {/* Social Proof */}
-                  <div className="border-t pt-4 text-center mt-6">
-                    <div className="text-sm text-muted-foreground mb-2">
-                      <span className="font-medium text-[#F5B614]">+500 empleados</span> transformados en <span className="font-medium">+50 empresas</span>
-                    </div>
-                    <div className="flex justify-center items-center gap-4 text-muted-foreground text-sm">
-                      <span>VISIONA</span>
-                      <span>TECH CORP</span>
-                      <span>INNOVATE SA</span>
-                    </div>
-                  </div>
-                </>
-              );
-            })()}
-          </CardContent>
-        </Card>
+        <CourseOfferCard 
+          companyName={companyName}
+          stats={stats}
+          roi={roi}
+          maturity={maturity}
+          singleValue={singleValue}
+        />
       </section>
 
-      {/* ChatGPT Only Program - Alternative Offer */}
+      {/* ChatGPT Only Program - Alternative Offer - This will be replaced */}
       <section className="mt-6">
-        <Card className="border-2 border-blue-500 bg-white shadow-sm">
-          <CardContent className="p-6">
-            {(() => {
-              const employeeCount = Math.max(25, roi.employeeCount);
-              const isMinimumTeam = roi.employeeCount < 25;
-              const potentialGain = (roi.potential - roi.current) * 0.5;
-              const pricePerEmployee = 999;
-              const totalPrice = employeeCount * pricePerEmployee;
-
-              return (
-                <>
-                  <div className="text-center mb-6">
-                    <div className="flex justify-center items-center gap-2 mb-3">
-                      <Image 
-                        src="/logo.png" 
-                        alt="Learning Gate" 
-                        width={144} 
-                        height={32} 
-                        quality={100}
-                        priority
-                        className="w-36 h-8 object-contain"
-                      />
-                    </div>
-                    <div className="flex justify-center items-center gap-2 text-sm text-gray-600 font-medium mb-2">
-                      <GraduationCap className="w-5 h-5" />
-                      PROGRAMA CHATGPT BÁSICO
-                    </div>
-                    <h3 className="text-2xl font-bold mb-1">
-                      De {maturity.level} a Intermedio en 60 Días
-                    </h3>
-                    <p className="text-base text-muted-foreground">
-                      Para {employeeCount} empleados — Certificación ChatGPT
-                    </p>
-                  </div>
-
-                  {isMinimumTeam && (
-                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded-r-lg mb-4">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Users className="w-5 h-5 text-yellow-600" />
-                        <span className="font-medium text-yellow-700 text-base">Programa Empresarial</span>
-                      </div>
-                      <div className="text-sm text-yellow-600">
-                        Programa diseñado para equipos de mínimo 25 empleados.
-                        <span className="font-medium"> Cotización basada en 25 empleados.</span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
-                      <h4 className="text-red-700 font-medium text-lg flex items-center gap-2 mb-3">
-                        <AlertTriangle className="w-5 h-5" /> Sin el programa
-                      </h4>
-                      <ul className="text-base text-red-600 space-y-2">
-                        <li className="flex items-center gap-2">
-                          <span className="text-red-500">💸</span>
-                          <span>Pierdes ${Math.round(roi.opportunity * 0.5).toLocaleString()} / mes</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-red-500">🕒</span>
-                          <span>Ahorro actual: {roi.currentMinutesSavedPerDay} min/día</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-red-500">📉</span>
-                          <span>Skill ChatGPT: {singleValue(stats, "avgPromptSkill", 1)}/5</span>
-                        </li>
-                      </ul>
-                      <div className="border-t border-red-200 mt-3 pt-3 text-center">
-                        <div className="text-base text-red-600 mb-2">Costo anual de oportunidad</div>
-                        <div className="text-3xl font-bold text-red-700 bg-white rounded-lg py-2 px-4">${Math.round(roi.opportunity * 0.5 * 12).toLocaleString()}</div>
-                      </div>
-                    </div>
-                    <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
-                      <h4 className="text-green-700 font-medium text-lg flex items-center gap-2 mb-3">
-                        <CheckCircle className="w-5 h-5" /> Con el programa
-                      </h4>
-                      <ul className="text-base text-green-600 space-y-2">
-                        <li className="flex items-center gap-2">
-                          <span className="text-green-500">📈</span>
-                          <span>Ganas ${Math.round(roi.current + potentialGain).toLocaleString()} / mes</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-green-500">⏱️</span>
-                          <span>60+ min/día ahorrados</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-green-500">🏆</span>
-                          <span>Skill ChatGPT: 4/5 intermedio</span>
-                        </li>
-                      </ul>
-                      <div className="border-t border-green-200 mt-3 pt-3 text-center">
-                        <div className="text-base text-green-600 mb-2">Beneficio anual total</div>
-                        <div className="text-3xl font-bold text-green-700 bg-white rounded-lg py-2 px-4">${Math.round((roi.current + potentialGain) * 12).toLocaleString()}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center mb-4">
-                    <div className="text-sm text-gray-600 mb-1">Precio del programa</div>
-                    <div className="text-2xl font-bold text-gray-900">${totalPrice.toLocaleString()}</div>
-                    <div className="text-sm text-gray-500">${pricePerEmployee} por empleado</div>
-                  </div>
-
-                  <div className="bg-green-50 border border-green-200 p-4 rounded-lg mb-4">
-                    <div className="flex items-center justify-center gap-2 text-green-700 text-base font-medium mb-2">
-                      <Shield className="w-5 h-5" /> Garantía Doble
-                    </div>
-                    <ul className="text-sm text-green-600 space-y-1">
-                      <li>✓ Recuperas ${Math.round(potentialGain).toLocaleString()} o reembolso</li>
-                      <li>✓ Skill sube a 4/5 o extensión gratis</li>
-                    </ul>
-                  </div>
-
-                  <div className="bg-blue-50 border-l-4 border-blue-400 p-3 rounded-r-lg mb-4 text-sm text-blue-600">
-                    Programa de entrada — <strong>Disponible inmediatamente</strong>
-                  </div>
-
-                  <div className="text-center">
-                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition duration-200 text-base">
-                      EMPEZAR AHORA
-                    </button>
-                    <div className="text-sm text-muted-foreground mt-2">
-                      Incluye acceso inmediato y soporte básico
-                    </div>
-                  </div>
-
-                  {/* Social Proof */}
-                  <div className="border-t pt-4 text-center mt-6">
-                    <div className="text-sm text-muted-foreground mb-2">
-                      <span className="font-medium text-blue-600">+200 empleados</span> capacitados en <span className="font-medium">ChatGPT básico</span>
-                    </div>
-                    <div className="flex justify-center items-center gap-4 text-muted-foreground text-sm">
-                      <span>STARTUP CO</span>
-                      <span>DIGITAL PLUS</span>
-                      <span>GROWTH SA</span>
-                    </div>
-                  </div>
-                </>
-              );
-            })()}
-          </CardContent>
-        </Card>
+        <AlternativeOfferCard 
+          companyName={companyName}
+          stats={stats}
+          roi={roi}
+          maturity={maturity}
+          singleValue={singleValue}
+        />
       </section>
 
-      <footer className="text-xs text-muted-foreground text-center pt-8">
-        Fuente: Encuesta interna · {companyName} · {today}
-      </footer>
+      {/* Footer - This will be replaced */}
+      <ReportFooter companyName={companyName} today={today} />
     </div>
   );
 };

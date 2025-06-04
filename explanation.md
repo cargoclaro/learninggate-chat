@@ -92,25 +92,28 @@ The application follows a multi-stage workflow, from initial user interaction to
         3.  Includes a sophisticated **ROI (Return on Investment) calculation**. This estimates the current monetary value derived from AI usage, the maximum potential value if AI were optimally used, and the opportunity cost (value being lost). This calculation considers factors like average time saved by employees and their AI prompt quality.
         4.  Gracefully handles potential legacy data fields if the database schema has evolved.
         5.  Returns a flat array of key-value pairs (e.g., `{ key: 'avgAge', value: 3.5 }`), representing all computed statistics for the company.
-*   **Displaying the Report (`components/report.tsx` as `CompanyIADashboard`):**
-    *   `ReportGeneratorForm` receives the array of statistics and passes it (along with the `companyName`) to the `CompanyIADashboard` component.
-    *   `CompanyIADashboard` is a comprehensive component responsible for rendering a rich, multi-section visual report. Its key features include:
-        *   **AI Maturity Score:** Calculated within the component based on several input stats.
-        *   **ROI Analysis:** Extracted from the pre-calculated stats from the API.
-        *   **Key Metrics Dashboard:** Summary cards for important figures.
-        *   **Detailed Sections:** In-depth views on AI knowledge, departmental usage, training status, new diagnostic metrics (autonomy, KPI impact, organizational barriers).
-        *   **Charts:** Utilizes Recharts for:
-            *   Pie chart for AI device distribution.
-            *   Radar chart comparing company AI skills against (currently hardcoded) industry benchmarks.
-            *   Bar chart for AI tools adoption (ChatGPT, Copilot, Gemini, etc.).
-        *   **Actionable Insights:** Dynamically generated lists of "Opportunities & Risks" based on the company's data.
-        *   **Sales-Oriented Offers:** Two prominent sections presenting "Course Transformation Programs." These offers are styled persuasively (Hormozi style), with pricing dynamically calculated based on employee count and ROI figures, aiming to convert the diagnostic into a sale for training services.
-        *   **PDF Export:** Integrates a `DropdownPDFExport` button for report download.
+*   **Displaying the Report (`components/report.tsx` as `CompanyIADashboard` and its child components):**
+    *   `ReportGeneratorForm` receives the array of statistics and passes it (along with the `companyName`) to the `CompanyIADashboard` component (`components/report.tsx`).
+    *   `CompanyIADashboard` now acts as an **orchestrator component**. It processes the incoming `stats` and `companyName`, computes derived data (e.g., `maturity`, `roi`, `radarData`, `toolChartData`), and defines helper functions (e.g., `getOpportunities`, `getRisks`).
+    *   It then renders a series of **specialized child components** located in the `components/report/` directory, passing them the necessary props. These child components are responsible for rendering specific sections of the rich, multi-part visual report. Key child components include:
+        *   `ReportHeader.tsx`: Displays the main title, PDF export options, and date.
+        *   `MaturityCard.tsx`: Shows the AI Maturity score and level.
+        *   `ROICard.tsx`: Presents the ROI analysis.
+        *   `KeyMetricsSection.tsx`: A collection of `SummaryCard.tsx` instances for key figures.
+        *   `KnowledgeAssessmentCard.tsx`, `DepartmentUsageCard.tsx`, `TrainingStatusCard.tsx`: Display detailed knowledge and usage metrics.
+        *   `TasksByAreaSection.tsx`: Shows a bar chart and breakdown of repetitive tasks by area.
+        *   `DiagnosticMetricsSection.tsx`: Contains cards for "Autonomy and Skills" and "Impact and Opportunities."
+        *   `OrganizationalBarriersCard.tsx`: Details organizational hurdles.
+        *   `DeviceDistributionChart.tsx` (Pie Chart), `SkillsRadarChart.tsx` (Radar Chart), `AIToolsAdoptionChart.tsx` (Bar Chart): Visualize specific data points.
+        *   `OpportunitiesRisksSection.tsx`: Displays `OpportunityCard.tsx` instances for growth opportunities and identified risks.
+        *   `CourseOfferCard.tsx` and `AlternativeOfferCard.tsx`: Present the sales-oriented training program offers.
+        *   `ReportFooter.tsx`: Displays the report footer.
+    *   This modular structure makes the report display more maintainable and scalable. Each child component handles a distinct piece of the UI.
 
 ### 2.5. PDF Report Export
 
 *   **Triggering PDF Export (`components/pdf-export-wrapper.tsx`):**
-    *   The `CompanyIADashboard` uses the `DropdownPDFExport` component.
+    *   The `ReportHeader` component (which is part of `CompanyIADashboard`'s structure) uses the `DropdownPDFExport` component.
     *   This component provides a user-friendly dropdown with "Preview Version" and "Full Version" options for the PDF.
     *   It dynamically imports the actual PDF generation component (`PDFExportButton` from `components/report-pdf.tsx`) only on the client-side (`ssr: false`) to prevent server-side rendering issues with the PDF library. It shows a loading state while the component is being fetched.
 *   **PDF Document Definition (`components/report-pdf.tsx`):**
@@ -149,7 +152,28 @@ The application follows a multi-stage workflow, from initial user interaction to
     *   `chat.tsx`: Manages the entire chat interview flow, including form input, AI interaction, progress tracking, and triggering evaluation.
     *   `CompanySelector.tsx`: UI for fetching and selecting a company.
     *   `report-generator.tsx`: Form and logic for fetching and then displaying a specific company's report via `CompanyIADashboard`.
-    *   `report.tsx` (exports `CompanyIADashboard`): The main dashboard component that visually presents all statistics, charts, and insights for a company.
+    *   `report.tsx` (exports `CompanyIADashboard`): The main orchestrator component for the company report. It fetches and processes data, then delegates rendering of specific sections to specialized child components.
+    *   `components/report/`: This new directory houses all the specialized child components that make up the `CompanyIADashboard`.
+        *   `types.ts`: Shared TypeScript interfaces for the report components.
+        *   `ReportHeader.tsx`: Renders the header of the report.
+        *   `MaturityCard.tsx`: Displays the AI maturity score.
+        *   `ROICard.tsx`: Displays the ROI analysis.
+        *   `KeyMetricsSection.tsx`: Displays a section of key metric `SummaryCard`s.
+        *   `SummaryCard.tsx`: A reusable card for displaying individual summary statistics.
+        *   `KnowledgeAssessmentCard.tsx`: Displays AI knowledge assessment details.
+        *   `DepartmentUsageCard.tsx`: Displays AI usage by department.
+        *   `TrainingStatusCard.tsx`: Displays the team's training status.
+        *   `TasksByAreaSection.tsx`: Displays tasks by functional area, including a bar chart.
+        *   `DiagnosticMetricsSection.tsx`: Displays cards for autonomy/skills and impact/opportunities.
+        *   `OrganizationalBarriersCard.tsx`: Displays analysis of organizational barriers.
+        *   `DeviceDistributionChart.tsx`: Renders a pie chart for AI device usage.
+        *   `SkillsRadarChart.tsx`: Renders a radar chart for skills vs. industry benchmarks.
+        *   `AIToolsAdoptionChart.tsx`: Renders a bar chart for AI tools adoption.
+        *   `OpportunityCard.tsx`: A reusable card for listing items like opportunities or risks (used by `OpportunitiesRisksSection.tsx`).
+        *   `OpportunitiesRisksSection.tsx`: Displays identified opportunities and risks.
+        *   `CourseOfferCard.tsx`: Displays the main training course offer.
+        *   `AlternativeOfferCard.tsx`: Displays an alternative training course offer.
+        *   `ReportFooter.tsx`: Renders the footer of the report.
     *   `pdf-export-wrapper.tsx`: Provides UI options (like a dropdown) for PDF export and dynamically loads the PDF button.
     *   `report-pdf.tsx` (exports `PDFReport` and `PDFExportButton`): Defines the actual PDF document structure and content using `@react-pdf/renderer`.
     *   `ProgressBar.tsx`: A simple visual component to show progress during the chat.
@@ -161,7 +185,7 @@ The application follows a multi-stage workflow, from initial user interaction to
 
 *   **Lead Generation & Diagnostic Tool:** The application is strategically designed to engage potential clients (companies) with an AI-driven diagnostic, provide them with valuable insights, and then seamlessly present tailored training solutions.
 *   **Data-Centric:** The entire process revolves around collecting (interview), structuring (AI evaluation + Zod schema), storing (Supabase), processing (statistical calculations), and presenting (web dashboard, PDF report) data.
-*   **Modular Architecture:** Clear separation of concerns between frontend (React components), backend (Next.js API routes), data processing logic (`lib/calculations.ts`), and presentation layers.
+*   **Highly Modular Architecture:** Clear separation of concerns between frontend (React components, now extensively modularized for the report), backend (Next.js API routes), data processing logic (`lib/calculations.ts`), and presentation layers. The report itself is a prime example of this modularity.
 *   **Modern Tooling:** Employs a contemporary stack with Next.js, TypeScript, Tailwind CSS, Supabase, and Vercel AI SDK, enabling efficient development and a good user experience.
 *   **User Experience:** Features like streaming chat responses, progress indicators, dynamic report generation, and client-side PDF export contribute to a responsive and interactive experience. The "blur" feature for PDF previews is a thoughtful touch for potentially tiered access or encouraging engagement.
 *   **Business Value Focus:** The reporting, especially the ROI calculations and the direct integration of training program offers within the report, underscores a strong focus on demonstrating and capturing business value.

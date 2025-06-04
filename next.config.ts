@@ -1,5 +1,10 @@
 import type { NextConfig } from "next";
 
+// Import the bundle analyzer plugin
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 const nextConfig: NextConfig = {
   images: {
     // Enable image optimization with modern formats
@@ -13,4 +18,5 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Wrap the Next.js config with the bundle analyzer
+export default withBundleAnalyzer(nextConfig);

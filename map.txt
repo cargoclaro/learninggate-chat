@@ -25,6 +25,27 @@
     ├── report-generator.tsx
     ├── report-pdf.tsx
     ├── report.tsx
+    ├── report
+    │   ├── AIToolsAdoptionChart.tsx
+    │   ├── AlternativeOfferCard.tsx
+    │   ├── CourseOfferCard.tsx
+    │   ├── DepartmentUsageCard.tsx
+    │   ├── DeviceDistributionChart.tsx
+    │   ├── DiagnosticMetricsSection.tsx
+    │   ├── KeyMetricsSection.tsx
+    │   ├── KnowledgeAssessmentCard.tsx
+    │   ├── MaturityCard.tsx
+    │   ├── OpportunityCard.tsx
+    │   ├── OpportunitiesRisksSection.tsx
+    │   ├── OrganizationalBarriersCard.tsx
+    │   ├── ROICard.tsx
+    │   ├── ReportFooter.tsx
+    │   ├── ReportHeader.tsx
+    │   ├── SkillsRadarChart.tsx
+    │   ├── SummaryCard.tsx
+    │   ├── TasksByAreaSection.tsx
+    │   ├── TrainingStatusCard.tsx
+    │   └── types.ts
     └── ui
     │   ├── badge.tsx
     │   └── card.tsx
