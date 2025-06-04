@@ -64,7 +64,7 @@ type Row = {
   oportunidad_de_mejora: number;
   prompt_practico: number;
 
-  // Legacy fields that might still exist
+  // Legacy fields that might still exist or have been repurposed
   anios_experiencia?: number;
   nivel_office?: string;
   horas_ia_semana?: number;
@@ -77,7 +77,7 @@ type Row = {
   usado_copilot_outlook?: string;
   usado_copilot_power_platform?: string;
   ejemplos_mejoras_ia?: string;
-  tema_a_profundizar?: string;
+  tema_a_profundizar?: Array<{area: string; task: string}> | null; // Now stores structured repetitive daily tasks as JSONB
 };
 
 // Helper functions
@@ -133,6 +133,27 @@ const countJsonArrayElements = (rows: Row[], field: keyof Row) => {
   
   return elementCounts;
 };
+
+// Helper function to analyze tasks by area
+function analyzeTasksByArea(rows: Row[]): { [area: string]: { tasks: string[], count: number } } {
+  const tasksByArea: { [area: string]: { tasks: string[], count: number } } = {};
+  
+  rows.forEach(row => {
+    if (row.tema_a_profundizar && Array.isArray(row.tema_a_profundizar)) {
+      row.tema_a_profundizar.forEach(taskItem => {
+        if (taskItem.area && taskItem.task) {
+          if (!tasksByArea[taskItem.area]) {
+            tasksByArea[taskItem.area] = { tasks: [], count: 0 };
+          }
+          tasksByArea[taskItem.area].tasks.push(taskItem.task);
+          tasksByArea[taskItem.area].count++;
+        }
+      });
+    }
+  });
+  
+  return tasksByArea;
+}
 
 export async function computeStatsByCompany(company: string) {
   // Filter by company using the new 'nombre' field
@@ -322,7 +343,7 @@ export async function computeStatsByCompany(company: string) {
   };
 
   const topChallenges = topN('retos_actuales_ia');
-  const topTopics = topN('tema_a_profundizar');
+  const topTopics = topN('tema_a_profundizar'); // Now fetches repetitive task descriptions
 
   // ----- ROI CALCULATION -----
   // Simplified ROI calculation based on new logic
@@ -418,6 +439,9 @@ export async function computeStatsByCompany(company: string) {
   // avgPromptQuality (scale 1-5, or 0) is passed as avgPromptQualityScale
   const roiData = calculateROI(total, avgMinutesSaved, avgPromptQuality, avgDepartmentUsage);
 
+  // Analyze tasks by area using the new structured data
+  const tasksByArea = analyzeTasksByArea(rows);
+
   // ----- RESULTADO PLANO -----
   return [
     // Demographics
@@ -509,5 +533,15 @@ export async function computeStatsByCompany(company: string) {
     { key: 'roi.perEmployee.missedYearly', value: roiData.perEmployee.missedYearly },
     { key: 'roi.adoptionEffectiveness', value: roiData.adoptionEffectiveness },
     { key: 'roi.departmentUsageScore', value: roiData.departmentUsageScore },
+
+    // Add new task analysis data
+    ...Object.entries(tasksByArea).map(([area, data]) => ({
+      key: `tasksByArea.${area}.tasks`,
+      value: data.tasks.join(', ')
+    })),
+    ...Object.entries(tasksByArea).map(([area, data]) => ({
+      key: `tasksByArea.${area}.count`,
+      value: data.count
+    })),
   ];
 } 

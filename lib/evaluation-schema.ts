@@ -39,5 +39,67 @@ export const IAFormSchema = z.object({
   impacto_en_kpis: z.string().describe("STRING REPRESENTA NÚMERO. Impacto en KPIs: 1=Sin impacto, 2=Poco, 3=Moderado, 4=Alto, 5=Muy alto"),
   barreras_organizacionales: z.string().describe("STRING REPRESENTA NÚMERO. Barreras organizacionales: 1=Ninguna, 2=Pocas, 3=Moderadas, 4=Muchas, 5=Extremas"),
   oportunidad_de_mejora: z.string().describe("STRING REPRESENTA NÚMERO. Oportunidad de mejora: 1=Baja, 2=Poca, 3=Moderada, 4=Alta, 5=Muy alta"),
-  prompt_practico: z.string().describe("STRING REPRESENTA NÚMERO. Calidad del prompt práctico: 1=Muy básico, 2=Básico, 3=Moderado, 4=Bueno, 5=Excelente")
+  prompt_practico: z.string().describe("STRING REPRESENTA NÚMERO. Calidad del prompt práctico: 1=Muy básico, 2=Básico, 3=Moderado, 4=Bueno, 5=Excelente"),
+  
+  // Updated field for structured repetitive tasks by area
+  tareas_repetitivas_diarias: z.array(
+    z.object({
+      area: z.string().describe("El área funcional a la que pertenece la tarea. Ejemplos: 'ventas', 'marketing', 'finanzas', 'administracion', 'operaciones', 'recursos humanos', 'otro'. Usar minúsculas."),
+      task: z.string().describe(`ARRAY DE TASKS. Ejemplos: [
+        // Ventas
+        "Actualizar CRM con interacciones de clientes",
+        "Enviar correos de seguimiento post-reunión",
+        "Realizar análisis de datos de ventas",
+        "Atender consultas de clientes",
+        "Desarrollar presentaciones para clientes",
+        
+        // Marketing
+        "Programar publicaciones en redes sociales",
+        "Coordinar eventos de marketing",
+        "Desarrollar contenido para el blog",
+        "Optimizar campañas de publicidad digital",
+        "Desarrollar estrategias de SEO",
+        
+        // Finanzas
+        "Revisar y aprobar facturas",
+        "Preparar informes financieros mensuales",
+        "Realizar auditorías de calidad",
+        "Gestionar presupuestos de proyectos",
+        "Realizar investigaciones de mercado",
+        
+        // Administración
+        "Gestionar agendas y programar reuniones internas",
+        "Gestionar la nómina de empleados",
+        "Actualizar políticas de la empresa",
+        "Coordinar reuniones de equipo",
+        "Gestionar contratos legales",
+        
+        // Recursos Humanos
+        "Realizar capacitaciones internas",
+        "Coordinar actividades de reclutamiento",
+        "Monitorear la satisfacción de los empleados",
+        "Realizar evaluaciones de desempeño",
+        "Desarrollar políticas de seguridad",
+        
+        // Operaciones
+        "Supervisar el inventario de productos",
+        "Coordinar la logística de envíos",
+        "Realizar mantenimiento de sistemas informáticos",
+        "Monitorear el rendimiento del sitio web",
+        "Realizar pruebas de productos",
+        
+        // Otros
+        "Desarrollar planes de proyecto",
+        "Monitorear tendencias del mercado",
+        "Gestionar relaciones con proveedores",
+        "Actualizar bases de datos de clientes",
+        "Desarrollar campañas de correo electrónico",
+        "Gestionar cuentas de redes sociales",
+        "Actualizar contenido del sitio web",
+        "Realizar encuestas de satisfacción del cliente",
+        "Gestionar la comunicación interna",
+        "Desarrollar políticas de seguridad"
+      ]`),
+    })
+  )
 });

@@ -1,0 +1,48 @@
+├── .gitignore
+├── README.md
+├── app
+    ├── api
+    │   ├── calculations
+    │   │   └── route.ts
+    │   ├── chat
+    │   │   └── route.ts
+    │   ├── companies
+    │   │   └── route.ts
+    │   └── evaluate-exam
+    │   │   └── route.ts
+    ├── favicon.ico
+    ├── globals.css
+    ├── layout.tsx
+    ├── page.tsx
+    └── report-generator
+    │   └── page.tsx
+├── components.json
+├── components
+    ├── CompanySelector.tsx
+    ├── ProgressBar.tsx
+    ├── chat.tsx
+    ├── pdf-export-wrapper.tsx
+    ├── report-generator.tsx
+    ├── report-pdf.tsx
+    ├── report.tsx
+    └── ui
+    │   ├── badge.tsx
+    │   └── card.tsx
+├── eslint.config.mjs
+├── lib
+    ├── calculations.ts
+    ├── evaluation-schema.ts
+    └── utils.ts
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── public
+    ├── ctawomanmodel1.png
+    ├── file.svg
+    ├── globe.svg
+    ├── logo.png
+    ├── next.svg
+    ├── vercel.svg
+    └── window.svg
+└── tsconfig.json

@@ -142,7 +142,8 @@ Genera la evaluacion de acuerdo al esquema definido.`;
       impacto_en_kpis: parseIntScale(evaluationResultStrings.impacto_en_kpis),
       barreras_organizacionales: parseIntScale(evaluationResultStrings.barreras_organizacionales),
       oportunidad_de_mejora: parseIntScale(evaluationResultStrings.oportunidad_de_mejora),
-      prompt_practico: parseIntScale(evaluationResultStrings.prompt_practico)
+      prompt_practico: parseIntScale(evaluationResultStrings.prompt_practico),
+      tareas_repetitivas_diarias: evaluationResultStrings.tareas_repetitivas_diarias
     };
 
     console.log('Typed evaluation result:', typedEvaluationResult);
@@ -150,10 +151,8 @@ Genera la evaluacion de acuerdo al esquema definido.`;
     if (supabase) {
       const insertData = {
         conversation_id: conversationId,
-        user_email: userEmail,
         conversation_transcript: messages,
-        
-        // Use the new schema fields
+        user_email: userEmail,
         nombre: typedEvaluationResult.nombre,
         nombre_y_puesto: typedEvaluationResult.nombre_y_puesto,
         area_principal_trabajo: typedEvaluationResult.area_principal_trabajo,
@@ -165,8 +164,8 @@ Genera la evaluacion de acuerdo al esquema definido.`;
         capacitacion_formal: typedEvaluationResult.capacitacion_formal,
         confia_en_ia: typedEvaluationResult.confia_en_ia,
         curiosidad_explorar_ia: typedEvaluationResult.curiosidad_explorar_ia,
-                 dispositivos_ia: typedEvaluationResult.dispositivos_ia,
-         uso_herramientas_ia: typedEvaluationResult.uso_herramientas_ia,
+        dispositivos_ia: typedEvaluationResult.dispositivos_ia,
+        uso_herramientas_ia: typedEvaluationResult.uso_herramientas_ia,
         uso_ia_ventas: typedEvaluationResult.uso_ia_ventas,
         uso_ia_marketing: typedEvaluationResult.uso_ia_marketing,
         uso_ia_finanzas: typedEvaluationResult.uso_ia_finanzas,
@@ -177,7 +176,8 @@ Genera la evaluacion de acuerdo al esquema definido.`;
         impacto_en_kpis: typedEvaluationResult.impacto_en_kpis,
         barreras_organizacionales: typedEvaluationResult.barreras_organizacionales,
         oportunidad_de_mejora: typedEvaluationResult.oportunidad_de_mejora,
-        prompt_practico: typedEvaluationResult.prompt_practico
+        prompt_practico: typedEvaluationResult.prompt_practico,
+        tema_a_profundizar: typedEvaluationResult.tareas_repetitivas_diarias || []
       };
 
       const { data, error: dbError } = await supabase
