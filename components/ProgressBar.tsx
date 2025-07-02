@@ -12,7 +12,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep, totalSteps }) =>
   const progressPercentage = totalSteps > 0 ? (displayStep / totalSteps) * 100 : 0;
 
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-8 py-4 bg-white sticky top-0 z-20 shadow-sm">
+    <div className="w-full px-4 sm:px-6 lg:px-8 py-4 bg-white fixed top-0 left-0 right-0 z-50 shadow-sm" style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}>
       <div className="max-w-2xl mx-auto"> {/* Centered and with a max-width */}
         <div className="flex items-center justify-between mb-1.5">
         </div>

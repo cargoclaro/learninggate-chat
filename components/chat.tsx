@@ -386,7 +386,7 @@ export default function Page() {
             />
           </div>
           
-          <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 
+          <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 pt-20 sm:pt-24 
                         relative z-10 flex flex-col flex-1">
             <div className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 
                           flex flex-col z-10 relative min-h-0">
