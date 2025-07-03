@@ -19,9 +19,9 @@ export const CourseOfferCard: React.FC<CourseOfferCardProps> = ({
   maturity, 
   singleValue 
 }) => {
-  const employeeCount = Math.max(25, roi.employeeCount);
-  const isMinimumTeam = roi.employeeCount < 25;
-  const price = employeeCount * 1800;
+  const employeeCount = Math.max(30, roi.employeeCount);
+  const isMinimumTeam = roi.employeeCount < 30;
+  const price = employeeCount * 2499;
 
   return (
     <Card className="border-2 border-[#F5B614] bg-stone-50 shadow-lg relative">
@@ -61,8 +61,8 @@ export const CourseOfferCard: React.FC<CourseOfferCardProps> = ({
               <span className="font-medium text-yellow-700 text-base">Programa Empresarial</span>
             </div>
             <div className="text-sm text-yellow-600">
-              Programa diseñado para equipos de mínimo 25 empleados.
-              <span className="font-medium"> Cotización basada en 25 empleados.</span>
+              Programa diseñado para equipos de mínimo 30 empleados.
+              <span className="font-medium"> Cotización basada en 30 empleados.</span>
             </div>
           </div>
         )}

@@ -1449,16 +1449,16 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                 const actualEmployeeCount = roi.employeeCount;
                 let calculatedPrice: number;
 
-                if (actualEmployeeCount < 25) {
-                  calculatedPrice = 25 * 1800;
+                if (actualEmployeeCount < 30) {
+                  calculatedPrice = 30 * 2499;
                 } else {
-                  calculatedPrice = actualEmployeeCount * 1800;
+                  calculatedPrice = actualEmployeeCount * 2499;
                 }
                 
                 const price = calculatedPrice; // Final price based on new logic
 
                 // Values for display, keeping some of the existing structure if needed for text
-                const displayEmployeeCount = Math.max(25, actualEmployeeCount); 
+                const displayEmployeeCount = Math.max(30, actualEmployeeCount); 
                 const potentialGain = roi.potential - roi.current;
 
                 return (
@@ -1578,9 +1578,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
           <View style={[styles.card, styles.cardBordered, { borderColor: '#3b82f6', borderWidth: 3, backgroundColor: '#EFF6FF', padding: 20 }]}>
             {(() => {
               const actualEmployeeCountLocal = roi.employeeCount;
-              const displayEmployeeCountLocal = Math.max(25, actualEmployeeCountLocal);
+              const displayEmployeeCountLocal = Math.max(30, actualEmployeeCountLocal);
               
-              const pricePerEmployee = 999;
+              const pricePerEmployee = 1499;
               const programPrice = displayEmployeeCountLocal * pricePerEmployee;
 
               // Corrected annual calculations

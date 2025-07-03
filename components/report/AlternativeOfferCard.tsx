@@ -18,10 +18,10 @@ export const AlternativeOfferCard: React.FC<AlternativeOfferCardProps> = ({
   maturity, 
   singleValue 
 }) => {
-  const employeeCount = Math.max(25, roi.employeeCount);
-  const isMinimumTeam = roi.employeeCount < 25;
+  const employeeCount = Math.max(30, roi.employeeCount);
+  const isMinimumTeam = roi.employeeCount < 30;
   const potentialGain = (roi.potential - roi.current) * 0.5;
-  const pricePerEmployee = 999;
+  const pricePerEmployee = 1499;
   const totalPrice = employeeCount * pricePerEmployee;
 
   return (
@@ -58,8 +58,8 @@ export const AlternativeOfferCard: React.FC<AlternativeOfferCardProps> = ({
               <span className="font-medium text-yellow-700 text-base">Programa Empresarial</span>
             </div>
             <div className="text-sm text-yellow-600">
-              Programa diseñado para equipos de mínimo 25 empleados.
-              <span className="font-medium"> Cotización basada en 25 empleados.</span>
+              Programa diseñado para equipos de mínimo 30 empleados.
+              <span className="font-medium"> Cotización basada en 30 empleados.</span>
             </div>
           </div>
         )}
