@@ -78,12 +78,11 @@ const styles = StyleSheet.create({
   },
   // Card styles with different variants
   card: {
-    border: '1 solid #e5e7eb',
-    borderRadius: 8,
-    padding: 14,
+    border: '1.5 solid #e5e7eb',
+    borderRadius: 10,
+    padding: 16,
     backgroundColor: '#ffffff',
     breakInside: 'avoid',
-    boxShadow: '0 1 3 rgba(0, 0, 0, 0.1)',
   },
   cardBordered: {
     borderWidth: 2,
@@ -349,7 +348,6 @@ const getSingleValue = (stats: StatKV[], key: string, decimals = 1) => {
 };
 
 // Helper function to convert age scale to readable format
-/*
 const convertAgeScale = (ageScale: number) => {
   switch(Math.round(ageScale)) {
     case 1: return "18-25";
@@ -360,7 +358,6 @@ const convertAgeScale = (ageScale: number) => {
     default: return "N/A";
   }
 };
-*/
 
 // Helper function to calculate AI maturity - matching dashboard logic
 const calculateAIMaturity = (stats: StatKV[]) => {
@@ -390,7 +387,7 @@ const calculateAIMaturity = (stats: StatKV[]) => {
     description = "Excelente adopción y dominio de herramientas IA";
   } else if (totalScore >= 50) {
     level = "Intermedio";
-    color = "#F5B614";
+    color = "#F4B400";
     description = "Buen progreso en la implementación de IA";
   } else if (totalScore >= 25) {
     level = "Básico";
@@ -431,8 +428,8 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
   const opportunityMonthly = roi.opportunity;
 
   // Get age data
-  // const avgAgeScale = getSingleValue(stats, "avgAge", 1);
-  // const avgAgeRange = convertAgeScale(avgAgeScale);
+  const avgAgeScale = getSingleValue(stats, "avgAge", 1);
+  const avgAgeRange = convertAgeScale(avgAgeScale);
 
   return (
     <Document>
@@ -527,8 +524,31 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
           </View>
         </View>
 
-        {/* Key Metrics */}
-        <View style={styles.section}>
+        {/* Enhanced Key Metrics Section */}
+        <View style={[styles.section, { marginBottom: 20 }]}>
+          <View style={{ 
+            marginBottom: 16, 
+            paddingBottom: 12, 
+            borderBottomWidth: 2, 
+            borderBottomColor: '#e5e7eb',
+            backgroundColor: '#f8fafc',
+            padding: 12,
+            borderRadius: 8
+          }}>
+            <Text style={{ 
+              fontSize: 16, 
+              fontWeight: 'bold', 
+              color: '#1f2937',
+              textAlign: 'center',
+              letterSpacing: 0.5
+            }}>[MÉTRICAS] RENDIMIENTO CLAVE</Text>
+            <Text style={{ 
+              fontSize: 10, 
+              color: '#6b7280', 
+              textAlign: 'center',
+              marginTop: 4
+            }}>Indicadores principales del nivel de adopción de IA en tu organización</Text>
+          </View>
           <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
             {/* Empleados */}
             <View style={[styles.card, styles.cardLeftBorder, { width: '19%', minWidth: 90, borderLeftColor: getSingleValue(stats, 'employeeCount', 0) >= 50 ? '#0F9D58' : '#DB4437', padding: 10 }]}>
@@ -620,26 +640,24 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
               <Text style={[styles.metricLabel, { fontSize: 6, marginTop: 2 }]}>Meta: 5/5</Text>
             </View>
 
-            {/* % Conoce LLMs */}
-            <View style={[styles.card, styles.cardLeftBorder, { width: '19%', minWidth: 90, borderLeftColor: getSingleValue(stats, 'pctKnowLLM', 0) >= 100 ? '#0F9D58' : '#DB4437', padding: 10 }]}>
+            {/* Edad promedio */}
+            <View style={[styles.card, styles.cardLeftBorder, { width: '19%', minWidth: 90, borderLeftColor: '#6b7280', padding: 10 }]}>
               <View style={{ marginBottom: 6 }}>
                 <View style={styles.cardTitleWithIcon}>
                   <Svg width="8" height="8" viewBox="0 0 24 24" fill="none">
-                    <Path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="#6b7280" strokeWidth="1.5" fill="none"/>
+                    <Path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                   </Svg>
-                  <Text style={[styles.cardTitle, { fontSize: 8 }]}>% Conoce LLMs</Text>
+                  <Text style={[styles.cardTitle, { fontSize: 8 }]}>Edad promedio</Text>
                 </View>
-                <View style={[styles.badge, { backgroundColor: getSingleValue(stats, 'pctKnowLLM', 0) >= 100 ? '#0F9D58' : '#DB4437', paddingHorizontal: 4, paddingVertical: 2, marginTop: 2 }]}>
-                  <Text style={[styles.badgeText, { fontSize: 6 }]}>
-                    {getSingleValue(stats, 'pctKnowLLM', 0) >= 100 ? 'Exc' : 'Bajo'}
-                  </Text>
+                <View style={[styles.badge, { backgroundColor: '#6b7280', paddingHorizontal: 4, paddingVertical: 2, marginTop: 2 }]}>
+                  <Text style={[styles.badgeText, { fontSize: 6 }]}>Info</Text>
                 </View>
               </View>
               <View style={styles.metricWithUnit}>
-                <Text style={[styles.metric, { fontSize: 18 }]}>{getSingleValue(stats, 'pctKnowLLM', 0)}</Text>
-                <Text style={[styles.metricUnit, { fontSize: 10 }]}>%</Text>
+                <Text style={[styles.metric, { fontSize: 18 }]}>{avgAgeRange}</Text>
+                <Text style={[styles.metricUnit, { fontSize: 10 }]}> años</Text>
               </View>
-              <Text style={[styles.metricLabel, { fontSize: 6, marginTop: 2 }]}>Meta: 100%</Text>
+              <Text style={[styles.metricLabel, { fontSize: 6, marginTop: 2 }]}>Perfil demográfico</Text>
             </View>
           </View>
         </View>
@@ -657,7 +675,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     </Svg>
                     <Text style={[styles.cardTitle, { color: '#2563eb', fontWeight: 'bold', fontSize: 11 }]}>Conocimiento Básico IA</Text>
                   </View>
-                  <Text style={[styles.cardSubtitle, { color: '#6b82f6', fontSize: 7, marginTop: 3 }]}>Oportunidad de capacitación fundamental</Text>
+                  <Text style={[styles.cardSubtitle, { color: '#6b82f6', fontSize: 7, marginTop: 3 }]}>Promedio en escala 1-5 (donde 5 = excelente)</Text>
                 </View>
                 <View style={{ gap: 8 }}>
                   <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #dbeafe', borderRadius: 6 }]}>
@@ -668,7 +686,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                         </Svg>
                         <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Sabe qué es un LLM:</Text>
                       </View>
-                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'pctKnowLLM', 0)}%</Text>
+                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'avgLLMKnowledge', 1).toFixed(1)}/5</Text>
                     </View>
                   </View>
                   <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #dbeafe', borderRadius: 6 }]}>
@@ -677,9 +695,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                         <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
                           <Path d="M12 2v20m10-10H2" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" fill="none"/>
                         </Svg>
-                        <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Pretraining/finetuning:</Text>
+                        <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Conoce pretraining/finetuning:</Text>
                       </View>
-                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'pctKnowPretrainingFT', 0)}%</Text>
+                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'avgPretrainingKnowledge', 1).toFixed(1)}/5</Text>
                     </View>
                   </View>
                   <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #dbeafe', borderRadius: 6 }]}>
@@ -691,7 +709,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                         </Svg>
                         <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Conoce 4 partes del prompt:</Text>
                       </View>
-                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'pctKnowPromptParts', 0)}%</Text>
+                      <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'avgPromptKnowledge', 1).toFixed(1)}/5</Text>
                     </View>
                   </View>
                 </View>
@@ -1028,8 +1046,31 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
             </View>
           </View>
 
-          {/* Charts Section - Data Visualizations */}
-          <View style={styles.section} wrap={false}>
+          {/* Enhanced Charts Section */}
+          <View style={[styles.section, { marginBottom: 20 }]} wrap={false}>
+            <View style={{ 
+              marginBottom: 16, 
+              paddingBottom: 12, 
+              borderBottomWidth: 2, 
+              borderBottomColor: '#e5e7eb',
+              backgroundColor: '#f0f9ff',
+              padding: 12,
+              borderRadius: 8
+            }}>
+              <Text style={{ 
+                fontSize: 16, 
+                fontWeight: 'bold', 
+                color: '#1e40af',
+                textAlign: 'center',
+                letterSpacing: 0.5
+              }}>[ANÁLISIS] COMPARATIVO Y VISUALIZACIONES</Text>
+              <Text style={{ 
+                fontSize: 10, 
+                color: '#3b82f6', 
+                textAlign: 'center',
+                marginTop: 4
+              }}>Comparación con benchmarks del mercado y distribución de uso</Text>
+            </View>
             <View style={{ flexDirection: 'row', gap: 12 }}>
               {/* Skills vs Industry - Updated with 6 metrics */}
               <View style={[styles.card, styles.cardBordered, { flex: 1, borderColor: '#9333ea' }]}>
@@ -1143,15 +1184,58 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     </Text>
                   </Svg>
                   
-                  {/* Legend */}
-                  <View style={{ flexDirection: 'row', gap: 20, marginTop: 10 }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                      <View style={{ width: 20, height: 3, backgroundColor: '#3b82f6' }} />
-                      <Text style={{ fontSize: 8, color: '#374151' }}>Tu empresa</Text>
+                  {/* Enhanced Legend with Values */}
+                  <View style={{ marginTop: 12 }}>
+                    <View style={{ flexDirection: 'row', gap: 20, marginBottom: 8 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                        <View style={{ width: 20, height: 3, backgroundColor: '#3b82f6' }} />
+                        <Text style={{ fontSize: 8, color: '#374151', fontWeight: 'bold' }}>Tu empresa</Text>
+                      </View>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                        <View style={{ width: 20, height: 3, backgroundColor: '#ef4444', opacity: 0.5 }} />
+                        <Text style={{ fontSize: 8, color: '#374151' }}>Promedio industria</Text>
+                      </View>
                     </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                      <View style={{ width: 20, height: 3, backgroundColor: '#ef4444', opacity: 0.5 }} />
-                      <Text style={{ fontSize: 8, color: '#374151' }}>Promedio industria</Text>
+                    
+                    {/* Skill Values Summary */}
+                    <View style={{ backgroundColor: '#f8fafc', padding: 8, borderRadius: 6, marginTop: 8 }}>
+                      <Text style={{ fontSize: 9, color: '#374151', fontWeight: 'bold', marginBottom: 6 }}>
+                        Puntuaciones detalladas (escala 1-5):
+                      </Text>
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+                        {(() => {
+                          const skills = [
+                            { name: 'Prompts', key: 'avgPromptSkill' },
+                            { name: 'Confianza', key: 'avgConfidence' },
+                            { name: 'Curiosidad', key: 'avgCuriosity' },
+                            { name: 'Autonomía', key: 'avgAutonomyLevel' },
+                            { name: 'KPIs', key: 'avgKPIImpact' },
+                            { name: 'Calidad', key: 'avgPromptQuality' }
+                          ];
+                          
+                          return skills.map((skill, idx) => {
+                            const value = getSingleValue(stats, skill.key, 1);
+                            const industryValue = [3.2, 3.5, 3.8, 3.0, 2.8, 3.1][idx];
+                            const isAboveAverage = value > industryValue;
+                            
+                            return (
+                              <View key={skill.name} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                                <Text style={{ fontSize: 7, color: '#6b7280', width: 45 }}>{skill.name}:</Text>
+                                <Text style={{ 
+                                  fontSize: 8, 
+                                  fontWeight: 'bold',
+                                  color: isAboveAverage ? '#059669' : '#dc2626'
+                                }}>
+                                  {value.toFixed(1)}
+                                </Text>
+                                <Text style={{ fontSize: 6, color: '#9ca3af' }}>
+                                  ({isAboveAverage ? '+' : ''}{(value - industryValue).toFixed(1)})
+                                </Text>
+                              </View>
+                            );
+                          });
+                        })()}
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -1169,25 +1253,65 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                 </View>
                 <View style={styles.barChart}>
                   {[
-                    { name: 'Laptop', key: 'device.laptop' },
-                    { name: 'Desktop', key: 'device.desktop' },
-                    { name: 'Móvil', key: 'device.phone' },
-                    { name: 'Tablet', key: 'device.tablet' }
+                    { name: 'Laptop', key: 'device.laptop', icon: '[L]' },
+                    { name: 'Desktop', key: 'device.desktop', icon: '[D]' },
+                    { name: 'Móvil', key: 'device.phone', icon: '[M]' },
+                    { name: 'Tablet', key: 'device.tablet', icon: '[T]' }
                   ].map((device, idx) => {
                     const value = getSingleValue(stats, device.key, 0);
+                    const maxValue = Math.max(
+                      getSingleValue(stats, 'device.laptop', 0),
+                      getSingleValue(stats, 'device.desktop', 0),
+                      getSingleValue(stats, 'device.phone', 0),
+                      getSingleValue(stats, 'device.tablet', 0)
+                    );
+                    const barWidth = maxValue > 0 ? (value / maxValue) * 100 : 0;
+                    
                     return (
                       <View key={device.name} style={styles.bar}>
-                        <Text style={styles.barLabel}>{device.name}</Text>
+                        <View style={[styles.barLabel, { flexDirection: 'row', alignItems: 'center', gap: 4 }]}>
+                          <Text style={{ fontSize: 8 }}>{device.icon}</Text>
+                          <Text style={{ fontSize: 7 }}>{device.name}</Text>
+                        </View>
                         <View style={styles.barContainer}>
                           <View style={[styles.barFill, { 
-                            width: `${value}%`, 
+                            width: `${barWidth}%`, 
                             backgroundColor: ['#4285F4', '#DB4437', '#F5B614', '#0F9D58'][idx] 
                           }]} />
                         </View>
-                        <Text style={styles.barValue}>{value}%</Text>
+                        <Text style={[styles.barValue, { fontWeight: 'bold' }]}>{value}%</Text>
                       </View>
                     );
                   })}
+                </View>
+                
+                {/* Device Usage Insights */}
+                <View style={{ marginTop: 10, padding: 8, backgroundColor: '#f1f5f9', borderRadius: 6 }}>
+                  <Text style={{ fontSize: 8, color: '#475569', fontWeight: 'bold', marginBottom: 4 }}>
+                    [INSIGHT] Análisis de Dispositivos:
+                  </Text>
+                  <Text style={{ fontSize: 7, color: '#64748b', lineHeight: 1.4 }}>
+                    {(() => {
+                      const laptopUsage = getSingleValue(stats, 'device.laptop', 0);
+                      const mobileUsage = getSingleValue(stats, 'device.phone', 0);
+                      const desktopUsage = getSingleValue(stats, 'device.desktop', 0);
+                      const totalUsage = laptopUsage + mobileUsage + desktopUsage + getSingleValue(stats, 'device.tablet', 0);
+                      
+                      if (totalUsage === 0) {
+                        return "No se registró uso de dispositivos específicos para IA.";
+                      }
+                      
+                      if (laptopUsage > 50) {
+                        return "Alto uso en laptops indica trabajo productivo. Oportunidad para optimizar workflows móviles.";
+                      } else if (mobileUsage > 40) {
+                        return "Fuerte adopción móvil. Considerar capacitación en apps móviles de IA especializadas.";
+                      } else if (desktopUsage > 40) {
+                        return "Preferencia por desktop. Ideal para herramientas avanzadas y capacitación técnica.";
+                      } else {
+                        return "Uso distribuido entre dispositivos. Estrategia multi-plataforma recomendada.";
+                      }
+                    })()}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -1382,6 +1506,156 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
             </View>
           </View>
 
+          {/* Tasks by Area Section */}
+          <View style={styles.section} wrap={false}>
+            <View style={[styles.card, styles.cardBordered, styles.cardGreen]}>
+              <View style={styles.cardHeader}>
+                <View style={styles.cardTitleWithIcon}>
+                  <Svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <Path d="M9 17h6l3-10-3-2-6 2-3 10z" stroke="#059669" strokeWidth="1.5" fill="none"/>
+                    <Path d="M12 7v10M8 11h8" stroke="#059669" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                  </Svg>
+                  <Text style={[styles.cardTitle, { color: '#059669', fontWeight: 'bold', fontSize: 14 }]}>Distribución de Tareas por Área</Text>
+                </View>
+                <Text style={[styles.cardSubtitle, { color: '#10b981' }]}>Tareas repetitivas identificadas por área funcional</Text>
+              </View>
+              
+              {/* Tasks by Area Bar Chart */}
+              <View style={styles.barChart}>
+                {(() => {
+                  const tasksByArea: { [area: string]: { count: number, tasks: string[] } } = {};
+                  
+                  // Process stats to extract tasks by area
+                  stats.forEach((item) => {
+                    if (item.key.startsWith('tasksByArea.') && item.key.endsWith('.tasks')) {
+                      const area = item.key.split('.')[1];
+                      if (!tasksByArea[area]) {
+                        tasksByArea[area] = { count: 0, tasks: [] };
+                      }
+                      tasksByArea[area].tasks = item.value ? String(item.value).split(', ') : [];
+                    }
+                    if (item.key.startsWith('tasksByArea.') && item.key.endsWith('.count')) {
+                      const area = item.key.split('.')[1];
+                      if (!tasksByArea[area]) {
+                        tasksByArea[area] = { count: 0, tasks: [] };
+                      }
+                      tasksByArea[area].count = Number(item.value) || 0;
+                    }
+                  });
+
+                  const areas = [
+                    { name: 'Ventas', key: 'ventas', color: '#3B82F6' },
+                    { name: 'Marketing', key: 'marketing', color: '#10B981' },
+                    { name: 'Finanzas', key: 'finanzas', color: '#F59E0B' },
+                    { name: 'Administración', key: 'administracion', color: '#8B5CF6' },
+                    { name: 'Operaciones', key: 'operaciones', color: '#EF4444' },
+                    { name: 'Recursos Humanos', key: 'recursos', color: '#06B6D4' },
+                    { name: 'Otro', key: 'otro', color: '#6B7280' }
+                  ];
+
+                  const maxCount = Math.max(...Object.values(tasksByArea).map(area => area.count), 1);
+                  
+                  return areas.map((area) => {
+                    const areaData = tasksByArea[area.key] || { count: 0, tasks: [] };
+                    const percentage = maxCount > 0 ? (areaData.count / maxCount) * 100 : 0;
+                    
+                    if (areaData.count === 0) return null;
+                    
+                    return (
+                      <View key={area.key} style={styles.bar}>
+                        <View style={[styles.barLabel, { width: 80 }]}>
+                          <Text style={{ fontSize: 7 }}>{area.name}</Text>
+                        </View>
+                        <View style={styles.barContainer}>
+                          <View style={[styles.barFill, { 
+                            width: `${percentage}%`, 
+                            backgroundColor: area.color 
+                          }]} />
+                        </View>
+                        <Text style={styles.barValue}>{areaData.count}</Text>
+                      </View>
+                    );
+                  }).filter(Boolean);
+                })()}
+              </View>
+              
+              {/* Top Tasks Summary */}
+              <View style={{ marginTop: 12, flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                {(() => {
+                  const tasksByArea: { [area: string]: { count: number, tasks: string[] } } = {};
+                  
+                  stats.forEach((item) => {
+                    if (item.key.startsWith('tasksByArea.') && item.key.endsWith('.tasks')) {
+                      const area = item.key.split('.')[1];
+                      if (!tasksByArea[area]) {
+                        tasksByArea[area] = { count: 0, tasks: [] };
+                      }
+                      tasksByArea[area].tasks = item.value ? String(item.value).split(', ') : [];
+                    }
+                    if (item.key.startsWith('tasksByArea.') && item.key.endsWith('.count')) {
+                      const area = item.key.split('.')[1];
+                      if (!tasksByArea[area]) {
+                        tasksByArea[area] = { count: 0, tasks: [] };
+                      }
+                      tasksByArea[area].count = Number(item.value) || 0;
+                    }
+                  });
+
+                  const sortedAreas = Object.entries(tasksByArea)
+                    .filter(([, data]) => data.count > 0)
+                    .sort(([, a], [, b]) => b.count - a.count)
+                    .slice(0, 3);
+
+                  return sortedAreas.map(([area, data], index) => (
+                    <View key={area} style={[styles.card, { 
+                      width: '30%', 
+                      padding: 8, 
+                      backgroundColor: '#f8fafc',
+                      borderLeftWidth: 3,
+                      borderLeftColor: ['#3B82F6', '#10B981', '#F59E0B'][index] || '#6B7280'
+                    }]}>
+                      <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#374151', marginBottom: 4 }}>
+                        {area.charAt(0).toUpperCase() + area.slice(1)}
+                      </Text>
+                      <Text style={{ fontSize: 7, color: '#059669', marginBottom: 4 }}>
+                        {data.count} tarea{data.count !== 1 ? 's' : ''}
+                      </Text>
+                      {data.tasks.slice(0, 2).map((task, idx) => (
+                        <Text key={idx} style={{ fontSize: 6, color: '#6b7280', marginBottom: 2 }}>
+                          • {task.length > 40 ? task.substring(0, 40) + '...' : task}
+                        </Text>
+                      ))}
+                    </View>
+                  ));
+                })()}
+              </View>
+              
+              {/* Automation Opportunities Insight */}
+              <View style={{ marginTop: 12, padding: 10, backgroundColor: '#ecfdf5', border: '1 solid #86efac', borderRadius: 6 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                  <Svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                    <Path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#059669" strokeWidth="1.5" fill="none"/>
+                  </Svg>
+                  <Text style={{ fontSize: 9, color: '#059669', fontWeight: 'bold' }}>[OPORTUNIDAD] Automatización</Text>
+                </View>
+                <Text style={{ fontSize: 8, color: '#065f46', lineHeight: 1.4 }}>
+                  {(() => {
+                    const totalTasks = stats.filter(s => s.key.endsWith('.count')).reduce((sum, s) => sum + Number(s.value), 0);
+                    if (totalTasks === 0) {
+                      return "No se identificaron tareas repetitivas específicas. Recomendamos realizar un análisis más detallado para identificar oportunidades de automatización.";
+                    } else if (totalTasks < 5) {
+                      return "Pocas tareas repetitivas identificadas. Enfoque en optimizar procesos existentes y capacitar en herramientas de productividad.";
+                    } else if (totalTasks < 15) {
+                      return "Oportunidades moderadas de automatización identificadas. Las áreas con mayor concentración de tareas podrían beneficiarse de capacitación especializada.";
+                    } else {
+                      return "Excelentes oportunidades de automatización. Alta concentración de tareas repetitivas indica gran potencial de mejora con herramientas de IA.";
+                    }
+                  })()}
+                </Text>
+              </View>
+            </View>
+          </View>
+
           {/* Blur overlay for second page */}
           {isBlurred && (
             <View style={[styles.blurOverlay, { 
@@ -1467,7 +1741,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     <View style={{ alignItems: 'center', marginBottom: 16 }}>
                       <Text style={{ fontSize: 10, color: '#6b7280', marginBottom: 4 }}>PROGRAMA CHATGPT BÁSICO + MICROSOFT COPILOT IA / GOOGLE GEMINI</Text>
                       <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#374151' }}>
-                        De {maturity.level} a Experto en 90 Días
+                        De {maturity.level} a Experto en 4 horas
                       </Text>
                       <Text style={{ fontSize: 10, color: '#6b7280', marginTop: 2 }}>
                         Para {displayEmployeeCount} empleados — Certificación en IA aplicada
@@ -1517,9 +1791,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                         <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold' }}>Garantía Triple</Text>
                       </View>
                       <View style={{ gap: 2 }}>
-                        <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Recuperas ${Math.round(potentialGain).toLocaleString()} o reembolso</Text>
-                        <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Skill sube a 5/5 o extensión gratis</Text>
-                        <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Satisfacción o no pagas</Text>
+                        <Text style={{ fontSize: 8, color: '#15803d' }}>• Recuperas ${Math.round(potentialGain).toLocaleString()} o reembolso</Text>
+                        <Text style={{ fontSize: 8, color: '#15803d' }}>• Skill sube a 5/5 o extensión gratis</Text>
+                        <Text style={{ fontSize: 8, color: '#15803d' }}>• Satisfacción o no pagas</Text>
                       </View>
                     </View>
 
@@ -1530,15 +1804,33 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                       </Text>
                     </View>
 
-                    {/* CTA */}
-                    <Link src="https://learninggate-ai.com" style={{ textDecoration: 'none' }}>
-                      <View style={{ backgroundColor: '#F5B614', borderRadius: 6, padding: 12, alignItems: 'center' }}>
-                        <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'white' }}>RESERVAR CUPO</Text>
-                        <Text style={{ fontSize: 8, color: 'white', marginTop: 2 }}>
-                          Incluye llamada estratégica gratuita y análisis ROI personalizado
-                        </Text>
-                      </View>
-                    </Link>
+                    {/* CTA - matching web version */}
+                    <View style={{ alignItems: 'center' }}>
+                      <Link src="https://learninggate-ai.com" style={{ textDecoration: 'none', width: '100%' }}>
+                        <View style={{ 
+                          backgroundColor: '#F5B614', 
+                          borderRadius: 8, 
+                          paddingVertical: 12, 
+                          paddingHorizontal: 16,
+                          alignItems: 'center',
+                          width: '100%'
+                        }}>
+                          <Text style={{ 
+                            fontSize: 16, 
+                            fontWeight: '500', 
+                            color: 'white'
+                          }}>RESERVAR CUPO</Text>
+                        </View>
+                      </Link>
+                      <Text style={{ 
+                        fontSize: 14, 
+                        color: '#6b7280', 
+                        marginTop: 8,
+                        textAlign: 'center'
+                      }}>
+                        Incluye llamada estratégica gratuita y análisis ROI personalizado
+                      </Text>
+                    </View>
                   </>
                 );
               })()}
@@ -1598,7 +1890,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                   <View style={{ alignItems: 'center', marginBottom: 16 }}>
                     <Text style={{ fontSize: 10, color: '#6b7280', marginBottom: 4 }}>PROGRAMA CHATGPT BÁSICO</Text>
                     <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1e3a8a' }}> {/* Darker Blue for title text */}
-                      De {maturity.level} a Intermedio en 60 Días
+                      De {maturity.level} a Intermedio en 2 horas
                     </Text>
                     <Text style={{ fontSize: 10, color: '#6b7280', marginTop: 2 }}>
                       Para {displayEmployeeCountLocal} empleados — Certificación ChatGPT
@@ -1650,9 +1942,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                       <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold' }}>Garantía del Programa Básico</Text>
                     </View>
                     <View style={{ gap: 2 }}>
-                      <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Recuperas ${Math.round(basicProgramAdditionalAnnualGain).toLocaleString()} en valor o reembolso</Text>
-                      <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Skill IA sube a 4/5 o extensión formativa gratis</Text>
-                      <Text style={{ fontSize: 8, color: '#15803d' }}>✓ Satisfacción garantizada o revisión del programa</Text>
+                      <Text style={{ fontSize: 8, color: '#15803d' }}>• Recuperas ${Math.round(basicProgramAdditionalAnnualGain).toLocaleString()} en valor o reembolso</Text>
+                      <Text style={{ fontSize: 8, color: '#15803d' }}>• Skill IA sube a 4/5 o extensión formativa gratis</Text>
+                      <Text style={{ fontSize: 8, color: '#15803d' }}>• Satisfacción garantizada o revisión del programa</Text>
                     </View>
                   </View>
                   
@@ -1662,15 +1954,33 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     </Text>
                   </View>
 
-                  {/* CTA */}
-                  <Link src="https://learninggate-ai.com" style={{ textDecoration: 'none' }}>
-                    <View style={{ backgroundColor: '#3b82f6', borderRadius: 6, padding: 12, alignItems: 'center' }}>
-                      <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'white' }}>EMPEZAR PROGRAMA BÁSICO</Text>
-                      <Text style={{ fontSize: 8, color: 'white', marginTop: 2 }}>
-                        Acceso a plataforma y primeros módulos en 24h
-                      </Text>
-                    </View>
-                  </Link>
+                  {/* CTA - matching web version */}
+                  <View style={{ alignItems: 'center' }}>
+                    <Link src="https://learninggate-ai.com" style={{ textDecoration: 'none', width: '100%' }}>
+                      <View style={{ 
+                        backgroundColor: '#2563eb', 
+                        borderRadius: 8, 
+                        paddingVertical: 12, 
+                        paddingHorizontal: 16,
+                        alignItems: 'center',
+                        width: '100%'
+                      }}>
+                        <Text style={{ 
+                          fontSize: 16, 
+                          fontWeight: '500', 
+                          color: 'white'
+                        }}>EMPEZAR AHORA</Text>
+                      </View>
+                    </Link>
+                    <Text style={{ 
+                      fontSize: 14, 
+                      color: '#6b7280', 
+                      marginTop: 8,
+                      textAlign: 'center'
+                    }}>
+                      Incluye acceso inmediato y soporte básico
+                    </Text>
+                  </View>
                 </>
               );
             })()}

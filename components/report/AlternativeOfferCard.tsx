@@ -44,7 +44,7 @@ export const AlternativeOfferCard: React.FC<AlternativeOfferCardProps> = ({
             PROGRAMA CHATGPT BÁSICO
           </div>
           <h3 className="text-2xl font-bold mb-1">
-            De {maturity.level} a Intermedio en 60 Días
+            De {maturity.level} a Intermedio en 2 horas
           </h3>
           <p className="text-base text-muted-foreground">
             Para {employeeCount} empleados — Certificación ChatGPT

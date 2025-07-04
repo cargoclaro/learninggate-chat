@@ -47,7 +47,7 @@ export const CourseOfferCard: React.FC<CourseOfferCardProps> = ({
             PROGRAMA CHATGPT BÁSICO + MICROSOFT COPILOT IA / GOOGLE GEMINI
           </div>
           <h3 className="text-2xl font-bold mb-1">
-            De {maturity.level} a Experto en 2 Días
+            De {maturity.level} a Experto en 4 horas
           </h3>
           <p className="text-base text-muted-foreground">
             Para {employeeCount} empleados — Certificación en IA aplicada
