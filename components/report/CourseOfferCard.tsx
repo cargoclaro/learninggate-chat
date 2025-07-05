@@ -19,9 +19,10 @@ export const CourseOfferCard: React.FC<CourseOfferCardProps> = ({
   maturity, 
   singleValue 
 }) => {
-  const employeeCount = Math.max(30, roi.employeeCount);
-  const isMinimumTeam = roi.employeeCount < 30;
-  const price = employeeCount * 2499;
+  const employeeCount = roi.employeeCount;
+  const isMinimumTeam = roi.employeeCount < 25;
+  const billingEmployeeCount = Math.max(25, roi.employeeCount);
+  const price = billingEmployeeCount * 2499;
 
   return (
     <Card className="border-2 border-[#F5B614] bg-stone-50 shadow-lg relative">
@@ -49,6 +50,9 @@ export const CourseOfferCard: React.FC<CourseOfferCardProps> = ({
           <h3 className="text-2xl font-bold mb-1">
             De {maturity.level} a Experto en 4 horas
           </h3>
+          <p className="text-sm text-muted-foreground italic mb-1">
+            (2 sesiones de 2 horas)
+          </p>
           <p className="text-base text-muted-foreground">
             Para {employeeCount} empleados — Certificación en IA aplicada
           </p>
@@ -61,8 +65,8 @@ export const CourseOfferCard: React.FC<CourseOfferCardProps> = ({
               <span className="font-medium text-yellow-700 text-base">Programa Empresarial</span>
             </div>
             <div className="text-sm text-yellow-600">
-              Programa diseñado para equipos de mínimo 30 empleados.
-              <span className="font-medium"> Cotización basada en 30 empleados.</span>
+              Programa diseñado para equipos de mínimo 25 empleados.
+              <span className="font-medium"> Cotización basada en {billingEmployeeCount} empleados.</span>
             </div>
           </div>
         )}
@@ -143,21 +147,8 @@ export const CourseOfferCard: React.FC<CourseOfferCardProps> = ({
           <button className="w-full bg-[#F5B614] hover:bg-[#e4a900] text-white font-medium py-3 rounded-lg transition duration-200 text-base">
             RESERVAR CUPO
           </button>
-          <div className="text-sm text-muted-foreground mt-2">
-            Incluye llamada estratégica gratuita y análisis ROI personalizado
-          </div>
         </div>
 
-        <div className="border-t pt-4 text-center mt-6">
-          <div className="text-sm text-muted-foreground mb-2">
-            <span className="font-medium text-[#F5B614]">+500 empleados</span> transformados en <span className="font-medium">+50 empresas</span>
-          </div>
-          <div className="flex justify-center items-center gap-4 text-muted-foreground text-sm">
-            <span>VISIONA</span>
-            <span>TECH CORP</span>
-            <span>INNOVATE SA</span>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );

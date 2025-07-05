@@ -497,7 +497,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                   <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
                     <Path d="M12 2V22M17 5H9.5C8.57 5 7.81 5.13 7.19 5.4C5.81 6 5 7.38 5 9C5 10.09 5.41 11.08 6.11 11.79C6.81 12.5 7.8 12.91 8.89 12.91H15.11C16.2 12.91 17.19 13.32 17.89 14.03C18.59 14.74 19 15.73 19 16.82C19 18.98 17.35 20.76 15.25 20.97C14.74 21.01 14.26 21 13.8 20.95" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                   </Svg>
-                  <Text style={styles.cardTitle}>Potencial ROI Mensual ({roi.employeeCount} empleados)</Text>
+                  <Text style={styles.cardTitle}>Ahorro Mensual Estimado ({roi.employeeCount} empleados)</Text>
                 </View>
               </View>
               <View style={{ gap: 6 }}>
@@ -514,9 +514,12 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                   </Text>
                 </View>
                 <View style={{ borderTop: '1 solid #d1fae5', paddingTop: 6, marginTop: 3 }}>
-                  <Text style={{ fontSize: 6, color: '#6b7280' }}>Costo de oportunidad:</Text>
+                  <Text style={{ fontSize: 6, color: '#6b7280' }}>Dinero que pierdes cada mes:</Text>
                   <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#DB4437' }}>
                     ${opportunityMonthly.toLocaleString()}/mes
+                  </Text>
+                  <Text style={{ fontSize: 6, color: '#6b7280', marginTop: 2 }}>
+                    Por no usar IA eficientemente
                   </Text>
                 </View>
               </View>
@@ -547,7 +550,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
               color: '#6b7280', 
               textAlign: 'center',
               marginTop: 4
-            }}>Indicadores principales del nivel de adopción de IA en tu organización</Text>
+            }}>¿Qué tan bien usa tu empresa la Inteligencia Artificial?</Text>
           </View>
           <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
             {/* Empleados */}
@@ -625,7 +628,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     <Circle cx="12" cy="12" r="10" stroke="#6b7280" strokeWidth="1.5" fill="none"/>
                     <Path d="M12 6V12L16 14" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                   </Svg>
-                  <Text style={[styles.cardTitle, { fontSize: 8 }]}>Skill prompting</Text>
+                  <Text style={[styles.cardTitle, { fontSize: 8 }]}>Habilidad para dar instrucciones a IA</Text>
                 </View>
                 <View style={[styles.badge, { backgroundColor: getSingleValue(stats, 'avgPromptSkill', 1) >= 5 ? '#0F9D58' : '#DB4437', paddingHorizontal: 4, paddingVertical: 2, marginTop: 2 }]}>
                   <Text style={[styles.badgeText, { fontSize: 6 }]}>
@@ -673,9 +676,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     <Svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                       <Path d="M9 11H3M21 11h-6M12 11v6M12 5V3M9.31 5.69L8.6 5M15.69 5.69l.71-.69" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                     </Svg>
-                    <Text style={[styles.cardTitle, { color: '#2563eb', fontWeight: 'bold', fontSize: 11 }]}>Conocimiento Básico IA</Text>
+                    <Text style={[styles.cardTitle, { color: '#2563eb', fontWeight: 'bold', fontSize: 11 }]}>¿Qué tanto sabe tu equipo de IA?</Text>
                   </View>
-                  <Text style={[styles.cardSubtitle, { color: '#6b82f6', fontSize: 7, marginTop: 3 }]}>Promedio en escala 1-5 (donde 5 = excelente)</Text>
+                  <Text style={[styles.cardSubtitle, { color: '#6b82f6', fontSize: 7, marginTop: 3 }]}>Nivel de conocimiento (1=Básico, 5=Experto)</Text>
                 </View>
                 <View style={{ gap: 8 }}>
                   <View style={[styles.card, { backgroundColor: 'white', padding: 8, border: '1 solid #dbeafe', borderRadius: 6 }]}>
@@ -684,7 +687,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                         <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
                           <Path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#3b82f6" strokeWidth="1.5" fill="none"/>
                         </Svg>
-                        <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Sabe qué es un LLM:</Text>
+                        <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Entiende cómo funciona ChatGPT:</Text>
                       </View>
                       <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'avgLLMKnowledge', 1).toFixed(1)}/5</Text>
                     </View>
@@ -695,7 +698,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                         <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
                           <Path d="M12 2v20m10-10H2" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" fill="none"/>
                         </Svg>
-                        <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Conoce pretraining/finetuning:</Text>
+                        <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Entiende entrenamiento de IA:</Text>
                       </View>
                       <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'avgPretrainingKnowledge', 1).toFixed(1)}/5</Text>
                     </View>
@@ -707,7 +710,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                           <Circle cx="12" cy="12" r="10" stroke="#3b82f6" strokeWidth="1.5" fill="none"/>
                           <Circle cx="12" cy="12" r="3" stroke="#3b82f6" strokeWidth="1.5" fill="none"/>
                         </Svg>
-                        <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Conoce 4 partes del prompt:</Text>
+                        <Text style={{ fontSize: 8, color: '#4b5563', flexShrink: 1 }}>Sabe dar instrucciones efectivas:</Text>
                       </View>
                       <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#2563eb', flexShrink: 0 }}>{getSingleValue(stats, 'avgPromptKnowledge', 1).toFixed(1)}/5</Text>
                     </View>
@@ -976,9 +979,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     <Path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#dc2626" strokeWidth="1.5" fill="none"/>
                     <Path d="M12 9v4M12 17h.01" stroke="#dc2626" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                   </Svg>
-                  <Text style={[styles.cardTitle, { color: '#dc2626', fontWeight: 'bold', fontSize: 11 }]}>Análisis de Barreras Organizacionales</Text>
+                  <Text style={[styles.cardTitle, { color: '#dc2626', fontWeight: 'bold', fontSize: 11 }]}>¿Qué impide usar IA en tu empresa?</Text>
                 </View>
-                <Text style={[styles.cardSubtitle, { color: '#ef4444', fontSize: 7 }]}>Obstáculos internos para la adopción de IA</Text>
+                <Text style={[styles.cardSubtitle, { color: '#ef4444', fontSize: 7 }]}>Obstáculos como políticas restrictivas, falta de capacitación, resistencia al cambio</Text>
               </View>
               <View style={{ flexDirection: 'row', gap: 10 }}>
                 <View style={[styles.card, { backgroundColor: 'white', padding: 10, flex: 1 }]}>
@@ -986,36 +989,36 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
                       <Path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#dc2626" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                     </Svg>
-                    <Text style={{ fontSize: 8, fontWeight: 'bold' }}>Nivel de barreras:</Text>
+                    <Text style={{ fontSize: 8, fontWeight: 'bold' }}>Obstáculos internos:</Text>
                   </View>
                   <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#dc2626' }}>
                     {getSingleValue(stats, 'avgOrganizationalBarriers', 1).toFixed(1)}/5
                   </Text>
-                  <Text style={{ fontSize: 6, color: '#9ca3af' }}>1=Ninguna, 5=Extremas</Text>
+                  <Text style={{ fontSize: 6, color: '#9ca3af' }}>1=Sin obstáculos, 5=Muchos obstáculos</Text>
                 </View>
                 <View style={[styles.card, { backgroundColor: 'white', padding: 10, flex: 1 }]}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                     <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
                       <Path d="M9 11l3 3L22 4" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                     </Svg>
-                    <Text style={{ fontSize: 8, fontWeight: 'bold' }}>Empleados sin barreras:</Text>
+                    <Text style={{ fontSize: 8, fontWeight: 'bold' }}>Empleados libres para usar IA:</Text>
                   </View>
                   <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#16a34a' }}>
                     {getSingleValue(stats, 'pctLowBarriers', 0)}%
                   </Text>
-                  <Text style={{ fontSize: 6, color: '#9ca3af' }}>Puntuación 1-2 en barreras</Text>
+                  <Text style={{ fontSize: 6, color: '#9ca3af' }}>Sin obstáculos para adoptar IA</Text>
                 </View>
                 <View style={[styles.card, { backgroundColor: 'white', padding: 10, flex: 1 }]}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                     <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
                       <Path d="M2 20h20L12 4z" stroke="#3b82f6" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
                     </Svg>
-                    <Text style={{ fontSize: 8, fontWeight: 'bold' }}>Potencial de mejora:</Text>
+                    <Text style={{ fontSize: 8, fontWeight: 'bold' }}>Empleados motivados:</Text>
                   </View>
                   <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#3b82f6' }}>
                     {getSingleValue(stats, 'pctHighImprovementOpportunity', 0)}%
                   </Text>
-                  <Text style={{ fontSize: 6, color: '#9ca3af' }}>Alta oportunidad (4-5)</Text>
+                  <Text style={{ fontSize: 6, color: '#9ca3af' }}>Quieren mejorar en IA</Text>
                 </View>
               </View>
               
@@ -1026,19 +1029,19 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     <Circle cx="12" cy="12" r="10" stroke="#f59e0b" strokeWidth="1.5" fill="none"/>
                     <Path d="M12 7v5l3 3" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                   </Svg>
-                  <Text style={{ fontSize: 9, color: '#d97706', fontWeight: 'bold' }}>Interpretación de Barreras</Text>
+                  <Text style={{ fontSize: 9, color: '#d97706', fontWeight: 'bold' }}>¿Qué significa esto para tu empresa?</Text>
                 </View>
                 <Text style={{ fontSize: 8, color: '#92400e', lineHeight: 1.4 }}>
                   {(() => {
                     const barrierLevel = getSingleValue(stats, "avgOrganizationalBarriers", 1);
                     if (barrierLevel <= 2) {
-                      return "Excelente: Pocas barreras organizacionales. El equipo tiene libertad para experimentar con IA.";
+                      return "Excelente: Tu equipo puede usar IA libremente. Es momento de acelerar la adopción y obtener ventaja competitiva.";
                     } else if (barrierLevel <= 3) {
-                      return "Moderado: Algunas barreras presentes. Se recomienda trabajar en políticas y comunicación interna.";
+                      return "Moderado: Hay algunos obstáculos. Recomendamos crear políticas claras de IA y capacitar a los gerentes.";
                     } else if (barrierLevel <= 4) {
-                      return "Alto: Barreras significativas. Necesario involucrar liderazgo y crear estrategia de cambio.";
+                      return "Preocupante: Muchos obstáculos frenan la productividad. Necesitas involucrar a los directivos para remover barreras.";
                     } else {
-                      return "Crítico: Barreras extremas. Requiere intervención ejecutiva y plan de transformación cultural.";
+                      return "Crítico: Los obstáculos están bloqueando completamente la innovación. Requiere acción inmediata de la alta dirección.";
                     }
                   })()}
                 </Text>
@@ -1063,13 +1066,13 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                 color: '#1e40af',
                 textAlign: 'center',
                 letterSpacing: 0.5
-              }}>[ANÁLISIS] COMPARATIVO Y VISUALIZACIONES</Text>
+              }}>[COMPARACIÓN] Tu empresa vs otras empresas</Text>
               <Text style={{ 
                 fontSize: 10, 
                 color: '#3b82f6', 
                 textAlign: 'center',
                 marginTop: 4
-              }}>Comparación con benchmarks del mercado y distribución de uso</Text>
+              }}>¿Cómo se compara tu empresa con el promedio del mercado?</Text>
             </View>
             <View style={{ flexDirection: 'row', gap: 12 }}>
               {/* Skills vs Industry - Updated with 6 metrics */}
@@ -1080,9 +1083,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                       <Circle cx="12" cy="12" r="10" stroke="#9333ea" strokeWidth="1.5" fill="none"/>
                       <Path d="M12 6V12L16 14" stroke="#9333ea" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                     </Svg>
-                    <Text style={[styles.cardTitle, { color: '#7c3aed', fontWeight: 'bold' }]}>Skills vs Industria</Text>
+                    <Text style={[styles.cardTitle, { color: '#7c3aed', fontWeight: 'bold' }]}>Tus habilidades vs promedio</Text>
                   </View>
-                  <Text style={[styles.cardSubtitle, { color: '#9333ea' }]}>Comparación con benchmarks del mercado</Text>
+                  <Text style={[styles.cardSubtitle, { color: '#9333ea' }]}>¿Estás por encima o debajo del promedio?</Text>
                 </View>
                 
                 {/* Radar Chart using hexagon for 6 points */}
@@ -1248,7 +1251,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     <Svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                       <Path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#6b7280" strokeWidth="1.5" fill="none"/>
                     </Svg>
-                    <Text style={styles.cardTitle}>Dispositivos donde usan IA</Text>
+                    <Text style={styles.cardTitle}>¿Dónde usa tu equipo la IA?</Text>
                   </View>
                 </View>
                 <View style={styles.barChart}>
@@ -1288,7 +1291,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                 {/* Device Usage Insights */}
                 <View style={{ marginTop: 10, padding: 8, backgroundColor: '#f1f5f9', borderRadius: 6 }}>
                   <Text style={{ fontSize: 8, color: '#475569', fontWeight: 'bold', marginBottom: 4 }}>
-                    [INSIGHT] Análisis de Dispositivos:
+                    [QUÉ SIGNIFICA] Para tu estrategia de capacitación:
                   </Text>
                   <Text style={{ fontSize: 7, color: '#64748b', lineHeight: 1.4 }}>
                     {(() => {
@@ -1298,17 +1301,17 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                       const totalUsage = laptopUsage + mobileUsage + desktopUsage + getSingleValue(stats, 'device.tablet', 0);
                       
                       if (totalUsage === 0) {
-                        return "No se registró uso de dispositivos específicos para IA.";
+                        return "Tu equipo no especificó dispositivos preferidos. Recomendamos capacitación en computadoras para mayor productividad.";
                       }
                       
                       if (laptopUsage > 50) {
-                        return "Alto uso en laptops indica trabajo productivo. Oportunidad para optimizar workflows móviles.";
+                        return "Tu equipo prefiere laptops para trabajar con IA. Esto es ideal para productividad. Considera también entrenar en herramientas móviles.";
                       } else if (mobileUsage > 40) {
-                        return "Fuerte adopción móvil. Considerar capacitación en apps móviles de IA especializadas.";
+                        return "Fuerte uso móvil de IA. Capacita en apps especializadas de móvil, pero también en herramientas de escritorio para tareas complejas.";
                       } else if (desktopUsage > 40) {
-                        return "Preferencia por desktop. Ideal para herramientas avanzadas y capacitación técnica.";
+                        return "Prefieren computadoras de escritorio. Perfecto para herramientas avanzadas y capacitación técnica profunda.";
                       } else {
-                        return "Uso distribuido entre dispositivos. Estrategia multi-plataforma recomendada.";
+                        return "Usan IA en diferentes dispositivos. Recomendamos capacitación que cubra todas las plataformas.";
                       }
                     })()}
                   </Text>
@@ -1327,7 +1330,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     <Svg width="14" height="14" viewBox="0 0 24 24" fill="transparent">
                       <Path d="M2 20h20L12 4z" stroke="#0F9D58" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
                     </Svg>
-                    <Text style={[styles.cardTitle, { color: '#0F9D58' }]}>Oportunidades de Crecimiento</Text>
+                    <Text style={[styles.cardTitle, { color: '#0F9D58' }]}>¿Cómo puede crecer tu empresa?</Text>
                   </View>
                 </View>
                 <View style={styles.list}>
@@ -1388,7 +1391,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                       <Path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#DB4437" strokeWidth="1.5" fill="none"/>
                       <Path d="M12 9v4M12 17h.01" stroke="#DB4437" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                     </Svg>
-                    <Text style={[styles.cardTitle, { color: '#DB4437' }]}>Riesgos Identificados</Text>
+                    <Text style={[styles.cardTitle, { color: '#DB4437' }]}>¿Qué amenaza tu competitividad?</Text>
                   </View>
                 </View>
                 <View style={styles.list}>
@@ -1454,9 +1457,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     <Rect x="3" y="11" width="18" height="10" rx="2" stroke="#3b82f6" strokeWidth="1.5" fill="none"/>
                     <Path d="M8 7V11M12 5V11M16 9V11" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                   </Svg>
-                  <Text style={[styles.cardTitle, { color: '#2563eb', fontWeight: 'bold', fontSize: 14 }]}>Herramientas IA Disponibles</Text>
+                  <Text style={[styles.cardTitle, { color: '#2563eb', fontWeight: 'bold', fontSize: 14 }]}>¿Qué herramientas de IA usa tu equipo?</Text>
                 </View>
-                <Text style={[styles.cardSubtitle, { color: '#3b82f6' }]}>Porcentaje de uso por herramienta</Text>
+                <Text style={[styles.cardSubtitle, { color: '#3b82f6' }]}>Porcentaje de empleados que usa cada herramienta</Text>
               </View>
               <View style={styles.barChart}>
                 {[
@@ -1490,7 +1493,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     <Circle cx="12" cy="12" r="10" stroke="#f59e0b" strokeWidth="1.5" fill="none"/>
                     <Path d="M12 7v5l3 3" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                   </Svg>
-                  <Text style={{ fontSize: 8, color: '#d97706', fontWeight: 'bold' }}>Oportunidad de Descubrimiento</Text>
+                  <Text style={{ fontSize: 8, color: '#d97706', fontWeight: 'bold' }}>Oportunidad de Crecimiento</Text>
                 </View>
                 <Text style={{ fontSize: 7, color: '#92400e' }}>
                   {(() => {
@@ -1498,8 +1501,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                       .filter(tool => getSingleValue(stats, `tool.${tool}`, 0) > 0).length;
                     const totalTools = 7;
                     const unusedTools = totalTools - toolsInUse;
-                    const employeeCount = getSingleValue(stats, 'employeeCount', 0);
-                    return `${toolsInUse} herramientas en uso de ${totalTools} disponibles. ${unusedTools} herramientas sin explorar por ${employeeCount} empleados.`;
+                    return `Tu equipo usa ${toolsInUse} de ${totalTools} herramientas principales. Hay ${unusedTools} herramientas más que podrían aumentar su productividad.`;
                   })()}
                 </Text>
               </View>
@@ -1719,21 +1721,10 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
 
               {/* Calculate program values */}
               {(() => {
-                // Use actual employee count for decision, not Math.max for this part
+                // Use minimum 25 employees, then actual count if higher
                 const actualEmployeeCount = roi.employeeCount;
-                let calculatedPrice: number;
-
-                if (actualEmployeeCount < 30) {
-                  calculatedPrice = 30 * 2499;
-                } else {
-                  calculatedPrice = actualEmployeeCount * 2499;
-                }
-                
-                const price = calculatedPrice; // Final price based on new logic
-
-                // Values for display, keeping some of the existing structure if needed for text
-                const displayEmployeeCount = Math.max(30, actualEmployeeCount); 
-                const potentialGain = roi.potential - roi.current;
+                const billingEmployeeCount = Math.max(25, actualEmployeeCount);
+                const price = billingEmployeeCount * 2499;
 
                 return (
                   <>
@@ -1743,9 +1734,17 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                       <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#374151' }}>
                         De {maturity.level} a Experto en 4 horas
                       </Text>
-                      <Text style={{ fontSize: 10, color: '#6b7280', marginTop: 2 }}>
-                        Para {displayEmployeeCount} empleados — Certificación en IA aplicada
+                      <Text style={{ fontSize: 9, color: '#6b7280', marginTop: 2, fontStyle: 'italic' }}>
+                        (2 sesiones de 2 horas)
                       </Text>
+                      <Text style={{ fontSize: 10, color: '#6b7280', marginTop: 2 }}>
+                        Para {actualEmployeeCount} empleados — Certificación en IA aplicada
+                      </Text>
+                      {actualEmployeeCount < 25 && (
+                        <Text style={{ fontSize: 8, color: '#6b7280', marginTop: 4, fontStyle: 'italic' }}>
+                          (Precio mínimo para 25 empleados)
+                        </Text>
+                      )}
                     </View>
 
                     {/* Value Comparison */}
@@ -1753,9 +1752,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                       <View style={{ flex: 1, backgroundColor: '#fef2f2', borderLeftWidth: 3, borderLeftColor: '#dc2626', padding: 10, borderRadius: 4 }}>
                         <Text style={{ fontSize: 10, color: '#dc2626', fontWeight: 'bold', marginBottom: 6 }}>Sin el programa</Text>
                         <View style={{ gap: 4 }}>
-                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Pierdes ${Math.round(roi.opportunity * 12).toLocaleString()} / año</Text>
-                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Ahorro actual: {roi.currentMinutesSavedPerDay} min/día</Text>
-                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Skill IA: {getSingleValue(stats, "avgPromptSkill", 1)}/5</Text>
+                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Pierdes ${Math.round(roi.opportunity).toLocaleString()} / mes</Text>
+                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Ahorro actual: {roi.currentMinutesSavedPerDay.toFixed(1)} min/día</Text>
+                          <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Skill IA: {getSingleValue(stats, "avgPromptSkill", 1).toFixed(1)}/5</Text>
                         </View>
                         <View style={{ borderTop: '1 solid #fecaca', marginTop: 6, paddingTop: 6, alignItems: 'center' }}>
                           <Text style={{ fontSize: 8, color: '#dc2626' }}>Costo anual de oportunidad</Text>
@@ -1765,7 +1764,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                       <View style={{ flex: 1, backgroundColor: '#f0fdf4', borderLeftWidth: 3, borderLeftColor: '#16a34a', padding: 10, borderRadius: 4 }}>
                         <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold', marginBottom: 6 }}>Con el programa</Text>
                         <View style={{ gap: 4 }}>
-                          <Text style={{ fontSize: 8, color: '#14532d' }}>Ganas ${Math.round(roi.potential * 12).toLocaleString()} / año</Text>
+                          <Text style={{ fontSize: 8, color: '#14532d' }}>Ganas ${Math.round(roi.potential).toLocaleString()} / mes</Text>
                           <Text style={{ fontSize: 8, color: '#14532d' }}>120+ min/día ahorrados</Text>
                           <Text style={{ fontSize: 8, color: '#14532d' }}>Skill IA: 5/5 certificado</Text>
                         </View>
@@ -1779,7 +1778,10 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                     {/* Price */}
                     <View style={{ backgroundColor: '#fef3c7', padding: 10, borderRadius: 6, alignItems: 'center', marginBottom: 10 }}>
                       <Text style={{ fontSize: 9, color: '#6b7280' }}>Precio del programa</Text>
-                      <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#374151' }}>${price.toLocaleString()}</Text>
+                      <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#374151' }}>
+                        ${price.toLocaleString()}
+                        <Text style={{ fontSize: 8, color: '#6b7280', fontWeight: 'normal' }}> más IVA</Text>
+                      </Text>
                     </View>
 
                     {/* Guarantee */}
@@ -1791,9 +1793,9 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                         <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold' }}>Garantía Triple</Text>
                       </View>
                       <View style={{ gap: 2 }}>
-                        <Text style={{ fontSize: 8, color: '#15803d' }}>• Recuperas ${Math.round(potentialGain).toLocaleString()} o reembolso</Text>
-                        <Text style={{ fontSize: 8, color: '#15803d' }}>• Skill sube a 5/5 o extensión gratis</Text>
-                        <Text style={{ fontSize: 8, color: '#15803d' }}>• Satisfacción o no pagas</Text>
+                        <Text style={{ fontSize: 8, color: '#15803d' }}>• Si no te gusta el programa te devolvemos el dinero</Text>
+                        <Text style={{ fontSize: 8, color: '#15803d' }}>• Skill sube a 4/5 o extensión gratis</Text>
+                        <Text style={{ fontSize: 8, color: '#15803d' }}>• Domina el uso de IA en tu empresa</Text>
                       </View>
                     </View>
 
@@ -1822,14 +1824,6 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                           }}>RESERVAR CUPO</Text>
                         </View>
                       </Link>
-                      <Text style={{ 
-                        fontSize: 14, 
-                        color: '#6b7280', 
-                        marginTop: 8,
-                        textAlign: 'center'
-                      }}>
-                        Incluye llamada estratégica gratuita y análisis ROI personalizado
-                      </Text>
                     </View>
                   </>
                 );
@@ -1837,17 +1831,6 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
             </View>
           </View>
 
-          {/* Social Proof - This now clearly belongs to the page with the first offer */}
-          <View style={{ borderTop: '1 solid #e5e7eb', paddingTop: 12, marginTop: 16, alignItems: 'center' }}>
-            <Text style={{ fontSize: 9, color: '#6b7280', marginBottom: 6 }}>
-              <Text style={{ fontWeight: 'bold', color: '#F5B614' }}>+500 empleados</Text> transformados en <Text style={{ fontWeight: 'bold' }}>+50 empresas</Text>
-            </Text>
-            <View style={{ flexDirection: 'row', gap: 12 }}>
-              <Text style={{ fontSize: 8, color: '#9ca3af' }}>VISIONA</Text>
-              <Text style={{ fontSize: 8, color: '#9ca3af' }}>TECH CORP</Text>
-              <Text style={{ fontSize: 8, color: '#9ca3af' }}>INNOVATE SA</Text>
-            </View>
-          </View>
         </View> {/* Closes the main content View of the third page (position: relative, flex: 1) */}
 
         {/* Footer for third page (containing the first offer) */}
@@ -1870,58 +1853,58 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
           <View style={[styles.card, styles.cardBordered, { borderColor: '#3b82f6', borderWidth: 3, backgroundColor: '#EFF6FF', padding: 20 }]}>
             {(() => {
               const actualEmployeeCountLocal = roi.employeeCount;
-              const displayEmployeeCountLocal = Math.max(30, actualEmployeeCountLocal);
-              
+              const billingEmployeeCountLocal = Math.max(25, actualEmployeeCountLocal);
               const pricePerEmployee = 1499;
-              const programPrice = displayEmployeeCountLocal * pricePerEmployee;
+              const programPrice = billingEmployeeCountLocal * pricePerEmployee;
 
-              // Corrected annual calculations
-              const currentAnnualSaving = roi.current * 12;
-              // basicProgramAdditionalAnnualGain: 50% of the difference between potential monthly and current monthly, then annualized.
-              const basicProgramAdditionalAnnualGain = (roi.potential - roi.current) * 0.5 * 12;
-              const totalAnnualSavingWithBasicProgram = currentAnnualSaving + basicProgramAdditionalAnnualGain;
-              
               // opportunityMonthly is already defined outside, representing roi.opportunity (monthly)
-              const annualOpportunityCost = opportunityMonthly * 12;
 
               return (
                 <>
                   {/* Program Title */}
                   <View style={{ alignItems: 'center', marginBottom: 16 }}>
                     <Text style={{ fontSize: 10, color: '#6b7280', marginBottom: 4 }}>PROGRAMA CHATGPT BÁSICO</Text>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1e3a8a' }}> {/* Darker Blue for title text */}
+                    <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#374151' }}>
                       De {maturity.level} a Intermedio en 2 horas
                     </Text>
-                    <Text style={{ fontSize: 10, color: '#6b7280', marginTop: 2 }}>
-                      Para {displayEmployeeCountLocal} empleados — Certificación ChatGPT
+                    <Text style={{ fontSize: 9, color: '#6b7280', marginTop: 2, fontStyle: 'italic' }}>
+                      (1 sesión de 2 horas)
                     </Text>
+                    <Text style={{ fontSize: 10, color: '#6b7280', marginTop: 2 }}>
+                      Para {actualEmployeeCountLocal} empleados — Certificación ChatGPT
+                    </Text>
+                    {actualEmployeeCountLocal < 25 && (
+                      <Text style={{ fontSize: 8, color: '#6b7280', marginTop: 4, fontStyle: 'italic' }}>
+                        (Precio mínimo para 25 empleados)
+                      </Text>
+                    )}
                   </View>
 
                   {/* Value Comparison */}
                   <View style={{ flexDirection: 'row', gap: 10, marginBottom: 12 }}>
                     <View style={{ flex: 1, backgroundColor: '#fef2f2', borderLeftWidth: 3, borderLeftColor: '#dc2626', padding: 10, borderRadius: 4 }}>
-                      <Text style={{ fontSize: 10, color: '#dc2626', fontWeight: 'bold', marginBottom: 6 }}>Sin capacitación IA</Text>
+                      <Text style={{ fontSize: 10, color: '#dc2626', fontWeight: 'bold', marginBottom: 6 }}>Sin el programa</Text>
                       <View style={{ gap: 4 }}>
-                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Pierdes ${annualOpportunityCost.toLocaleString()} / año</Text>
-                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Ahorro actual: {roi.currentMinutesSavedPerDay} min/día</Text>
-                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Skill IA: {getSingleValue(stats, "avgPromptSkill", 1)}/5</Text>
+                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Pierdes ${Math.round(roi.opportunity * 0.5).toLocaleString()} / mes</Text>
+                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Ahorro actual: {roi.currentMinutesSavedPerDay.toFixed(1)} min/día</Text>
+                        <Text style={{ fontSize: 8, color: '#7f1d1d' }}>Skill ChatGPT: {getSingleValue(stats, "avgPromptSkill", 1).toFixed(1)}/5</Text>
                       </View>
                       <View style={{ borderTop: '1 solid #fecaca', marginTop: 6, paddingTop: 6, alignItems: 'center' }}>
                         <Text style={{ fontSize: 8, color: '#dc2626' }}>Costo anual de oportunidad</Text>
-                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#dc2626' }}>${annualOpportunityCost.toLocaleString()}</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#dc2626' }}>${Math.round(roi.opportunity * 0.5 * 12).toLocaleString()}</Text>
                       </View>
                     </View>
                     
                     <View style={{ flex: 1, backgroundColor: '#f0fdf4', borderLeftWidth: 3, borderLeftColor: '#16a34a', padding: 10, borderRadius: 4 }}>
-                      <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold', marginBottom: 6 }}>Con Programa Básico</Text>
+                      <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold', marginBottom: 6 }}>Con el programa</Text>
                       <View style={{ gap: 4 }}>
-                        <Text style={{ fontSize: 8, color: '#14532d' }}>Ganas ${totalAnnualSavingWithBasicProgram.toLocaleString()} / año</Text>
+                        <Text style={{ fontSize: 8, color: '#14532d' }}>Ganas ${Math.round(roi.current + (roi.potential - roi.current) * 0.5).toLocaleString()} / mes</Text>
                         <Text style={{ fontSize: 8, color: '#14532d' }}>60+ min/día ahorrados</Text>
-                        <Text style={{ fontSize: 8, color: '#14532d' }}>Skill IA: 4/5 certificado</Text>
+                        <Text style={{ fontSize: 8, color: '#14532d' }}>Skill ChatGPT: 4/5 intermedio</Text>
                       </View>
                       <View style={{ borderTop: '1 solid #bbf7d0', marginTop: 6, paddingTop: 6, alignItems: 'center' }}>
                         <Text style={{ fontSize: 8, color: '#16a34a' }}>Beneficio anual total</Text>
-                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a' }}>${totalAnnualSavingWithBasicProgram.toLocaleString()}</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a' }}>${Math.round((roi.current + (roi.potential - roi.current) * 0.5) * 12).toLocaleString()}</Text>
                       </View>
                     </View>
                   </View>
@@ -1929,8 +1912,8 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                   {/* Price */}
                   <View style={{ backgroundColor: '#DBEAFE', padding: 10, borderRadius: 6, alignItems: 'center', marginBottom: 10 }}>
                     <Text style={{ fontSize: 9, color: '#1e3a8a' }}>Precio del programa</Text>
-                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#1e40af' }}>${programPrice.toLocaleString()}</Text>
-                    <Text style={{ fontSize: 8, color: '#1e40af', marginTop: 1 }}>(${pricePerEmployee} por empleado, min. {displayEmployeeCountLocal})</Text>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#374151' }}>${programPrice.toLocaleString()}</Text>
+                    <Text style={{ fontSize: 8, color: '#6b7280', marginTop: 1 }}>${pricePerEmployee} por empleado</Text>
                   </View>
 
                   {/* Guarantee */}
@@ -1939,18 +1922,17 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                       <Svg width="10" height="10" viewBox="0 0 24 24" fill="none">
                         <Path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#16a34a" strokeWidth="1.5" fill="none"/>
                       </Svg>
-                      <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold' }}>Garantía del Programa Básico</Text>
+                      <Text style={{ fontSize: 10, color: '#16a34a', fontWeight: 'bold' }}>Garantía Doble</Text>
                     </View>
                     <View style={{ gap: 2 }}>
-                      <Text style={{ fontSize: 8, color: '#15803d' }}>• Recuperas ${Math.round(basicProgramAdditionalAnnualGain).toLocaleString()} en valor o reembolso</Text>
-                      <Text style={{ fontSize: 8, color: '#15803d' }}>• Skill IA sube a 4/5 o extensión formativa gratis</Text>
-                      <Text style={{ fontSize: 8, color: '#15803d' }}>• Satisfacción garantizada o revisión del programa</Text>
+                      <Text style={{ fontSize: 8, color: '#15803d' }}>• Recuperas ${Math.round((roi.potential - roi.current) * 0.5).toLocaleString()} o reembolso</Text>
+                      <Text style={{ fontSize: 8, color: '#15803d' }}>• Skill sube a 4/5 o extensión gratis</Text>
                     </View>
                   </View>
                   
                   <View style={{ backgroundColor: '#E0E7FF', borderLeftWidth: 3, borderLeftColor: '#4338CA', padding: 8, borderRadius: 4, marginBottom: 10 }}>
                      <Text style={{ fontSize: 9, color: '#4338CA' }}>
-                      Inicia tu transformación básica en IA — <Text style={{ fontWeight: 'bold' }}>¡Comienza la próxima semana!</Text>
+                      Programa de entrada — <Text style={{ fontWeight: 'bold' }}>Disponible inmediatamente</Text>
                     </Text>
                   </View>
 
@@ -1972,14 +1954,6 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
                         }}>EMPEZAR AHORA</Text>
                       </View>
                     </Link>
-                    <Text style={{ 
-                      fontSize: 14, 
-                      color: '#6b7280', 
-                      marginTop: 8,
-                      textAlign: 'center'
-                    }}>
-                      Incluye acceso inmediato y soporte básico
-                    </Text>
                   </View>
                 </>
               );

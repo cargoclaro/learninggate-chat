@@ -18,11 +18,12 @@ export const AlternativeOfferCard: React.FC<AlternativeOfferCardProps> = ({
   maturity, 
   singleValue 
 }) => {
-  const employeeCount = Math.max(30, roi.employeeCount);
-  const isMinimumTeam = roi.employeeCount < 30;
+  const employeeCount = roi.employeeCount;
+  const isMinimumTeam = roi.employeeCount < 25;
+  const billingEmployeeCount = Math.max(25, roi.employeeCount);
   const potentialGain = (roi.potential - roi.current) * 0.5;
   const pricePerEmployee = 1499;
-  const totalPrice = employeeCount * pricePerEmployee;
+  const totalPrice = billingEmployeeCount * pricePerEmployee;
 
   return (
     <Card className="border-2 border-blue-500 bg-white shadow-sm">
@@ -46,6 +47,9 @@ export const AlternativeOfferCard: React.FC<AlternativeOfferCardProps> = ({
           <h3 className="text-2xl font-bold mb-1">
             De {maturity.level} a Intermedio en 2 horas
           </h3>
+          <p className="text-sm text-muted-foreground italic mb-1">
+            (1 sesión de 2 horas)
+          </p>
           <p className="text-base text-muted-foreground">
             Para {employeeCount} empleados — Certificación ChatGPT
           </p>
@@ -58,8 +62,8 @@ export const AlternativeOfferCard: React.FC<AlternativeOfferCardProps> = ({
               <span className="font-medium text-yellow-700 text-base">Programa Empresarial</span>
             </div>
             <div className="text-sm text-yellow-600">
-              Programa diseñado para equipos de mínimo 30 empleados.
-              <span className="font-medium"> Cotización basada en 30 empleados.</span>
+              Programa diseñado para equipos de mínimo 25 empleados.
+              <span className="font-medium"> Cotización basada en {billingEmployeeCount} empleados.</span>
             </div>
           </div>
         )}
@@ -137,21 +141,8 @@ export const AlternativeOfferCard: React.FC<AlternativeOfferCardProps> = ({
           <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition duration-200 text-base">
             EMPEZAR AHORA
           </button>
-          <div className="text-sm text-muted-foreground mt-2">
-            Incluye acceso inmediato y soporte básico
-          </div>
         </div>
 
-        <div className="border-t pt-4 text-center mt-6">
-          <div className="text-sm text-muted-foreground mb-2">
-            <span className="font-medium text-blue-600">+200 empleados</span> capacitados en <span className="font-medium">ChatGPT básico</span>
-          </div>
-          <div className="flex justify-center items-center gap-4 text-muted-foreground text-sm">
-            <span>STARTUP CO</span>
-            <span>DIGITAL PLUS</span>
-            <span>GROWTH SA</span>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );
