@@ -439,7 +439,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
           <View style={styles.headerLeft}>
             {/* eslint-disable-next-line jsx-a11y/alt-text */}
             <Image
-              src="/logo.png"
+              src="/temple_name.png"
               style={{ width: 100, height: 23, marginRight: 12 }}
             />
           </View>
@@ -1681,7 +1681,7 @@ export const PDFReport: React.FC<PDFReportProps> = ({ companyName, stats, isBlur
           <View style={styles.headerLeft}>
             {/* eslint-disable-next-line jsx-a11y/alt-text */}
             <Image
-              src="/logo.png"
+              src="/temple_name.png"
               style={{ width: 100, height: 23, marginRight: 12 }}
             />
             <Text style={[styles.title, { fontSize: 22, color: '#F5B614' }]}>Programa de Transformación IA</Text>

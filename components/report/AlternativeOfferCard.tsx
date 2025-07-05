@@ -31,7 +31,7 @@ export const AlternativeOfferCard: React.FC<AlternativeOfferCardProps> = ({
         <div className="text-center mb-6">
           <div className="flex justify-center items-center gap-2 mb-3">
             <Image 
-              src="/logo.png" 
+              src="/temple_name.png" 
               alt="Learning Gate" 
               width={144} 
               height={32} 

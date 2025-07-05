@@ -34,7 +34,7 @@ export const CourseOfferCard: React.FC<CourseOfferCardProps> = ({
         <div className="text-center mb-6 pt-10"> {/* Adjusted pt-10 for more space for the banner */}
           <div className="flex justify-center items-center gap-2 mb-3">
             <Image 
-              src="/logo.png" 
+              src="/temple_name.png" 
               alt="Learning Gate" 
               width={144} 
               height={32} 

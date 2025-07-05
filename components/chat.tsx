@@ -378,7 +378,7 @@ export default function Page() {
           {/* Background logo during chat */}
           <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
             <Image 
-              src="/logo.png" 
+              src="/temple_name.png" 
               alt="" 
               width={400} 
               height={400} 
@@ -527,7 +527,7 @@ export default function Page() {
         <div className="flex justify-center mt-4 pb-4 sm:pb-6 lg:pb-8 relative z-20 
                       px-4 sm:px-6 lg:px-8">
           <Image 
-            src="/logo.png" 
+            src="/temple_name.png" 
             alt="Logo" 
             width={180} 
             height={180} 
